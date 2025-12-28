@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.kotlin.konan.properties.Properties
 import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     alias(libs.plugins.android)
@@ -17,11 +17,27 @@ if (keystorePropertiesFile.exists()) {
     keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
-fun hasSigningVars(): Boolean {
-    return providers.environmentVariable("SIGNING_KEY_ALIAS").orNull != null
-            && providers.environmentVariable("SIGNING_KEY_PASSWORD").orNull != null
-            && providers.environmentVariable("SIGNING_STORE_FILE").orNull != null
-            && providers.environmentVariable("SIGNING_STORE_PASSWORD").orNull != null
+fun getSigningProperty(propName: String): String? {
+    val snakeName = propName.replace("([a-z])([A-Z])".toRegex(), "$1_$2").uppercase()
+    val keysToTry = listOf(
+        "SIGNING_$snakeName",
+        propName,
+        propName.lowercase(),
+        "signing.$propName",
+        "RELEASE_$snakeName"
+    )
+    
+    for (key in keysToTry) {
+        val value = project.findProperty(key)?.toString() 
+            ?: project.providers.gradleProperty(key).orNull
+            ?: project.providers.environmentVariable(key).orNull
+        
+        if (!value.isNullOrBlank()) {
+            return value
+        }
+    }
+    
+    return keystoreProperties.getProperty(propName)
 }
 
 android {
@@ -39,22 +55,34 @@ android {
         }
     }
 
+    val sKeyAlias = getSigningProperty("keyAlias")
+    val sKeyPassword = getSigningProperty("keyPassword")
+    val sStoreFile = getSigningProperty("storeFile")
+    val sStorePassword = getSigningProperty("storePassword")
+    
+    val missing = mutableListOf<String>()
+    if (sKeyAlias.isNullOrBlank()) missing.add("keyAlias (looked for SIGNING_KEY_ALIAS)")
+    if (sKeyPassword.isNullOrBlank()) missing.add("keyPassword (looked for SIGNING_KEY_PASSWORD)")
+    if (sStoreFile.isNullOrBlank()) missing.add("storeFile (looked for SIGNING_STORE_FILE)")
+    if (sStorePassword.isNullOrBlank()) missing.add("storePassword (looked for SIGNING_STORE_PASSWORD)")
+    
+    val canSign = missing.isEmpty()
+
     signingConfigs {
-        if (keystorePropertiesFile.exists()) {
+        if (canSign) {
             register("release") {
-                keyAlias = keystoreProperties.getProperty("keyAlias")
-                keyPassword = keystoreProperties.getProperty("keyPassword")
-                storeFile = file(keystoreProperties.getProperty("storeFile"))
-                storePassword = keystoreProperties.getProperty("storePassword")
-            }
-        } else if (hasSigningVars()) {
-            register("release") {
-                keyAlias = providers.environmentVariable("SIGNING_KEY_ALIAS").get()
-                keyPassword = providers.environmentVariable("SIGNING_KEY_PASSWORD").get()
-                storeFile = file(providers.environmentVariable("SIGNING_STORE_FILE").get())
-                storePassword = providers.environmentVariable("SIGNING_STORE_PASSWORD").get()
+                keyAlias = sKeyAlias
+                keyPassword = sKeyPassword
+                storeFile = file(sStoreFile!!)
+                storePassword = sStorePassword
             }
         } else {
+            // This will show up in your console
+            println("---------------------------------------------------------")
+            println("SIGNING DEBUG:")
+            println("Checking global properties in C:/Users/vk/.gradle/gradle.properties...")
+            println("Missing signatures: ${missing.joinToString(", ")}")
+            println("---------------------------------------------------------")
             logger.warn("Warning: No signing config found. Build will be unsigned.")
         }
     }
@@ -75,7 +103,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            if (keystorePropertiesFile.exists() || hasSigningVars()) {
+            if (canSign) {
                 signingConfig = signingConfigs.getByName("release")
             }
         }

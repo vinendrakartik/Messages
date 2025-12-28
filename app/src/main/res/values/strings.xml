@@ -56,6 +56,7 @@
     <string name="new_message">New message</string>
     <string name="mark_as_read">Mark as Read</string>
     <string name="mark_as_unread">Mark as Unread</string>
+    <string name="mark_all_as_read">Mark all as Read</string>
     <string name="me">Me</string>
     <string name="enable_custom_notifications">Enable custom notifications</string>
     <!-- Archive -->
