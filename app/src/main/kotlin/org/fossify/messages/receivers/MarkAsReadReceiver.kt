@@ -13,15 +13,25 @@ import org.fossify.messages.helpers.refreshConversations
 
 class MarkAsReadReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        when (intent.action) {
-            MARK_AS_READ -> {
-                val threadId = intent.getLongExtra(THREAD_ID, 0L)
-                context.notificationManager.cancel(threadId.hashCode())
-                ensureBackgroundThread {
-                    context.markThreadMessagesRead(threadId)
-                    context.conversationsDB.markRead(threadId)
-                    refreshConversations()
-                }
+        if (intent.action == MARK_AS_READ) {
+            val threadId = intent.getLongExtra(THREAD_ID, 0L)
+            val otp = intent.getStringExtra("otp")
+            val isTransaction = intent.getBooleanExtra("is_transaction", false)
+
+            val notificationId = when {
+                otp != null -> otp.hashCode()
+                isTransaction -> intent.getIntExtra("transaction_hash", 0)
+                else -> threadId.hashCode()
+            }
+
+            if (notificationId != 0) {
+                context.notificationManager.cancel(notificationId)
+            }
+
+            ensureBackgroundThread {
+                context.markThreadMessagesRead(threadId)
+                context.conversationsDB.markRead(threadId)
+                refreshConversations()
             }
         }
     }

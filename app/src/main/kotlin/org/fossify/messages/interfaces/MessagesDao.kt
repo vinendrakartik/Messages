@@ -54,6 +54,9 @@ interface MessagesDao {
     @Query("UPDATE messages SET read = 1 WHERE thread_id = :threadId")
     fun markThreadRead(threadId: Long)
 
+    @Query("UPDATE messages SET read = 1")
+    fun markAllRead()
+
     @Query("UPDATE messages SET type = :type WHERE id = :id")
     fun updateType(id: Long, type: Int): Int
 

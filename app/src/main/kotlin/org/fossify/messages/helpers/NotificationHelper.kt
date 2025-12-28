@@ -5,12 +5,15 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager.IMPORTANCE_HIGH
 import android.app.PendingIntent
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
-import android.media.RingtoneManager
+import android.net.Uri
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
@@ -30,10 +33,25 @@ import org.fossify.messages.receivers.MarkAsReadReceiver
 class NotificationHelper(private val context: Context) {
 
     private val notificationManager = context.notificationManager
-    private val soundUri get() = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+    private val ttsHelper = TTSHelper.getInstance(context)
     private val user = Person.Builder()
         .setName(context.getString(R.string.me))
         .build()
+
+    private val otpChannelId = "otp_channel"
+    private val transactionChannelId = "transaction_channel"
+    private val defaultChannelId = NOTIFICATION_CHANNEL_ID
+
+    private fun getSoundUri(isOtp: Boolean): Uri {
+        val soundName = if (isOtp) "otp" else "message"
+        val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
+        return if (resId != 0) {
+            Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/$resId")
+        } else {
+            @Suppress("DEPRECATION")
+            android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION)
+        }
+    }
 
     @SuppressLint("NewApi")
     fun showMessageNotification(
@@ -45,15 +63,40 @@ class NotificationHelper(private val context: Context) {
         sender: String?,
         alertOnlyOnce: Boolean = false
     ) {
-        val hasCustomNotifications =
-            context.config.customNotifications.contains(threadId.toString())
-        val notificationChannelId =
-            if (hasCustomNotifications) threadId.toString() else NOTIFICATION_CHANNEL_ID
-        if (!hasCustomNotifications) {
-            createChannel(notificationChannelId, context.getString(R.string.channel_received_sms))
+        val otp = body.extractOTP()
+        val isOtp = otp != null
+        
+        val transaction = if (!isOtp) body.extractTransactionInfo() else null
+        val isTransaction = transaction != null
+
+        if (isOtp) {
+            copyToClipboard(otp!!)
+        } else if (isTransaction) {
+            handleTransactionTTS(transaction!!)
         }
 
-        val notificationId = threadId.hashCode()
+        val hasCustomNotifications =
+            context.config.customNotifications.contains(threadId.toString())
+        
+        val notificationChannelId = when {
+            isOtp -> otpChannelId
+            isTransaction -> transactionChannelId
+            hasCustomNotifications -> threadId.toString()
+            else -> defaultChannelId
+        }
+
+        when {
+            isOtp -> createChannel(otpChannelId, "OTP Notifications", true)
+            isTransaction -> createChannel(transactionChannelId, "Transaction Notifications", false)
+            !hasCustomNotifications -> createChannel(defaultChannelId, context.getString(R.string.channel_received_sms), false)
+        }
+
+        val notificationId = when {
+            isOtp -> otp.hashCode()
+            isTransaction -> transaction.hashCode()
+            else -> threadId.hashCode()
+        }
+        
         val contentIntent = Intent(context, ThreadActivity::class.java).apply {
             putExtra(THREAD_ID, threadId)
         }
@@ -68,6 +111,13 @@ class NotificationHelper(private val context: Context) {
         val markAsReadIntent = Intent(context, MarkAsReadReceiver::class.java).apply {
             action = MARK_AS_READ
             putExtra(THREAD_ID, threadId)
+            if (isOtp) {
+                putExtra("otp", otp)
+            }
+            if (isTransaction) {
+                putExtra("is_transaction", true)
+                putExtra("transaction_hash", transaction.hashCode())
+            }
         }
         val markAsReadPendingIntent =
             PendingIntent.getBroadcast(
@@ -124,10 +174,11 @@ class NotificationHelper(private val context: Context) {
             null
         }
         val builder = NotificationCompat.Builder(context, notificationChannelId).apply {
+            val contentBody = if (isOtp) "OTP: $otp\n$body" else body
             when (context.config.lockScreenVisibilitySetting) {
                 LOCK_SCREEN_SENDER_MESSAGE -> {
                     setLargeIcon(largeIcon)
-                    setStyle(getMessagesStyle(address, body, notificationId, sender))
+                    setStyle(getMessagesStyle(address, contentBody, notificationId, sender))
                 }
 
                 LOCK_SCREEN_SENDER -> {
@@ -135,7 +186,7 @@ class NotificationHelper(private val context: Context) {
                     setLargeIcon(largeIcon)
                     val summaryText = context.getString(R.string.new_message)
                     setStyle(
-                        NotificationCompat.BigTextStyle().setSummaryText(summaryText).bigText(body)
+                        NotificationCompat.BigTextStyle().setSummaryText(summaryText).bigText(contentBody)
                     )
                 }
             }
@@ -148,7 +199,7 @@ class NotificationHelper(private val context: Context) {
             setCategory(Notification.CATEGORY_MESSAGE)
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
-            setSound(soundUri, AudioManager.STREAM_NOTIFICATION)
+            setSound(getSoundUri(isOtp), AudioManager.STREAM_NOTIFICATION)
         }
 
         if (replyAction != null && context.config.lockScreenVisibilitySetting == LOCK_SCREEN_SENDER_MESSAGE) {
@@ -186,14 +237,31 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
+    private fun handleTransactionTTS(transaction: TransactionInfo) {
+        val speechText = if (transaction.isDebit) {
+            val participantPart = if (transaction.participant != null) "to ${transaction.participant} " else ""
+            "Paid ${transaction.amount} rupees ${participantPart}from ${transaction.source}."
+        } else {
+            val participantPart = if (transaction.participant != null) "from ${transaction.participant} " else ""
+            "Received ${transaction.amount} rupees ${participantPart}on ${transaction.source}."
+        }
+        ttsHelper.speak(speechText)
+    }
+
+    private fun copyToClipboard(otp: String) {
+        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("OTP", otp)
+        clipboard.setPrimaryClip(clip)
+    }
+
     @SuppressLint("NewApi")
     fun showSendingFailedNotification(recipientName: String, threadId: Long) {
         val hasCustomNotifications =
             context.config.customNotifications.contains(threadId.toString())
         val notificationChannelId =
-            if (hasCustomNotifications) threadId.toString() else NOTIFICATION_CHANNEL_ID
+            if (hasCustomNotifications) threadId.toString() else defaultChannelId
         if (!hasCustomNotifications) {
-            createChannel(notificationChannelId, context.getString(R.string.message_not_sent_short))
+            createChannel(notificationChannelId, context.getString(R.string.message_not_sent_short), false)
         }
 
         val notificationId = generateRandomId().hashCode()
@@ -227,7 +295,8 @@ class NotificationHelper(private val context: Context) {
         notificationManager.notify(notificationId, builder.build())
     }
 
-    private fun createChannel(id: String, name: String) {
+    private fun createChannel(id: String, name: String, isOtp: Boolean) {
+        val soundUri = getSoundUri(isOtp)
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_NOTIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
