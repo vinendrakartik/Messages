@@ -12,6 +12,3 @@ fastlane/fastlane.json
 fastlane/report.xml
 .kotlin/
 /sample
-/app/core/release/baselineProfiles
-/app/core/release
-/app
