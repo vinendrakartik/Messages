@@ -10,6 +10,7 @@ import android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION
 import android.content.res.ColorStateList
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.DocumentsContract
@@ -28,8 +29,8 @@ import android.text.format.DateUtils.FORMAT_SHOW_TIME
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.KeyEvent
-import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.EditorInfo
@@ -40,11 +41,16 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.net.toUri
 import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnLayout
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -60,7 +66,6 @@ import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.copyToClipboard
 import org.fossify.commons.extensions.darkenColor
 import org.fossify.commons.extensions.formatDate
 import org.fossify.commons.extensions.getBottomNavigationBackgroundColor
@@ -116,9 +121,9 @@ import org.fossify.messages.dialogs.RenameConversationDialog
 import org.fossify.messages.dialogs.ScheduleMessageDialog
 import org.fossify.messages.extensions.clearExpiredScheduledMessages
 import org.fossify.messages.extensions.config
-import org.fossify.messages.extensions.conversationsDB
 import org.fossify.messages.extensions.copyToUri
 import org.fossify.messages.extensions.createTemporaryThread
+import org.fossify.messages.extensions.conversationsDB
 import org.fossify.messages.extensions.deleteConversation
 import org.fossify.messages.extensions.deleteMessage
 import org.fossify.messages.extensions.deleteScheduledMessage
@@ -201,6 +206,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.joda.time.DateTime
 import java.io.File
+import java.io.Serializable
 
 class ThreadActivity : SimpleActivity() {
     private var threadId = 0L
@@ -362,47 +368,43 @@ class ThreadActivity : SimpleActivity() {
             findItem(R.id.rename_conversation).isVisible =
                 participants.size > 1 && conversation != null && !isRecycleBin
             findItem(R.id.conversation_details).isVisible = conversation != null && !isRecycleBin
-            findItem(R.id.block_number).title =
-                addLockedLabelIfNeeded(org.fossify.commons.R.string.block_number)
+            findItem(R.id.block_number).title = getString(org.fossify.commons.R.string.block_number)
             findItem(R.id.block_number).isVisible = !isRecycleBin
             findItem(R.id.dial_number).isVisible =
                 participants.size == 1 && !isSpecialNumber() && !isRecycleBin
             findItem(R.id.manage_people).isVisible = !isSpecialNumber() && !isRecycleBin
             findItem(R.id.mark_as_unread).isVisible = threadItems.isNotEmpty() && !isRecycleBin
 
-            // allow saving number in cases when we don't have it stored yet
+            // allow saving number in cases when we don't have it stored yet and it is a casual readable number
             findItem(R.id.add_number_to_contact).isVisible =
-                participants.size == 1 && participants.first().name == firstPhoneNumber && !isRecycleBin
-            findItem(R.id.copy_number).isVisible =
-                participants.size == 1 && !firstPhoneNumber.isNullOrEmpty() && !isRecycleBin
+                participants.size == 1 && participants.first().name == firstPhoneNumber && firstPhoneNumber.any {
+                    it.isDigit()
+                } && !isRecycleBin
         }
     }
 
     private fun setupOptionsMenu() {
         binding.threadToolbar.setOnMenuItemClickListener { menuItem ->
-            if (participants.isEmpty()) return@setOnMenuItemClickListener true
-            return@setOnMenuItemClickListener handleMenuItemAction(menuItem)
-        }
-    }
+            if (participants.isEmpty()) {
+                return@setOnMenuItemClickListener true
+            }
 
-    private fun handleMenuItemAction(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.block_number -> tryBlocking()
-            R.id.delete -> askConfirmDelete()
-            R.id.restore -> askConfirmRestoreAll()
-            R.id.archive -> archiveConversation()
-            R.id.unarchive -> unarchiveConversation()
-            R.id.rename_conversation -> renameConversation()
-            R.id.conversation_details -> launchConversationDetails(threadId)
-            R.id.add_number_to_contact -> addNumberToContact()
-            R.id.copy_number -> copyNumberToClipboard()
-            R.id.dial_number -> dialNumber()
-            R.id.manage_people -> managePeople()
-            R.id.mark_as_unread -> markAsUnread()
-            else -> return false
+            when (menuItem.itemId) {
+                R.id.block_number -> blockNumber()
+                R.id.delete -> askConfirmDelete()
+                R.id.restore -> askConfirmRestoreAll()
+                R.id.archive -> archiveConversation()
+                R.id.unarchive -> unarchiveConversation()
+                R.id.rename_conversation -> renameConversation()
+                R.id.conversation_details -> launchConversationDetails(threadId)
+                R.id.add_number_to_contact -> addNumberToContact()
+                R.id.dial_number -> dialNumber()
+                R.id.manage_people -> managePeople()
+                R.id.mark_as_unread -> markAsUnread()
+                else -> return@setOnMenuItemClickListener false
+            }
+            return@setOnMenuItemClickListener true
         }
-
-        return true
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
@@ -615,7 +617,8 @@ class ThreadActivity : SimpleActivity() {
                         val contactWithSelectedNumber = selectedContact.copy(
                             phoneNumbers = arrayListOf(phoneNumber)
                         )
-                        addSelectedContact(contactWithSelectedNumber)
+                        val contactToAdd = contactWithSelectedNumber as SimpleContact
+                        addSelectedContact(contactToAdd)
                     }
                 }
 
@@ -929,7 +932,14 @@ class ThreadActivity : SimpleActivity() {
                 val uri = intent.getStringExtra(THREAD_ATTACHMENT_URI)!!.toUri()
                 addAttachment(uri)
             } else if (intent.extras?.containsKey(THREAD_ATTACHMENT_URIS) == true) {
-                (intent.getSerializableExtra(THREAD_ATTACHMENT_URIS) as? ArrayList<Uri>)?.forEach {
+                @Suppress("UNCHECKED_CAST")
+                val uris = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getSerializableExtra(THREAD_ATTACHMENT_URIS, ArrayList::class.java) as? ArrayList<Uri>
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getSerializableExtra(THREAD_ATTACHMENT_URIS) as? ArrayList<Uri>
+                }
+                uris?.forEach {
                     addAttachment(it)
                 }
             }
@@ -1019,9 +1029,6 @@ class ThreadActivity : SimpleActivity() {
         if (availableSIMs.size > 1) {
             availableSIMs.forEachIndexed { index, subscriptionInfo ->
                 var label = subscriptionInfo.displayName?.toString() ?: ""
-                if (subscriptionInfo.number?.isNotEmpty() == true) {
-                    label += " (${subscriptionInfo.number})"
-                }
                 val simCard = SIMCard(index + 1, subscriptionInfo.subscriptionId, label)
                 availableSIMCards.add(simCard)
             }
@@ -1092,15 +1099,7 @@ class ThreadActivity : SimpleActivity() {
             null
         }
 
-        return userPreferredSimIdx ?: senderPreferredSimIdx ?: systemPreferredSimIdx ?: 0
-    }
-
-    private fun tryBlocking() {
-        if (isOrWasThankYouInstalled()) {
-            blockNumber()
-        } else {
-            FeatureLockedDialog(this) { }
-        }
+        return userPreferredSimId.let { id -> userPreferredSimIdx } ?: senderPreferredSimIdx ?: systemPreferredSimIdx ?: 0
     }
 
     private fun blockNumber() {
@@ -1174,13 +1173,6 @@ class ThreadActivity : SimpleActivity() {
     private fun dialNumber() {
         val phoneNumber = participants.first().phoneNumbers.first().normalizedNumber
         dialNumber(phoneNumber)
-    }
-
-    private fun copyNumberToClipboard() {
-        val phoneNumber = conversation?.phoneNumber
-            ?.ifEmpty { participants.firstOrNull()?.phoneNumbers?.firstOrNull()?.value }
-            ?: return
-        copyToClipboard(phoneNumber)
     }
 
     private fun managePeople() {
@@ -1340,6 +1332,7 @@ class ThreadActivity : SimpleActivity() {
     ) {
         hideKeyboard()
         try {
+            @Suppress("DEPRECATION")
             startActivityForResult(intent, requestCode)
         } catch (e: ActivityNotFoundException) {
             showErrorToast(getString(error))
@@ -1981,7 +1974,7 @@ class ThreadActivity : SimpleActivity() {
             org.fossify.commons.R.color.md_green_500,
             org.fossify.commons.R.color.md_indigo_500,
             org.fossify.commons.R.color.md_blue_500
-        ).map { ResourcesCompat.getColor(resources, it, theme) }
+        ).map { ContextCompat.getColor(this@ThreadActivity, it) }
         arrayOf(
             choosePhotoIcon,
             chooseVideoIcon,
@@ -2019,7 +2012,7 @@ class ThreadActivity : SimpleActivity() {
             launchCapturePhotoIntent()
         }
         recordVideo.setOnClickListener {
-            launchCaptureVideoIntent()
+            launchGetContentIntent(arrayOf("video/*"), PICK_VIDEO_INTENT)
         }
         recordAudio.setOnClickListener {
             launchCaptureAudioIntent()
@@ -2071,7 +2064,7 @@ class ThreadActivity : SimpleActivity() {
     }
 
     private fun getBottomBarColor() = if (isDynamicTheme()) {
-        resources.getColor(org.fossify.commons.R.color.you_bottom_bar_color)
+        ContextCompat.getColor(this, org.fossify.commons.R.color.you_bottom_bar_color)
     } else {
         getBottomNavigationBackgroundColor()
     }

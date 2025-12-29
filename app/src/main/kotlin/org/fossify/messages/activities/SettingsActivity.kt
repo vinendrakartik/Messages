@@ -3,12 +3,12 @@ package org.fossify.messages.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
 import org.fossify.commons.dialogs.ChangeDateTimeFormatDialog
 import org.fossify.commons.dialogs.ConfirmationDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.dialogs.SecurityDialog
-import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.beVisibleIf
 import org.fossify.commons.extensions.formatWithDeprecatedBadge
@@ -162,7 +162,8 @@ class SettingsActivity : SimpleActivity() {
 
     private fun setupCustomizeColors() = binding.apply {
         settingsColorCustomizationHolder.setOnClickListener {
-            startCustomizationActivity()
+            val intent = Intent(this@SettingsActivity, CustomizationActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -193,7 +194,7 @@ class SettingsActivity : SimpleActivity() {
                 launchChangeAppLanguageIntent()
             }
         } else {
-            settingsLanguageHolder.beGone()
+            settingsLanguageHolder.visibility = android.view.View.GONE
         }
     }
 
