@@ -2,6 +2,7 @@ package org.fossify.messages.activities
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import ezvcard.VCard
 import ezvcard.property.Email
@@ -30,7 +31,13 @@ class VCardViewerActivity : SimpleActivity() {
         setupEdgeToEdge(padBottomSystem = listOf(binding.contactsList))
         setupMaterialScrollListener(binding.contactsList, binding.vcardAppbar)
 
-        val vCardUri = intent.getParcelableExtra(EXTRA_VCARD_URI) as? Uri
+        val vCardUri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(EXTRA_VCARD_URI, Uri::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra(EXTRA_VCARD_URI)
+        }
+
         if (vCardUri != null) {
             setupOptionsMenu(vCardUri)
             parseVCardFromUri(this, vCardUri) {
