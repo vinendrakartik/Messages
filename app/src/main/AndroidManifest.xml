@@ -131,6 +131,13 @@
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity
+            android:name=".activities.CustomCustomizationActivity"
+            android:configChanges="orientation"
+            android:exported="false"
+            android:label="@string/customize_colors"
+            android:parentActivityName=".activities.SettingsActivity" />
+
+        <activity
             android:name="org.fossify.commons.activities.ManageBlockedNumbersActivity"
             android:configChanges="orientation"
             android:exported="false"
@@ -217,6 +224,15 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="org.fossify.messages.action.mark_as_read" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receivers.DirectReplyReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.fossify.messages.action.reply" />
             </intent-filter>
         </receiver>
 

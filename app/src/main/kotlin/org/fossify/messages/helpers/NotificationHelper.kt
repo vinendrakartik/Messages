@@ -42,7 +42,8 @@ class NotificationHelper(private val context: Context) {
     private val transactionChannelId = "transaction_channel"
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
-    private fun getSoundUri(isOtp: Boolean): Uri {
+    private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
+        if (isTransaction) return null
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
         return if (resId != 0) {
@@ -86,9 +87,9 @@ class NotificationHelper(private val context: Context) {
         }
 
         when {
-            isOtp -> createChannel(otpChannelId, "OTP Notifications", true)
-            isTransaction -> createChannel(transactionChannelId, "Transaction Notifications", false)
-            !hasCustomNotifications -> createChannel(defaultChannelId, context.getString(R.string.channel_received_sms), false)
+            isOtp -> createChannel(otpChannelId, "OTP Notifications", true, false)
+            isTransaction -> createChannel(transactionChannelId, "Transaction Notifications", false, true)
+            !hasCustomNotifications -> createChannel(defaultChannelId, context.getString(R.string.channel_received_sms), false, false)
         }
 
         val notificationId = when {
@@ -199,7 +200,11 @@ class NotificationHelper(private val context: Context) {
             setCategory(Notification.CATEGORY_MESSAGE)
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
-            setSound(getSoundUri(isOtp), AudioManager.STREAM_NOTIFICATION)
+            if (!isTransaction) {
+                setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
+            } else {
+                setSound(null)
+            }
         }
 
         if (replyAction != null && context.config.lockScreenVisibilitySetting == LOCK_SCREEN_SENDER_MESSAGE) {
@@ -240,10 +245,10 @@ class NotificationHelper(private val context: Context) {
     private fun handleTransactionTTS(transaction: TransactionInfo) {
         val speechText = if (transaction.isDebit) {
             val participantPart = if (transaction.participant != null) "to ${transaction.participant} " else ""
-            "Paid ${transaction.amount} rupees ${participantPart}from ${transaction.source}."
+            "Paid rupees, ${transaction.amount},  ${participantPart}from ${transaction.source}."
         } else {
             val participantPart = if (transaction.participant != null) "from ${transaction.participant} " else ""
-            "Received ${transaction.amount} rupees ${participantPart}on ${transaction.source}."
+            "Received rupees, ${transaction.amount}, ${participantPart}on ${transaction.source}."
         }
         ttsHelper.speak(speechText)
     }
@@ -261,7 +266,7 @@ class NotificationHelper(private val context: Context) {
         val notificationChannelId =
             if (hasCustomNotifications) threadId.toString() else defaultChannelId
         if (!hasCustomNotifications) {
-            createChannel(notificationChannelId, context.getString(R.string.message_not_sent_short), false)
+            createChannel(notificationChannelId, context.getString(R.string.message_not_sent_short), false, false)
         }
 
         val notificationId = generateRandomId().hashCode()
@@ -295,8 +300,8 @@ class NotificationHelper(private val context: Context) {
         notificationManager.notify(notificationId, builder.build())
     }
 
-    private fun createChannel(id: String, name: String, isOtp: Boolean) {
-        val soundUri = getSoundUri(isOtp)
+    private fun createChannel(id: String, name: String, isOtp: Boolean, isTransaction: Boolean) {
+        val soundUri = getSoundUri(isOtp, isTransaction)
         val audioAttributes = AudioAttributes.Builder()
             .setUsage(AudioAttributes.USAGE_NOTIFICATION)
             .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
@@ -307,7 +312,11 @@ class NotificationHelper(private val context: Context) {
         NotificationChannel(id, name, importance).apply {
             setBypassDnd(false)
             enableLights(true)
-            setSound(soundUri, audioAttributes)
+            if (isTransaction) {
+                setSound(null, null)
+            } else {
+                setSound(soundUri, audioAttributes)
+            }
             enableVibration(true)
             notificationManager.createNotificationChannel(this)
         }

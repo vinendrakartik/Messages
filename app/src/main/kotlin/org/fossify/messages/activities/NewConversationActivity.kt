@@ -2,6 +2,7 @@ package org.fossify.messages.activities
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.WindowManager
 import android.widget.Toast
@@ -48,6 +49,7 @@ import org.fossify.messages.helpers.THREAD_TEXT
 import org.fossify.messages.helpers.THREAD_TITLE
 import org.fossify.messages.messaging.isShortCodeWithLetters
 import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 import java.util.Locale
 
 class NewConversationActivity : SimpleActivity() {
@@ -141,7 +143,7 @@ class NewConversationActivity : SimpleActivity() {
         if (result != null && (result.first.isNotEmpty() || result.second.isNotEmpty())) {
             val (body, recipients) = result
             launchThreadActivity(
-                phoneNumber = URLDecoder.decode(recipients.replace("+", "%2b").trim()),
+                phoneNumber = URLDecoder.decode(recipients.replace("+", "%2b").trim(), StandardCharsets.UTF_8.toString()),
                 name = "",
                 body = body
             )
@@ -276,13 +278,23 @@ class NewConversationActivity : SimpleActivity() {
             putExtra(THREAD_NUMBER, number)
 
             if (intent.action == Intent.ACTION_SEND && intent.extras?.containsKey(Intent.EXTRA_STREAM) == true) {
-                val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+                val uri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(Intent.EXTRA_STREAM)
+                }
                 putExtra(THREAD_ATTACHMENT_URI, uri?.toString())
             } else if (intent.action == Intent.ACTION_SEND_MULTIPLE && intent.extras?.containsKey(
                     Intent.EXTRA_STREAM
                 ) == true
             ) {
-                val uris = intent.getParcelableArrayListExtra<Uri>(Intent.EXTRA_STREAM)
+                val uris = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM, Uri::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM)
+                }
                 putExtra(THREAD_ATTACHMENT_URIS, uris)
             }
 
