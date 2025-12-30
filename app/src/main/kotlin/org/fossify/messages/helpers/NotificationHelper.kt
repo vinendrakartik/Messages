@@ -43,7 +43,9 @@ class NotificationHelper(private val context: Context) {
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
+        // Only suppress sound if it's detected as a valid transaction (since we use TTS for those)
         if (isTransaction) return null
+        
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
         return if (resId != 0) {
@@ -67,7 +69,8 @@ class NotificationHelper(private val context: Context) {
         val otp = body.extractOTP()
         val isOtp = otp != null
         
-        val transaction = if (!isOtp) body.extractTransactionInfo() else null
+        // Pass the address (header) to extractTransactionInfo for better bank detection
+        val transaction = if (!isOtp) body.extractTransactionInfo(address) else null
         val isTransaction = transaction != null
 
         if (isOtp) {
@@ -131,6 +134,13 @@ class NotificationHelper(private val context: Context) {
         val deleteSmsIntent = Intent(context, DeleteSmsReceiver::class.java).apply {
             putExtra(THREAD_ID, threadId)
             putExtra(MESSAGE_ID, messageId)
+            if (isOtp) {
+                putExtra("otp", otp)
+            }
+            if (isTransaction) {
+                putExtra("is_transaction", true)
+                putExtra("transaction_hash", transaction.hashCode())
+            }
         }
         val deleteSmsPendingIntent =
             PendingIntent.getBroadcast(
@@ -200,10 +210,13 @@ class NotificationHelper(private val context: Context) {
             setCategory(Notification.CATEGORY_MESSAGE)
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
-            if (!isTransaction) {
-                setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
-            } else {
+            
+            // Only use the silent channel if a valid transaction is detected.
+            // False transactions will fall through to use the default sound.
+            if (isTransaction) {
                 setSound(null)
+            } else {
+                setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
             }
         }
 
@@ -217,13 +230,13 @@ class NotificationHelper(private val context: Context) {
             markAsReadPendingIntent
         )
             .setChannelId(notificationChannelId)
-        if (isNoReplySms) {
-            builder.addAction(
-                org.fossify.commons.R.drawable.ic_delete_vector,
-                context.getString(org.fossify.commons.R.string.delete),
-                deleteSmsPendingIntent
-            ).setChannelId(notificationChannelId)
-        }
+        
+        // Use the custom delete intent for OTP/Transactions too
+        builder.addAction(
+            org.fossify.commons.R.drawable.ic_delete_vector,
+            context.getString(org.fossify.commons.R.string.delete),
+            deleteSmsPendingIntent
+        ).setChannelId(notificationChannelId)
 
         var shortcut = context.shortcutHelper.getShortcut(threadId)
         if (shortcut == null) {

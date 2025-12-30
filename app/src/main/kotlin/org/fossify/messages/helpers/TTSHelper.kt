@@ -22,7 +22,11 @@ class TTSHelper private constructor(context: Context) {
     }
 
     init {
-        tts = TextToSpeech(context) { status ->
+        // 1. Get the current default engine from the system
+        val defaultEngine = TextToSpeech(context, null).defaultEngine
+
+        // 2. Re-initialize with that specific engine to bypass any auto-selection
+        tts = TextToSpeech(context, { status ->
             if (status == TextToSpeech.SUCCESS) {
                 val result = tts?.setLanguage(Locale.getDefault())
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
@@ -35,7 +39,7 @@ class TTSHelper private constructor(context: Context) {
             } else {
                 Log.e("TTSHelper", "Initialization failed")
             }
-        }
+        }, defaultEngine) // <--- This forces the system-set engine
     }
 
     fun speak(text: String) {
