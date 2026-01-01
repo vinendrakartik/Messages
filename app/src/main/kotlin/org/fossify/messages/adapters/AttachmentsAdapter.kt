@@ -201,7 +201,7 @@ class AttachmentsAdapter(
 
     inner class AttachmentsViewHolder(val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bindView(callback: (binding: ViewBinding, adapterPosition: Int) -> Unit) {
-            callback(binding, adapterPosition)
+            callback(binding, bindingAdapterPosition)
         }
     }
 }

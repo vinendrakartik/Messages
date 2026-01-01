@@ -30,6 +30,9 @@ app-build-javaVersion = "VERSION_17"
 app-build-kotlinJVMTarget = "17"
 #Helpers
 ez-vcard = "0.12.1"
+mlkit-translate = "17.0.3"
+mlkit-language-id = "17.0.6"
+
 [libraries]
 #AndroidX
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
@@ -52,6 +55,10 @@ eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 ez-vcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ez-vcard" }
 #Kotlin
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+#ML Kit
+mlkit-translate = { module = "com.google.mlkit:translate", version.ref = "mlkit-translate" }
+mlkit-language-id = { module = "com.google.mlkit:language-id", version.ref = "mlkit-language-id" }
+
 [bundles]
 room = [
     "androidx-room-ktx",

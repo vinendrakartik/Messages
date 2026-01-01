@@ -30,7 +30,7 @@ import org.fossify.messages.models.RecycleBinMessage
         RecycleBinMessage::class,
         Draft::class
     ],
-    version = 10
+    version = 13
 )
 @TypeConverters(Converters::class)
 abstract class MessagesDatabase : RoomDatabase() {
@@ -57,7 +57,7 @@ abstract class MessagesDatabase : RoomDatabase() {
                             klass = MessagesDatabase::class.java,
                             name = "conversations.db"
                         )
-                            .fallbackToDestructiveMigration()
+                            .fallbackToDestructiveMigration(dropAllTables = true)
                             .addMigrations(MIGRATION_1_2)
                             .addMigrations(MIGRATION_2_3)
                             .addMigrations(MIGRATION_3_4)
@@ -67,6 +67,9 @@ abstract class MessagesDatabase : RoomDatabase() {
                             .addMigrations(MIGRATION_7_8)
                             .addMigrations(MIGRATION_8_9)
                             .addMigrations(MIGRATION_9_10)
+                            .addMigrations(MIGRATION_10_11)
+                            .addMigrations(MIGRATION_11_12)
+                            .addMigrations(MIGRATION_12_13)
                             .build()
                     }
                 }
@@ -162,6 +165,31 @@ abstract class MessagesDatabase : RoomDatabase() {
                 db.apply {
                     execSQL("ALTER TABLE conversations ADD COLUMN unread_count INTEGER NOT NULL DEFAULT 0")
                 }
+            }
+        }
+
+        private val MIGRATION_10_11 = object : Migration(10, 11) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.apply {
+                    // Try to add the column, catch if it already exists from a previous partially-failed run
+                    try {
+                        execSQL("ALTER TABLE messages ADD COLUMN translated_body TEXT DEFAULT NULL")
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        private val MIGRATION_11_12 = object : Migration(11, 12) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Empty migration
+            }
+        }
+
+        private val MIGRATION_12_13 = object : Migration(12, 13) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Empty migration to refresh schema hash
             }
         }
     }

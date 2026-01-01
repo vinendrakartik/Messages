@@ -68,6 +68,7 @@ import org.fossify.messages.extensions.isVideoMimeType
 import org.fossify.messages.extensions.launchViewIntent
 import org.fossify.messages.extensions.startContactDetailsIntent
 import org.fossify.messages.extensions.subscriptionManagerCompat
+import org.fossify.messages.extensions.translationHelper
 import org.fossify.messages.helpers.EXTRA_VCARD_URI
 import org.fossify.messages.helpers.THREAD_DATE_TIME
 import org.fossify.messages.helpers.THREAD_RECEIVED_MESSAGE
@@ -355,7 +356,19 @@ class ThreadAdapter(
         ItemMessageBinding.bind(view).apply {
             threadMessageHolder.isSelected = selectedKeys.contains(message.getSelectionKey())
             threadMessageBody.apply {
-                text = message.body
+                if (activity.config.autoTranslate && message.isReceivedMessage() && message.translatedBody == null) {
+                    activity.translationHelper.translate(message.body) { translated ->
+                        message.translatedBody = translated
+                        activity.runOnUiThread {
+                            text = translated
+                        }
+                    }
+                } else if (activity.config.autoTranslate && message.isReceivedMessage() && message.translatedBody != null) {
+                    text = message.translatedBody
+                } else {
+                    text = message.body
+                }
+                
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
                 beVisibleIf(message.body.isNotEmpty())
                 setOnLongClickListener {

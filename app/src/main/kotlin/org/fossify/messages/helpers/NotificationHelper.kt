@@ -66,6 +66,10 @@ class NotificationHelper(private val context: Context) {
         sender: String?,
         alertOnlyOnce: Boolean = false
     ) {
+        if (context.config.mutedThreads.contains(threadId.toString())) {
+            return
+        }
+
         val otp = body.extractOTP()
         val isOtp = otp != null
         
@@ -369,14 +373,7 @@ class NotificationHelper(private val context: Context) {
     private fun getOldMessages(notificationId: Int): List<NotificationCompat.MessagingStyle.Message> {
         val currentNotification =
             notificationManager.activeNotifications.find { it.id == notificationId }
-        return if (currentNotification != null) {
-            val activeStyle =
-                NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(
-                    currentNotification.notification
-                )
-            activeStyle?.messages.orEmpty()
-        } else {
-            emptyList()
-        }
+        val messagingStyle = currentNotification?.notification?.let { NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(it) }
+        return messagingStyle?.messages ?: emptyList()
     }
 }

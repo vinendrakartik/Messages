@@ -105,6 +105,7 @@ class SettingsActivity : SimpleActivity() {
         setupManageBlockedKeywords()
         setupChangeDateTimeFormat()
         setupFontSize()
+        setupAutoTranslate()
         setupShowCharacterCounter()
         setupUseSimpleCharacters()
         setupSendOnEnter()
@@ -242,6 +243,14 @@ class SettingsActivity : SimpleActivity() {
                 config.fontSize = it as Int
                 settingsFontSize.text = getFontSizeText()
             }
+        }
+    }
+
+    private fun setupAutoTranslate() = binding.apply {
+        settingsAutoTranslate.isChecked = config.autoTranslate
+        settingsAutoTranslateHolder.setOnClickListener {
+            settingsAutoTranslate.toggle()
+            config.autoTranslate = settingsAutoTranslate.isChecked
         }
     }
 

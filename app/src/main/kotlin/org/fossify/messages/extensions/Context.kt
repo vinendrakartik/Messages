@@ -59,6 +59,7 @@ import org.fossify.messages.helpers.MESSAGES_LIMIT
 import org.fossify.messages.helpers.MessagingCache
 import org.fossify.messages.helpers.NotificationHelper
 import org.fossify.messages.helpers.ShortcutHelper
+import org.fossify.messages.helpers.TranslationHelper
 import org.fossify.messages.helpers.generateRandomId
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.interfaces.AttachmentsDao
@@ -103,6 +104,8 @@ val Context.smsSender
     get() = SmsSender.getInstance(applicationContext as Application)
 
 val Context.shortcutHelper get() = ShortcutHelper(this)
+
+val Context.translationHelper get() = TranslationHelper.getInstance(this)
 
 fun Context.getMessages(
     threadId: Long,

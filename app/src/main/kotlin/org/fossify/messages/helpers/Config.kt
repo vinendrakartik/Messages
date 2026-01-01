@@ -76,6 +76,18 @@ class Config(context: Context) : BaseConfig(context) {
             pinnedConversations.minus(conversations.map { it.threadId.toString() })
     }
 
+    var mutedThreads: Set<String>
+        get() = prefs.getStringSet(MUTED_THREADS, HashSet<String>())!!
+        set(mutedThreads) = prefs.edit().putStringSet(MUTED_THREADS, mutedThreads).apply()
+
+    fun addMutedThread(threadId: Long) {
+        mutedThreads = mutedThreads.plus(threadId.toString())
+    }
+
+    fun removeMutedThread(threadId: Long) {
+        mutedThreads = mutedThreads.minus(threadId.toString())
+    }
+
     var blockedKeywords: Set<String>
         get() = prefs.getStringSet(BLOCKED_KEYWORDS, HashSet<String>())!!
         set(blockedKeywords) = prefs.edit().putStringSet(BLOCKED_KEYWORDS, blockedKeywords).apply()
@@ -148,4 +160,8 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(KEEP_CONVERSATIONS_ARCHIVED, false)
         set(keepConversationsArchived) = prefs.edit()
             .putBoolean(KEEP_CONVERSATIONS_ARCHIVED, keepConversationsArchived).apply()
+
+    var autoTranslate: Boolean
+        get() = prefs.getBoolean(AUTO_TRANSLATE, false)
+        set(autoTranslate) = prefs.edit().putBoolean(AUTO_TRANSLATE, autoTranslate).apply()
 }
