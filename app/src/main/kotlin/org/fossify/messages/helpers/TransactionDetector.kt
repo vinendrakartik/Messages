@@ -13,7 +13,7 @@ data class TransactionInfo(
 )
 
 private val FALSE_POSITIVE_KEYWORDS = listOf("bill","ignore", "insurance", "prudential", "wi-fi", "placing order", "recharge successful", "recharge of", "dnd", "folio", "nav", "contribution", "failed", "unsuccessful", "requested", "premium", "cashback", "due on", "bill alert", "ignore if paid", "new bill alert")
-private val FALSE_NEGATIVE_KEYWORDS = listOf("bharat bill payment system")
+private val FALSE_NEGATIVE_KEYWORDS = listOf("bharat bill payment system", "bbps")
 private val OTP_KEYWORDS = listOf("otp", "verification", "verify", "code", "secret")
 private val DEBIT_KEYWORDS = listOf("debited", "spent", "sent", "withdrawn", "deducted", "debit", "paid", "txn of", "transaction")
 private val CREDIT_KEYWORDS = listOf("credited", "received", "topped up", "added to", "deposited", "earned")
@@ -21,7 +21,10 @@ private val INTEREST_KEYWORDS = listOf("interest", "int of")
 
 private val AMOUNT_REGEX = Regex("""(?i)(?:rs\.?|inr|₹)\s?([\d,]+(?:\.\d{1,2})?)""")
 private val SOURCE_FALLBACK_REGEX = Regex("""(?:a/c|account|card)\s+(?:no\.?\s+)?([a-z0-9*]{3,15})""")
-private val PARTICIPANT_PREFIX_REGEX = Regex("""(?i)(?:at|to|from)\s+([a-z0-9\s@\.&/-]{3,35})(?:\s*\(|\s+on|\s+via|\s+vide|\s+ending|\s+xx|\s+a/c|\.|\-|$)""")
+
+// Separate regex for specific directions
+private val TO_AT_PREFIX_REGEX = Regex("""(?i)(?:at|to)\s+([a-z0-9\s@\.&/-]{3,35})(?:\s*\(|\s+on|\s+via|\s+vide|\s+ending|\s+xx|\s+a/c|\.|\-|$)""")
+private val FROM_PREFIX_REGEX = Regex("""(?i)(?:from)\s+([a-z0-9\s@\.&/-]{3,35})(?:\s*\(|\s+on|\s+via|\s+vide|\s+ending|\s+xx|\s+a/c|\.|\-|$)""")
 private val PARTICIPANT_SLASH_REGEX = Regex("""(?<!http|https):?/(?!/)([a-z]{3,20})(?:\s|$)""")
 
 private val SOURCE_MAP = mapOf(
@@ -52,7 +55,8 @@ private val SOURCE_MAP = mapOf(
     "CITIBK" to "Citi", "CITI" to "Citi",
     "HSBCBK" to "HSBC", "HSBC" to "HSBC",
     "BAJAJF" to "Bajaj", "BAJAJ" to "Bajaj",
-    "AMEX" to "American Express", "AMEXIN" to "American Express"
+    "AMEX" to "American Express", "AMEXIN" to "American Express",
+    "TIDEPF" to "Tide"
 )
 
 fun String.extractTransactionInfo(sender: String? = null): TransactionInfo? {
@@ -85,6 +89,7 @@ fun String.extractTransactionInfo(sender: String? = null): TransactionInfo? {
             body.contains("sbi") -> "SBI"
             body.contains("idfc") -> "IDFC First"
             body.contains("bajaj") -> "Bajaj"
+            body.contains("tide") -> "Tide"
             else -> ""
         }
     }
@@ -130,20 +135,29 @@ fun String.extractTransactionInfo(sender: String? = null): TransactionInfo? {
     }
 
     // 5. Extract Participant
-    // Try prefix pattern (at/to/from) first as it's more specific than slash
-    var participant = PARTICIPANT_PREFIX_REGEX.find(body)?.groupValues?.get(1)?.trim()?.uppercase()
+    // For debits, prioritize "at" or "to". For credits, prioritize "from".
+    var participant: String? = null
+    if (isDebit && !isInterest) {
+        participant = TO_AT_PREFIX_REGEX.find(body)?.groupValues?.get(1)?.trim()?.uppercase()
+    }
+    
+    if (participant == null) {
+        participant = FROM_PREFIX_REGEX.find(body)?.groupValues?.get(1)?.trim()?.uppercase()
+    }
+    
     if (participant == null) {
         participant = PARTICIPANT_SLASH_REGEX.find(body)?.groupValues?.get(1)?.trim()?.uppercase()
     }
 
-    // Validation: Filter out source name, numbers, and instructions
+    // Validation: Filter out source name, numbers, instructions, and dates
     if (participant != null) {
         val sourceUpper = detectedSource.uppercase()
         val isMostlyDigits = participant.count { it.isDigit() } > participant.length / 2
         val isUrl = participant.contains("http") || participant.contains(".com") || participant.contains(".in")
-        val isInstruction = listOf("BLOCK", "SMS", "CALL", "HELP", "REF", "UTR", "FRAUD", "DISPUTE", "REPORT").any { participant!!.contains(it) }
+        val isInstruction = listOf("BLOCK", "SMS", "CALL", "HELP", "REF", "UTR", "FRAUD", "DISPUTE", "REPORT", "BBPS").any { participant!!.contains(it) }
+        val isDate = participant.contains(Regex("""\d{1,2}[/-]\d{1,2}[/-]\d{2,4}"""))
         
-        if ((sourceUpper.isNotEmpty() && participant.contains(sourceUpper)) || isMostlyDigits || isUrl || isInstruction || participant.length < 3) {
+        if ((sourceUpper.isNotEmpty() && participant.contains(sourceUpper)) || isMostlyDigits || isUrl || isInstruction || isDate || participant.length < 3) {
             participant = null
         }
     }
