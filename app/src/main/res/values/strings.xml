@@ -18,6 +18,7 @@
     <string name="pin_conversation">Pin to the top</string>
     <string name="unpin_conversation">Unpin</string>
     <string name="forward_message">Forward</string>
+    <string name="forward">Forward</string>
     <string name="compress_error">Unable to compress image to selected size</string>
     <!-- Attachments -->
     <string name="duplicate_item_warning">Duplicate item was not included</string>
@@ -108,6 +109,10 @@
     <string name="group_message_mms">Send group messages as MMS</string>
     <string name="send_long_message_mms">Send long messages as MMS</string>
     <string name="auto_translate">Auto translate message body to system language</string>
+    <string name="use_natural_voices">Use natural voices</string>
+    <string name="tts_speed">Speech speed</string>
+    <string name="tts_pitch">Speech pitch</string>
+    <string name="check_voice_data">Check voice data</string>
     <!-- Export / Import -->
     <string name="messages">Messages</string>
     <string name="keywords">Keywords</string>

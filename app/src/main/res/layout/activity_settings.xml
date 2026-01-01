@@ -191,6 +191,88 @@
 
             </RelativeLayout>
 
+            <RelativeLayout
+                android:id="@+id/settings_use_natural_voices_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_use_natural_voices"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_natural_voices" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_tts_speed_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_tts_speed_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tts_speed" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_tts_speed"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_tts_speed_label"
+                    tools:text="1.0x" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_tts_pitch_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_tts_pitch_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tts_pitch" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_tts_pitch"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_tts_pitch_label"
+                    tools:text="1.0x" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_check_voice_data_holder"
+                style="@style/SettingsHolderTextViewOneLinerStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_check_voice_data"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/check_voice_data" />
+
+            </RelativeLayout>
+
             <include
                 android:id="@+id/settings_general_settings_divider"
                 layout="@layout/divider" />
