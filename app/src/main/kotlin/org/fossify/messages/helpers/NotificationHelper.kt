@@ -256,12 +256,18 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun handleTransactionTTS(transaction: TransactionInfo) {
-        val speechText = if (transaction.isDebit) {
-            val participantPart = if (transaction.participant != null) "to ${transaction.participant} " else ""
-            "Paid rupees, ${transaction.amount},  ${participantPart}from ${transaction.source}."
-        } else {
-            val participantPart = if (transaction.participant != null) "from ${transaction.participant} " else ""
-            "Received rupees, ${transaction.amount}, ${participantPart}on ${transaction.source}."
+        val speechText = when {
+            transaction.isInterest -> {
+                "Received rupees, ${transaction.ttsAmount}, interest on ${transaction.source}."
+            }
+            transaction.isDebit -> {
+                val participantPart = if (transaction.participant != null) "to ${transaction.participant} " else ""
+                "Paid rupees, ${transaction.ttsAmount}, ${participantPart}from ${transaction.source}."
+            }
+            else -> {
+                val participantPart = if (transaction.participant != null) "from ${transaction.participant} " else ""
+                "Received rupees, ${transaction.ttsAmount}, ${participantPart}on ${transaction.source}."
+            }
         }
         ttsHelper.speak(speechText)
     }
