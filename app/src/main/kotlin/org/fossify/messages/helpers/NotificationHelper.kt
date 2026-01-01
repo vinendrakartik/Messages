@@ -14,6 +14,7 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.net.Uri
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
@@ -45,7 +46,7 @@ class NotificationHelper(private val context: Context) {
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
         // Only suppress sound if it's detected as a valid transaction (since we use TTS for those)
         if (isTransaction) return null
-        
+
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
         return if (resId != 0) {
@@ -72,7 +73,7 @@ class NotificationHelper(private val context: Context) {
 
         val otp = body.extractOTP()
         val isOtp = otp != null
-        
+
         // Pass the address (header) to extractTransactionInfo for better bank detection
         val transaction = if (!isOtp) body.extractTransactionInfo(address) else null
         val isTransaction = transaction != null
@@ -85,7 +86,7 @@ class NotificationHelper(private val context: Context) {
 
         val hasCustomNotifications =
             context.config.customNotifications.contains(threadId.toString())
-        
+
         val notificationChannelId = when {
             isOtp -> otpChannelId
             isTransaction -> transactionChannelId
@@ -104,7 +105,7 @@ class NotificationHelper(private val context: Context) {
             isTransaction -> transaction.hashCode()
             else -> threadId.hashCode()
         }
-        
+
         val contentIntent = Intent(context, ThreadActivity::class.java).apply {
             putExtra(THREAD_ID, threadId)
         }
@@ -214,7 +215,7 @@ class NotificationHelper(private val context: Context) {
             setCategory(Notification.CATEGORY_MESSAGE)
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
-            
+
             // Only use the silent channel if a valid transaction is detected.
             // False transactions will fall through to use the default sound.
             if (isTransaction) {
@@ -234,7 +235,7 @@ class NotificationHelper(private val context: Context) {
             markAsReadPendingIntent
         )
             .setChannelId(notificationChannelId)
-        
+
         // Use the custom delete intent for OTP/Transactions too
         builder.addAction(
             org.fossify.commons.R.drawable.ic_delete_vector,
@@ -260,19 +261,25 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun handleTransactionTTS(transaction: TransactionInfo) {
+        // We use commas for short pauses and periods for a drop in pitch (finality).
+        val amount = transaction.ttsAmount
+        val source = transaction.source
+        val participant = transaction.participant
+
         val speechText = when {
             transaction.isInterest -> {
-                "Received rupees, ${transaction.ttsAmount}, interest on ${transaction.source}."
+                "Interest Received. $amount credited to your $source."
             }
             transaction.isDebit -> {
-                val participantPart = if (transaction.participant != null) "to ${transaction.participant} " else ""
-                "Paid rupees, ${transaction.ttsAmount}, ${participantPart}from ${transaction.source}."
+                val toWhom = if (participant != null) "to $participant, " else ""
+                "$amount, paid  ${toWhom} from $source."
             }
             else -> {
-                val participantPart = if (transaction.participant != null) "from ${transaction.participant} " else ""
-                "Received rupees, ${transaction.ttsAmount}, ${participantPart}on ${transaction.source}."
+                val fromWhom = if (participant != null) "from $participant, " else ""
+                "$amount, received ${fromWhom} to $source."
             }
         }
+        Log.d("NotificationHelper", "Speaking transaction: $speechText")
         ttsHelper.speak(speechText)
     }
 

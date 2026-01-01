@@ -357,7 +357,7 @@ class ThreadAdapter(
             threadMessageHolder.isSelected = selectedKeys.contains(message.getSelectionKey())
             threadMessageBody.apply {
                 if (activity.config.autoTranslate && message.isReceivedMessage() && message.translatedBody == null) {
-                    activity.translationHelper.translate(message.body) { translated ->
+                    activity.translationHelper.translate(message.body) { translated: String ->
                         message.translatedBody = translated
                         activity.runOnUiThread {
                             text = translated
