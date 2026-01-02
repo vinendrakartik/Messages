@@ -108,10 +108,11 @@
     <string name="outgoing_messages">Outgoing messages</string>
     <string name="group_message_mms">Send group messages as MMS</string>
     <string name="send_long_message_mms">Send long messages as MMS</string>
-    <string name="use_natural_voices">Natural Voice for Transaction Notifications</string>
-    <string name="tts_speed">Speech speed</string>
-    <string name="tts_pitch">Speech pitch</string>
+    <string name="use_natural_voices">Use Natural Voice for Transactions</string>
     <string name="check_voice_data">Check voice data</string>
+    <string name="swipe_actions">Swipe actions</string>
+    <string name="swipe_right">Swipe right</string>
+    <string name="swipe_left">Swipe left</string>
     <!-- Export / Import -->
     <string name="messages">Messages</string>
     <string name="keywords">Keywords</string>
@@ -150,4 +151,14 @@
         Haven't found some strings? There's more at
         https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
     -->
+
+
+    <!-- TTS strings -->
+    <string name="tts_speed">Speech Speed</string>
+    <string name="tts_pitch">Speech Pitch</string>
+    <string name="tts_interest_received"><![CDATA[<speak>Interest Received! <break time="250ms"/> <say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> credited as <emphasis level="moderate">interest</emphasis> to your %2$s.</speak>]]></string>
+    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> <break time="200ms"/> paid %2$sfrom your %3$s.</speak>]]></string>
+    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> <break time="200ms"/> received %2$sto your %3$s.</speak>]]></string>
+    <string name="tts_to_whom">to <emphasis level="moderate">%1$s</emphasis>, </string>
+    <string name="tts_from_whom">from <emphasis level="moderate">%1$s</emphasis>, </string>
 </resources>

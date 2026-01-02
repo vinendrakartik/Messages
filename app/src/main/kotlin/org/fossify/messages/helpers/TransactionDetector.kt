@@ -2,7 +2,7 @@ package org.fossify.messages.helpers
 
 data class TransactionInfo(
     val amount: Double,
-    val ttsAmount: String,
+    val ttsAmount: Double,
     val source: String,
     val isDebit: Boolean,
     val participant: String? = null,
@@ -76,7 +76,9 @@ fun String.extractTransactionInfo(address: String): TransactionInfo? {
     val isStatement = STATEMENT_KEYWORDS.any { lowerBody.contains(it) } ||
         (lowerBody.contains("minimum") && lowerBody.contains("due"))
 
-    if (!isStatement && FALSE_POSITIVE_KEYWORDS.any { lowerBody.contains(it) } &&
+    if (isStatement) return null
+
+    if (FALSE_POSITIVE_KEYWORDS.any { lowerBody.contains(it) } &&
         FALSE_NEGATIVE_KEYWORDS.none { lowerBody.contains(it) }) return null
 
     val isDebit = DEBIT_KEYWORDS.any { lowerBody.contains(it) } || lowerBody.contains("deducted")
@@ -88,48 +90,17 @@ fun String.extractTransactionInfo(address: String): TransactionInfo? {
     
     val isCredit = isReceivedPayment || CREDIT_KEYWORDS.any { lowerBody.contains(it) }
 
-    if (!isDebit && !isCredit && !isInterest && !isStatement) return null
+    if (!isDebit && !isCredit && !isInterest) return null
 
     val matcher = AMOUNT_REGEX.find(body) ?: return null
     val amountStr = matcher.groupValues[1].replace(",", "")
     val amount = amountStr.toDoubleOrNull() ?: return null
 
-    val ttsAmount = formatAmountForTTS(amount)
+    val ttsAmount = amount
     val source = identifySource(address, body)
-    val participant = if (!isStatement) extractParticipant(body, isDebit) else null
+    val participant = extractParticipant(body, isDebit)
 
     return TransactionInfo(amount, ttsAmount, source, isDebit, participant, isInterest, isStatement)
-}
-
-private fun formatAmountForTTS(amount: Double): String {
-    val integerPart = amount.toLong()
-    val decimalPart = Math.round((amount - integerPart) * 100).toInt()
-
-    if (integerPart == 0L && decimalPart == 0) return "zero rupees"
-
-    val crores = integerPart / 10000000
-    val lakhs = (integerPart % 10000000) / 100000
-    val thousands = (integerPart % 100000) / 1000
-    val remainder = integerPart % 1000
-
-    val parts = mutableListOf<String>()
-
-    if (crores > 0) parts.add("$crores crore")
-    if (lakhs > 0) parts.add("$lakhs lakh")
-    if (thousands > 0) parts.add("$thousands thousand")
-    if (remainder > 0 || (integerPart > 0 && parts.isEmpty())) {
-        parts.add(remainder.toString())
-    }
-
-    var result = parts.joinToString(" ")
-    result += if (result == "1") " rupee" else " rupees"
-
-    if (decimalPart > 0) {
-        val paiseLabel = if (decimalPart == 1) "paisa" else "paise"
-        result += " and $decimalPart $paiseLabel"
-    }
-
-    return result.trim()
 }
 
 private fun identifySource(address: String, body: String): String {

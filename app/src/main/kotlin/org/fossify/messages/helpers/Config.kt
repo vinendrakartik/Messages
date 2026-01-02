@@ -8,6 +8,10 @@ import org.fossify.messages.models.Conversation
 class Config(context: Context) : BaseConfig(context) {
     companion object {
         fun newInstance(context: Context) = Config(context)
+
+        const val SWIPE_MARK_READ = 1
+        const val SWIPE_DELETE = 2
+        const val SWIPE_ARCHIVE = 3
     }
 
     fun saveUseSIMIdAtNumber(number: String, SIMId: Int) {
@@ -177,4 +181,12 @@ class Config(context: Context) : BaseConfig(context) {
     var enableDebugLogs: Boolean
         get() = prefs.getBoolean("enable_debug_logs", false)
         set(enableDebugLogs) = prefs.edit().putBoolean("enable_debug_logs", enableDebugLogs).apply()
+
+    var swipeRightAction: Int
+        get() = prefs.getInt("swipe_right_action", SWIPE_MARK_READ)
+        set(value) = prefs.edit().putInt("swipe_right_action", value).apply()
+
+    var swipeLeftAction: Int
+        get() = prefs.getInt("swipe_left_action", SWIPE_DELETE)
+        set(value) = prefs.edit().putInt("swipe_left_action", value).apply()
 }

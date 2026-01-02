@@ -1,2 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_launcher_name">ಸಂದೇಶಗಳು</string>
+    <string name="type_a_message">ಸಂದೇಶವನ್ನು ಟೈಪ್ ಮಾಡಿ…</string>
+    <string name="message_not_sent_short">ಸಂದೇಶ ಕಳುಹಿಸಲಾಗಿಲ್ಲ</string>
+    <string name="message_not_sent_touch_retry">ಕಳುಹಿಸಲಾಗಿಲ್ಲ. ಮರುಪ್ರಯತ್ನಿಸಲು ಸ್ಪರ್ಶಿಸಿ.</string>
+    <string name="message_sending_error">\'%s\' ಗೆ ನಿಮ್ಮ ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲಾಗಿಲ್ಲ</string>
+    <string name="add_person">ವ್ಯಕ್ತಿಯನ್ನು ಸೇರಿಸಿ</string>
+    <string name="attachment">ಅಟ್ಯಾಚ್‌ಮೆಂಟ್</string>
+    <string name="no_conversations_found">ಯಾವುದೇ ಸಂಗ್ರಹಿಸಲಾದ ಸಂಭಾಷಣೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ</string>
+    <string name="start_conversation">ಸಂಭಾಷಣೆಯನ್ನು ಪ್ರಾರಂಭಿಸಿ</string>
+    <string name="reply">ಪ್ರತ್ಯುತ್ತರ</string>
+    <string name="show_character_counter">ಸಂದೇಶಗಳನ್ನು ಬರೆಯುವಾಗ ಅಕ್ಷರಗಳ ಕೌಂಟರ್ ತೋರಿಸಿ</string>
+    <string name="loading_messages">ಸಂದೇಶಗಳನ್ನು ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</string>
+    <string name="no_reply_support">ಕಳುಹಿಸುವವರು ಪ್ರತ್ಯುತ್ತರಗಳನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</string>
+    <string name="draft">ಕರಡು</string>
+    <string name="sending">ಕಳುಹಿಸಲಾಗುತ್ತಿದೆ…</string>
+    <string name="pin_conversation">ಮೇಲ್ಭಾಗಕ್ಕೆ ಪಿನ್ ಮಾಡಿ</string>
+    <string name="unpin_conversation">ಅನ್‌ಪಿನ್ ಮಾಡಿ</string>
+    <string name="forward_message">ಫಾರ್ವರ್ಡ್</string>
+    <string name="forward">ಫಾರ್ವರ್ಡ್</string>
+    <string name="compress_error">ಆಯ್ಕೆಮಾಡಿದ ಗಾತ್ರಕ್ಕೆ ಚಿತ್ರವನ್ನು ಸಂಕುಚಿತಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
+    <string name="duplicate_item_warning">ನಕಲಿ ಐಟಂ ಅನ್ನು ಸೇರಿಸಲಾಗಿಲ್ಲ</string>
+    <plurals name="and_other_contacts">
+        <item quantity="one">ಮತ್ತು %d ಇತರ</item>
+        <item quantity="other">ಮತ್ತು %d ಇತರರು</item>
+    </plurals>
+    <string name="new_conversation">ಹೊಸ ಸಂಭಾಷಣೆ</string>
+    <string name="add_contact_or_number">ಸಂಪರ್ಕ ಅಥವಾ ಸಂಖ್ಯೆಯನ್ನು ಸೇರಿಸಿ…</string>
+    <string name="suggestions">ಸಲಹೆಗಳು</string>
+    <string name="members">ಸದಸ್ಯರು</string>
+    <string name="conversation_name">ಸಂಭಾಷಣೆಯ ಹೆಸರು</string>
+    <string name="conversation_details">ಸಂಭಾಷಣೆಯ ವಿವರಗಳು</string>
+    <string name="rename_conversation">ಸಂಭಾಷಣೆಯ ಹೆಸರನ್ನು ಬದಲಾಯಿಸಿ</string>
+    <string name="rename_conversation_warning">ಈ ಸಂಭಾಷಣೆಯ ಹೆಸರನ್ನು ನೀವು ಮಾತ್ರ ನೋಡಬಹುದು</string>
+    <string name="scheduled_message">ನಿಗದಿತ ಸಂದೇಶ</string>
+    <string name="schedule_message">ಸಂದೇಶವನ್ನು ನಿಗದಿಪಡಿಸಿ</string>
+    <string name="schedule_send">ಕಳುಹಿಸುವಿಕೆಯನ್ನು ನಿಗದಿಪಡಿಸಿ</string>
+    <string name="cancel_schedule_send">ನಿಗದಿತ ಕಳುಹಿಸುವಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿ</string>
+    <string name="must_pick_time_in_the_future">ನೀವು ಭವಿಷ್ಯದ ಸಮಯವನ್ನು ಆರಿಸಿಕೊಳ್ಳಬೇಕು</string>
+    <string name="schedule_send_warning">ಫೋನ್ ಅನ್ನು ಆನ್ ಆಗಿರಲಿ ಮತ್ತು ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಯಾವುದೂ ನಿಲ್ಲಿಸುವುದಿಲ್ಲ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</string>
+    <string name="update_message">ಸಂದೇಶವನ್ನು ನವೀಕರಿಸಿ</string>
+    <string name="send_now">ಈಗಲೇ ಕಳುಹಿಸಿ</string>
+    <string name="message_details">ಸಂದೇಶದ ವಿವರಗಳು</string>
+    <string name="message_details_sender">ಕಳುಹಿಸುವವರು</string>
+    <string name="message_details_receiver">ಸ್ವೀಕರಿಸುವವರು</string>
+    <string name="message_details_sent_at">ಕಳುಹಿಸಿದ ಸಮಯ</string>
+    <string name="message_details_received_at">ಸ್ವೀಕರಿಸಿದ ಸಮಯ</string>
+    <string name="channel_received_sms">ಸ್ವೀಕರಿಸಿದ SMS</string>
+    <string name="new_message">ಹೊಸ ಸಂದೇಶ</string>
+    <string name="mark_as_read">ಓದಿದಂತೆ ಗುರುತಿಸಿ</string>
+    <string name="mark_as_unread">ಓದದಂತೆ ಗುರುತಿಸಿ</string>
+    <string name="mark_all_as_read">ಎಲ್ಲವನ್ನೂ ಓದಿದಂತೆ ಗುರುತಿಸಿ</string>
+    <string name="me">ನಾನು</string>
+    <string name="enable_custom_notifications">ಕಸ್ಟಮ್ ಅಧಿಸೂಚನೆಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="mute_notifications">ಅಧಿಸೂಚನೆಗಳನ್ನು ಮ್ಯೂಟ್ ಮಾಡಿ</string>
+    <string name="unarchive">ಅನ್-ಆರ್ಕೈವ್</string>
+    <string name="empty_archive">ಆರ್ಕೈವ್ ಮಾಡಲಾದ ಎಲ್ಲಾ ಸಂಭಾಷಣೆಗಳನ್ನು ಅಳಿಸಿ</string>
+    <string name="archived_conversations">ಆರ್ಕೈವ್</string>
+    <string name="show_archived_conversations">ಆರ್ಕೈವ್ ಮಾಡಿದ ಸಂಭಾಷಣೆಗಳನ್ನು ತೋರಿಸಿ</string>
+    <string name="archive">ಆರ್ಕೈವ್</string>
+    <string name="no_archived_conversations">ಯಾವುದೇ ಆರ್ಕೈವ್ ಮಾಡಿದ ಸಂಭಾಷಣೆಗಳು ಕಂಡುಬಂದಿಲ್ಲ</string>
+    <string name="archive_emptied_successfully">ಆರ್ಕೈವ್ ಅನ್ನು ಯಶಸ್ವಿಯಾಗಿ ಖಾಲಿ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="empty_archive_confirmation">ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಆರ್ಕೈವ್ ಅನ್ನು ಖಾಲಿ ಮಾಡಲು ಬಯಸುವಿರಾ? ಎಲ್ಲಾ ಆರ್ಕೈವ್ ಮಾಡಿದ ಸಂಭಾಷಣೆಗಳು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲ್ಪಡುತ್ತವೆ.</string>
+    <string name="keep_conversations_archived">ಸಂಭಾಷಣೆಗಳನ್ನು ಆರ್ಕೈವ್ ಮಾಡಿಡಿ</string>
+    <string name="restore">ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="restore_all_messages">ಎಲ್ಲಾ ಸಂದೇಶಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ</string>
+    <string name="empty_recycle_bin_messages_confirmation">ನೀವು ಖಂಡಿತವಾಗಿಯೂ ಮರುಬಳಕೆ ಬುಟ್ಟಿಯನ್ನು ಖಾಲಿ ಮಾಡಲು ಬಯಸುವಿರಾ? ಸಂದೇಶಗಳು ಶಾಶ್ವತವಾಗಿ ಅಳಿಸಲ್ಪಡುತ್ತವೆ.</string>
+    <string name="skip_the_recycle_bin_messages">ಮರುಬಳಕೆ ಬುಟ್ಟಿಯನ್ನು ಬಿಟ್ಟುಬಿಡಿ, ಸಂದೇಶಗಳನ್ನು ನೇರವಾಗಿ ಅಳಿಸಿ</string>
+    <string name="delete_whole_conversation_confirmation">ಈ ಸಂಭಾಷಣೆಯ ಎಲ್ಲಾ ಸಂದೇಶಗಳನ್ನು ಅಳಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</string>
+    <string name="archive_confirmation">ನೀವು ಖಂಡಿತವಾಗಿಯೂ %s ಅನ್ನು ಆರ್ಕೈವ್ ಮಾಡಲು ಬಯಸುವಿರಾ?</string>
+    <string name="restore_whole_conversation_confirmation">ಈ ಸಂಭಾಷಣೆಯ ಎಲ್ಲಾ ಸಂದೇಶಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?</string>
+    <string name="restore_confirmation">ನೀವು ಖಂಡಿತವಾಗಿಯೂ %s ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಬಯಸುವಿರಾ?</string>
+    <plurals name="delete_conversations">
+        <item quantity="one">%d ಸಂಭಾಷಣೆ</item>
+        <item quantity="other">%d ಸಂಭಾಷಣೆಗಳು</item>
+    </plurals>
+    <plurals name="delete_messages">
+        <item quantity="one">%d ಸಂದೇಶ</item>
+        <item quantity="other">%d ಸಂದೇಶಗಳು</item>
+    </plurals>
+    <string name="keyword">ಕೀವರ್ಡ್</string>
+    <string name="blocked_keywords">ನಿರ್ಬಂಧಿಸಿದ ಕೀವರ್ಡ್‌ಗಳು</string>
+    <string name="manage_blocked_keywords">ನಿರ್ಬಂಧಿಸಿದ ಕೀವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</string>
+    <string name="not_blocking_keywords">ನೀವು ಯಾವುದೇ ಕೀವರ್ಡ್‌ಗಳನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತಿಲ್ಲ. ಅವುಗಳನ್ನು ಹೊಂದಿರುವ ಎಲ್ಲಾ ಸಂದೇಶಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲು ನೀವು ಇಲ್ಲಿ ಕೀವರ್ಡ್‌ಗಳನ್ನು ಸೇರಿಸಬಹುದು.</string>
+    <string name="add_a_blocked_keyword">ನಿರ್ಬಂಧಿಸಿದ ಕೀವರ್ಡ್ ಸೇರಿಸಿ</string>
+    <string name="lock_screen_visibility">ಲಾಕ್ ಸ್ಕ್ರೀನ್ ಅಧಿಸೂಚನೆ ಗೋಚರತೆ</string>
+    <string name="sender_and_message">ಕಳುಹಿಸುವವರು ಮತ್ತು ಸಂದೇಶ</string>
+    <string name="sender_only">ಕಳುಹಿಸುವವರು ಮಾತ್ರ</string>
+    <string name="enable_delivery_reports">ಡೆಲಿವರಿ ವರದಿಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="use_simple_characters">ಸಂದೇಶಗಳನ್ನು ಕಳುಹಿಸುವಾಗ ಉಚ್ಚಾರಣಾ ಗುರುತುಗಳನ್ನು ತೆಗೆದುಹಾಕಿ</string>
+    <string name="send_on_enter">Enter ಒತ್ತಿದಾಗ ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಿ</string>
+    <string name="mms_file_size_limit">ಕಳುಹಿಸಿದ MMS ಚಿತ್ರಗಳ ಗಾತ್ರವನ್ನು ಬದಲಾಯಿಸಿ</string>
+    <string name="mms_file_size_limit_none">ಯಾವುದೇ ಮಿತಿ ಇಲ್ಲ</string>
+    <string name="outgoing_messages">ಹೊರಹೋಗುವ ಸಂದೇಶಗಳು</string>
+    <string name="group_message_mms">ಗುಂಪು ಸಂದೇಶಗಳನ್ನು MMS ಆಗಿ ಕಳುಹಿಸಿ</string>
+    <string name="send_long_message_mms">ದೀರ್ಘ ಸಂದೇಶಗಳನ್ನು MMS ಆಗಿ ಕಳುಹಿಸಿ</string>
+    <string name="use_natural_voices">ವಹಿವಾಟುಗಳಿಗಾಗಿ ನೈಸರ್ಗಿಕ ಧ್ವನಿಯನ್ನು ಬಳಸಿ</string>
+    <string name="check_voice_data">ಧ್ವನಿ ಡೇಟಾವನ್ನು ಪರಿಶೀಲಿಸಿ</string>
+    <string name="swipe_actions">ಸ್ವೈಪ್ ಕ್ರಮಗಳು</string>
+    <string name="swipe_right">ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</string>
+    <string name="swipe_left">ಎಡಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</string>
+    <string name="delete">ಅಳಿಸಿ</string>
+    <string name="messages">ಸಂದೇಶಗಳು</string>
+    <string name="keywords">ಕೀವರ್ಡ್‌ಗಳು</string>
+    <string name="export_messages">ಸಂದೇಶಗಳನ್ನು ರಫ್ತು ಮಾಡಿ</string>
+    <string name="export_sms">SMS ರಫ್ತು ಮಾಡಿ</string>
+    <string name="export_mms">MMS ರಫ್ತು ಮಾಡಿ</string>
+    <string name="import_messages">ಸಂದೇಶಗಳನ್ನು ಆಮದು ಮಾಡಿ</string>
+    <string name="import_sms">SMS ಆಮದು ಮಾಡಿ</string>
+    <string name="import_mms">MMS ಆಮದು ಮಾಡಿ</string>
+    <string name="no_option_selected">ನೀವು ಕನಿಷ್ಠ ಒಂದು ಐಟಂ ಅನ್ನು ಆರಿಸಬೇಕು</string>
+    <string name="export_blocked_keywords">ನಿರ್ಬಂಧಿಸಿದ ಕೀವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಿ</string>
+    <string name="import_blocked_keywords">ನಿರ್ಬಂಧಿಸಿದ ಕೀವರ್ಡ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</string>
+    <string name="empty_destination_address">ಖಾಲಿ ಸಂಖ್ಯೆಗೆ ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</string>
+    <string name="unable_to_save_message">ಸಂದೇಶವನ್ನು ಟೆಲಿಫೋನಿ ಡೇಟಾಬೇಸ್‌ಗೆ ಉಳಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
+    <string name="error_service_is_unavailable">ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಸೇವೆ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="error_radio_turned_off">ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ರೇಡಿಯೋ ಆಫ್ ಆಗಿದೆ</string>
+    <string name="carrier_send_error">ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ಕ್ಯಾರಿಯರ್ ದೋಷ</string>
+    <string name="unknown_error_occurred_sending_message">ಸಂದೇಶವನ್ನು ಕಳುಹಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ, ದೋಷ ಕೋಡ್: %d</string>
+    <string name="invalid_short_code">ಇಂತಹ ಕಿರು ಕೋಡ್‌ಗಳಿಗೆ ಉತ್ತರಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</string>
+    <string name="invalid_short_code_desc">ನೀವು \"503501\" ರಂತಹ ಸಂಖ್ಯೆಗಳನ್ನು ಹೊಂದಿರುವ ಕಿರು ಕೋಡ್‌ಗಳಿಗೆ ಮಾತ್ರ ಉತ್ತರಿಸಬಹುದು ಆದರೆ ಅಕ್ಷರಗಳು ಮತ್ತು ಸಂಖ್ಯೆಗಳನ್ನು ಹೊಂದಿರುವ ಕೋಡ್‌ಗಳಿಗೆ ಅಲ್ಲ.</string>
+    <string name="attachment_sized_exceeds_max_limit">ಅಟ್ಯಾಚ್‌ಮೆಂಟ್ ಗಾತ್ರವು ಗರಿಷ್ಠ MMS ಮಿತಿಯನ್ನು ಮೀರಿದೆ</string>
+    <string name="sim_card_not_available">SIM ಕಾರ್ಡ್ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="couldnt_download_mms">MMS ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
+    <string name="tts_speed">ಭಾಷಣದ ವೇಗ</string>
+    <string name="tts_pitch">ಧ್ವನಿಯ ಏರಿಳಿತ (ಪಿಚ್)</string>
+    <string name="tts_interest_received"><![CDATA[<speak>ಬಡ್ಡಿ ಜಮೆಯಾಗಿದೆ! <break time="250ms"/> <say-as interpret-as="currency" language="kn-IN">Rs.%1$s</say-as> ನಿಮ್ಮ %2$s ಖಾತೆಗೆ ಬಡ್ಡಿಯಾಗಿ ಜಮೆಯಾಗಿದೆ.</speak>]]></string>
+    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="kn-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s ನಿಮ್ಮ %3$s ಖಾತೆಯಿಂದ ಪಾವತಿಸಲಾಗಿದೆ.</speak>]]></string>
+    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="kn-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s ನಿಮ್ಮ %3$s ಖಾತೆಗೆ ಜಮೆಯಾಗಿದೆ.</speak>]]></string>
+    <string name="tts_to_whom"><emphasis level="moderate">%1$s</emphasis> ಅವರಿಗೆ, </string>
+    <string name="tts_from_whom"><emphasis level="moderate">%1$s</emphasis> ಅವರಿಂದ, </string>
+</resources>

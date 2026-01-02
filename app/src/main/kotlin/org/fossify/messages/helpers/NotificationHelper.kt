@@ -279,18 +279,17 @@ class NotificationHelper(private val context: Context) {
 
         val ssmlText = when {
             transaction.isInterest -> {
-                "<speak>Interest Received! <break time=\"250ms\"/> <prosody rate=\"130%\" pitch=\"+2st\">$amount</prosody> credited to your $source.</speak>"
+                "<speak>Interest Received! <break time=\"250ms\"/> <say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> credited as <emphasis level=\"moderate\">interest</emphasis> to your $source.</speak>"
             }
             transaction.isDebit -> {
                 val toWhom = if (participant != null) "to <emphasis level=\"moderate\">$participant</emphasis>, " else ""
-                "<speak><prosody rate=\"130%\">$amount</prosody> <break time=\"200ms\"/> paid ${toWhom}from $source.</speak>"
+                "<speak><say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> <break time=\"200ms\"/> paid ${toWhom}from your $source.</speak>"
             }
             else -> {
                 val fromWhom = if (participant != null) "from <emphasis level=\"moderate\">$participant</emphasis>, " else ""
-                "<speak><prosody rate=\"130%\">$amount</prosody> <break time=\"200ms\"/> received ${fromWhom}to $source.</speak>"
+                "<speak><say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> <break time=\"200ms\"/> received ${fromWhom}to your $source.</speak>"
             }
         }
-
         context.logDebug("NotificationHelper", "Message Body: $originalBody")
         context.logDebug("NotificationHelper", "Transaction: $humanReadableText")
         ttsHelper.speak(ssmlText)

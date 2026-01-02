@@ -12,43 +12,12 @@ import android.provider.Telephony
 import android.text.TextUtils
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
-import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.RecyclerView
+import org.fossify.commons.dialogs.ConfirmationDialog
 import org.fossify.commons.dialogs.PermissionRequiredDialog
-import org.fossify.commons.extensions.adjustAlpha
-import org.fossify.commons.extensions.appLaunched
-import org.fossify.commons.extensions.appLockManager
-import org.fossify.commons.extensions.applyColorFilter
-import org.fossify.commons.extensions.areSystemAnimationsEnabled
-import org.fossify.commons.extensions.beGone
-import org.fossify.commons.extensions.beGoneIf
-import org.fossify.commons.extensions.beVisible
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.checkAppSideloading
-import org.fossify.commons.extensions.checkWhatsNew
-import org.fossify.commons.extensions.convertToBitmap
-import org.fossify.commons.extensions.fadeIn
-import org.fossify.commons.extensions.formatDateOrTime
-import org.fossify.commons.extensions.getMyContactsCursor
-import org.fossify.commons.extensions.getProperBackgroundColor
-import org.fossify.commons.extensions.getProperPrimaryColor
-import org.fossify.commons.extensions.getProperTextColor
-import org.fossify.commons.extensions.hideKeyboard
-import org.fossify.commons.extensions.openNotificationSettings
-import org.fossify.commons.extensions.toast
-import org.fossify.commons.extensions.underlineText
-import org.fossify.commons.extensions.updateTextColors
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.LICENSE_EVENT_BUS
-import org.fossify.commons.helpers.LICENSE_INDICATOR_FAST_SCROLL
-import org.fossify.commons.helpers.LICENSE_SMS_MMS
-import org.fossify.commons.helpers.LOWER_ALPHA
-import org.fossify.commons.helpers.MyContactsContentProvider
-import org.fossify.commons.helpers.PERMISSION_READ_CONTACTS
-import org.fossify.commons.helpers.PERMISSION_READ_SMS
-import org.fossify.commons.helpers.PERMISSION_SEND_SMS
-import org.fossify.commons.helpers.SHORT_ANIMATION_DURATION
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.helpers.isQPlus
+import org.fossify.commons.extensions.*
+import org.fossify.commons.helpers.*
 import org.fossify.commons.models.FAQItem
 import org.fossify.commons.models.Release
 import org.fossify.messages.BuildConfig
@@ -56,16 +25,8 @@ import org.fossify.messages.R
 import org.fossify.messages.adapters.ConversationsAdapter
 import org.fossify.messages.adapters.SearchResultsAdapter
 import org.fossify.messages.databinding.ActivityMainBinding
-import org.fossify.messages.extensions.checkAndDeleteOldRecycleBinMessages
-import org.fossify.messages.extensions.clearAllMessagesIfNeeded
-import org.fossify.messages.extensions.clearExpiredScheduledMessages
-import org.fossify.messages.extensions.config
-import org.fossify.messages.extensions.conversationsDB
-import org.fossify.messages.extensions.getConversations
-import org.fossify.messages.extensions.getMessages
-import org.fossify.messages.extensions.insertOrUpdateConversation
-import org.fossify.messages.extensions.markAllMessagesRead
-import org.fossify.messages.extensions.messagesDB
+import org.fossify.messages.extensions.*
+import org.fossify.messages.helpers.Config
 import org.fossify.messages.helpers.SEARCHED_MESSAGE_ID
 import org.fossify.messages.helpers.THREAD_ID
 import org.fossify.messages.helpers.THREAD_TITLE
@@ -109,6 +70,8 @@ class MainActivity : SimpleActivity() {
         if (checkAppSideloading()) {
             return
         }
+
+        setupSwipeActions()
     }
 
     override fun onResume() {
@@ -236,7 +199,7 @@ class MainActivity : SimpleActivity() {
     // while SEND_SMS and READ_SMS permissions are mandatory, READ_CONTACTS is optional.
     // If we don't have it, we just won't be able to show the contact name in some cases
     private fun askPermissions() {
-        handlePermission(PERMISSION_READ_SMS) {
+        handlePermission(PERMISSION_READ_SMS) { it ->
             if (it) {
                 handlePermission(PERMISSION_SEND_SMS) {
                     if (it) {
@@ -664,6 +627,69 @@ class MainActivity : SimpleActivity() {
             faqItems = faqItems,
             showFAQBeforeMail = true
         )
+    }
+
+    private fun setupSwipeActions() {
+        val swipeCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+                val adapter = getOrCreateConversationsAdapter()
+                val conversation = adapter.currentList.getOrNull(position) ?: return
+
+                val action = if (direction == ItemTouchHelper.RIGHT) config.swipeRightAction else config.swipeLeftAction
+                handleSwipeAction(action, conversation, position)
+            }
+        }
+        ItemTouchHelper(swipeCallback).attachToRecyclerView(binding.conversationsList)
+    }
+
+    private fun handleSwipeAction(action: Int, conversation: Conversation, position: Int) {
+        when (action) {
+            Config.SWIPE_MARK_READ -> toggleReadStatus(conversation)
+            Config.SWIPE_DELETE -> askConfirmDelete(conversation, position)
+            Config.SWIPE_ARCHIVE -> archiveConversation(conversation)
+        }
+    }
+
+    private fun toggleReadStatus(conversation: Conversation) {
+        ensureBackgroundThread {
+            if (conversation.read) {
+                markThreadMessagesUnread(conversation.threadId)
+            } else {
+                markThreadMessagesRead(conversation.threadId)
+            }
+            runOnUiThread {
+                initMessenger()
+            }
+        }
+    }
+
+    private fun askConfirmDelete(conversation: Conversation, position: Int) {
+        val items = resources.getQuantityString(R.plurals.delete_conversations, 1, 1)
+        val question = String.format(resources.getString(org.fossify.commons.R.string.deletion_confirmation), items)
+
+        ConfirmationDialog(this, question) {
+            ensureBackgroundThread {
+                deleteConversation(conversation.threadId)
+                notificationManager.cancel(conversation.threadId.hashCode())
+                runOnUiThread {
+                    initMessenger()
+                }
+            }
+        }
+        getOrCreateConversationsAdapter().notifyItemChanged(position)
+    }
+
+    private fun archiveConversation(conversation: Conversation) {
+        ensureBackgroundThread {
+            updateConversationArchivedStatus(conversation.threadId, true)
+            notificationManager.cancel(conversation.threadId.hashCode())
+            runOnUiThread {
+                initMessenger()
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

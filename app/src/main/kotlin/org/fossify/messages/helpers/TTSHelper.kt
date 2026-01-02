@@ -52,7 +52,8 @@ class TTSHelper private constructor(private val context: Context) {
         val speed = context.config.ttsSpeed
         tts.setSpeechRate(speed)
         
-        context.logDebug(TAG, "TTS Speed: Applied=$speed")
+        // Log to Log.e so it's easier to see in logcat
+        Log.d(TAG, "TTS Speed: Applied=$speed")
 
         tts.setPitch(context.config.ttsPitch)
 
@@ -66,7 +67,7 @@ class TTSHelper private constructor(private val context: Context) {
                     logVoiceDetails(selectedVoice)
                 } else {
                     tts.language = currentLocale
-                    context.logDebug(TAG, "Using default system voice selection for $currentLocale")
+                    Log.d(TAG, "Using default system voice selection for $currentLocale")
                 }
             }
         } catch (e: Exception) {

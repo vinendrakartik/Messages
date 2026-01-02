@@ -45,4 +45,9 @@
     <string name="use_simple_characters">സന്ദേശങ്ങൾ അയയ്‌ക്കുമ്പോൾ ഉച്ചാരണങ്ങളും ഡയക്രിറ്റിക്‌സും നീക്കംചെയ്യുക</string>
     <string name="faq_1_title">എന്തുകൊണ്ടാണ് ആപ്പിന് ഇന്റർനെറ്റ് ആക്‌സസ് ആവശ്യമായി വരുന്നത്\?</string>
     <string name="faq_1_text">നിർഭാഗ്യവശാൽ, MMS അറ്റാച്ചുമെന്റുകൾ അയക്കുന്നതിനു ഇത് ആവശ്യമാണ്. മറ്റ് ആപ്ലിക്കേഷനുകളുമായി താരതമ്യപ്പെടുത്തുമ്പോൾ MMS അയയ്ക്കാൻ കഴിയുന്നില്ല എന്നത് ഒരു വലിയ പോരായ്മയാണ്, അതിനാൽ ഞങ്ങൾ ഈ റൂട്ടിൽ പോകാൻ തീരുമാനിച്ചു. എന്നിരുന്നാലും, സാധാരണപോലെ, പരസ്യങ്ങളോ ട്രാക്കിംഗ് അല്ലെങ്കിൽ അനലിറ്റിക്സുകളോ ഇല്ല. ഇന്റർനെറ്റ് MMS അയയ്ക്കുന്നതിന് മാത്രമാണ് ഉപയോഗിക്കുന്നത്.</string>
+    <string name="tts_interest_received"><![CDATA[<speak>പലിശ ലഭിച്ചു! <break time="250ms"/> <say-as interpret-as="currency" language="ml-IN">Rs.%1$s</say-as> നിങ്ങളുടെ %2$s അക്കൗണ്ടിൽ പലിശയായി ക്രെഡിറ്റ് ചെയ്തിരിക്കുന്നു.</speak>]]></string>
+    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="ml-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s നിങ്ങളുടെ %3$s അക്കൗണ്ടിൽ നിന്നും ഡെബിറ്റ് ചെയ്യപ്പെട്ടു.</speak>]]></string>
+    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="ml-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s നിങ്ങളുടെ %3$s അക്കൗണ്ടിൽ ക്രെഡിറ്റ് ചെയ്യപ്പെട്ടു.</speak>]]></string>
+    <string name="tts_to_whom"><emphasis level="moderate">%1$s</emphasis>-ലേക്ക്, </string>
+    <string name="tts_from_whom"><emphasis level="moderate">%1$s</emphasis>-ൽ നിന്നും, </string>
     </resources>

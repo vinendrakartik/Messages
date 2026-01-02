@@ -2,6 +2,7 @@ package org.fossify.messages.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.SeekBar
 import androidx.activity.result.contract.ActivityResultContracts
 import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
@@ -46,7 +47,9 @@ import org.fossify.messages.helpers.LOCK_SCREEN_NOTHING
 import org.fossify.messages.helpers.LOCK_SCREEN_SENDER
 import org.fossify.messages.helpers.LOCK_SCREEN_SENDER_MESSAGE
 import org.fossify.messages.helpers.MessagesImporter
+import org.fossify.messages.helpers.TTSHelper
 import org.fossify.messages.helpers.refreshConversations
+import org.fossify.messages.helpers.Config
 import java.util.Locale
 import kotlin.system.exitProcess
 
@@ -106,6 +109,8 @@ class SettingsActivity : SimpleActivity() {
         setupChangeDateTimeFormat()
         setupFontSize()
         setupUseNaturalVoices()
+        setupTTSSettings()
+        setupSwipeActions()
         setupDebugLogging()
         setupShowCharacterCounter()
         setupUseSimpleCharacters()
@@ -137,7 +142,8 @@ class SettingsActivity : SimpleActivity() {
             binding.settingsArchivedMessagesLabel,
             binding.settingsRecycleBinLabel,
             binding.settingsSecurityLabel,
-            binding.settingsMigratingLabel
+            binding.settingsMigratingLabel,
+            binding.settingsSwipeActionsLabel
         ).forEach {
             it.setTextColor(getProperPrimaryColor())
         }
@@ -254,6 +260,68 @@ class SettingsActivity : SimpleActivity() {
             config.useNaturalVoices = settingsUseNaturalVoices.isChecked
         }
     }
+
+    private fun setupTTSSettings() = binding.apply {
+        settingsTtsSpeedSeekbar.apply {
+            progress = ((config.ttsSpeed - 0.5f) * 10).toInt()
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (fromUser) config.ttsSpeed = (progress / 10.0f) + 0.5f
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    TTSHelper.getInstance(this@SettingsActivity).setupVoice()
+                }
+            })
+        }
+
+        settingsTtsPitchSeekbar.apply {
+            progress = ((config.ttsPitch - 0.5f) * 10).toInt()
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (fromUser) config.ttsPitch = (progress / 10.0f) + 0.5f
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                    TTSHelper.getInstance(this@SettingsActivity).setupVoice()
+                }
+            })
+        }
+    }
+
+    private fun setupSwipeActions() = binding.apply {
+        settingsSwipeRight.text = getSwipeActionText(config.swipeRightAction)
+        settingsSwipeRightHolder.setOnClickListener {
+            val items = getSwipeActionItems()
+            RadioGroupDialog(this@SettingsActivity, items, config.swipeRightAction) {
+                config.swipeRightAction = it as Int
+                settingsSwipeRight.text = getSwipeActionText(config.swipeRightAction)
+            }
+        }
+
+        settingsSwipeLeft.text = getSwipeActionText(config.swipeLeftAction)
+        settingsSwipeLeftHolder.setOnClickListener {
+            val items = getSwipeActionItems()
+            RadioGroupDialog(this@SettingsActivity, items, config.swipeLeftAction) {
+                config.swipeLeftAction = it as Int
+                settingsSwipeLeft.text = getSwipeActionText(config.swipeLeftAction)
+            }
+        }
+    }
+
+    private fun getSwipeActionItems() = arrayListOf(
+        RadioItem(Config.SWIPE_MARK_READ, getString(R.string.mark_as_read)),
+        RadioItem(Config.SWIPE_DELETE, getString(org.fossify.commons.R.string.delete)),
+        RadioItem(Config.SWIPE_ARCHIVE, getString(R.string.archive))
+    )
+
+    private fun getSwipeActionText(action: Int) = getString(
+        when (action) {
+            Config.SWIPE_MARK_READ -> R.string.mark_as_read
+            Config.SWIPE_DELETE -> org.fossify.commons.R.string.delete
+            else -> R.string.archive
+        }
+    )
 
     private fun setupDebugLogging() = binding.apply {
         settingsEnableDebugLogs.isChecked = config.enableDebugLogs
