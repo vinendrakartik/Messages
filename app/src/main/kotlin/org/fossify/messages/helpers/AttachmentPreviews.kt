@@ -52,7 +52,7 @@ fun ItemAttachmentDocumentBinding.setupDocumentPreview(
                 fileSize.beVisible()
                 fileSize.text = size.formatSize()
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             root.post {
                 fileSize.beGone()
             }
