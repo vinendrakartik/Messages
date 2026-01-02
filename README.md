@@ -9,7 +9,7 @@ Fossify Messages is your trusted messaging companion, designed to enhance your m
 • **Robust APK Signing**: Updated app/build.gradle.kts to automatically detect signing credentials from your global ~/.gradle/gradle.properties using SIGNING_ snake_case naming conventions.<br>
 • **Warning Cleanup**: Fixed various deprecation warnings in Context.kt (Glide into calls) and resolved unresolved references during the build process.<br><br>
 **2. New Feature**s: OTP & Transaction Automation<br>
-• **OTP Detection**: Created OTPDetector.kt to identify verification codes. The app now automatically copies OTPs to the clipboard and plays a dedicated otp.mp3 sound.<br>
+• **OTP Detection**: Created OTPDetector.kt to identify verification codes. The app now automatically copies OTPs to the clipboard and plays a dedicated otp.mp3 sound(the present audio file is my daughter SAYING PAPPA OTP 😍). Once everything is stable I'll update to other tone<br>
 • **Smart Transaction Announcements**:<br>
 ◦ Added TransactionDetector.kt to parse debit/credit alerts from major banks (Axis, HDFC, IDFC, Kotak, Federal, etc.).<br>
 ◦ Implemented a Singleton TTSHelper to announce transactions out loud (e.g., "Paid 100 rupees to Amazon from HDFC bank").<br>
@@ -26,5 +26,5 @@ Fossify Messages is your trusted messaging companion, designed to enhance your m
 • **Privacy-focused Debugging**: Added a "Enable Debug Logs" toggle under Security settings. All sensitive transaction and OTP logs are hidden by default.<br>
 • **Broadcast Security**: The `org.fossify.messages.TEST_SMS` ADB testing command is now strictly restricted and only works when Debug Logs are enabled.<br>
 • **Size Optimization**: Reduced the final APK size by ~1.5MB by using `localeFilters` to strip out all non-essential language resources, keeping only English and major Indian languages (Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam).<br>
-• **Unlocked Premium Features**: Removed the purchase requirement and "locked" labels for Blocked Numbers and Blocked Keywords settings.<br>
-• **Removed Monetization Prompts**: Completely hid the "Purchase Fossify Thank You" item from the General Settings to provide a cleaner, fully open-source experience.<br>
+• **Unlocked Premium Features**: Removed the purchase requirementand "locked" labels for Blocked Numbers and Blocked Keywords settings.<br>
+• **Removed Monetization Prompts**: Completely hid the "Purchase Fossify Thank You" item from the General Settings to provide a cleaner, fully open-source experience.(there is occassional pop up to buy and also setting to purchase in customize appearance tab working on it)<br>
