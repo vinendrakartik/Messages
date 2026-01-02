@@ -2,7 +2,6 @@ package org.fossify.messages.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.speech.tts.TextToSpeech
 import androidx.activity.result.contract.ActivityResultContracts
 import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
@@ -47,7 +46,6 @@ import org.fossify.messages.helpers.LOCK_SCREEN_NOTHING
 import org.fossify.messages.helpers.LOCK_SCREEN_SENDER
 import org.fossify.messages.helpers.LOCK_SCREEN_SENDER_MESSAGE
 import org.fossify.messages.helpers.MessagesImporter
-import org.fossify.messages.helpers.TTSHelper
 import org.fossify.messages.helpers.refreshConversations
 import java.util.Locale
 import kotlin.system.exitProcess
@@ -107,9 +105,8 @@ class SettingsActivity : SimpleActivity() {
         setupManageBlockedKeywords()
         setupChangeDateTimeFormat()
         setupFontSize()
-        setupAutoTranslate()
         setupUseNaturalVoices()
-        setupTtsSettings()
+        setupDebugLogging()
         setupShowCharacterCounter()
         setupUseSimpleCharacters()
         setupSendOnEnter()
@@ -250,14 +247,6 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupAutoTranslate() = binding.apply {
-        settingsAutoTranslate.isChecked = config.autoTranslate
-        settingsAutoTranslateHolder.setOnClickListener {
-            settingsAutoTranslate.toggle()
-            config.autoTranslate = settingsAutoTranslate.isChecked
-        }
-    }
-
     private fun setupUseNaturalVoices() = binding.apply {
         settingsUseNaturalVoices.isChecked = config.useNaturalVoices
         settingsUseNaturalVoicesHolder.setOnClickListener {
@@ -266,56 +255,12 @@ class SettingsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupTtsSettings() = binding.apply {
-        settingsTtsSpeedHolder.beVisible()
-        settingsTtsPitchHolder.beVisible()
-        settingsCheckVoiceDataHolder.beVisible()
-
-        settingsTtsSpeed.text = String.format("%.1fx", config.ttsSpeed)
-        settingsTtsPitch.text = String.format("%.1fx", config.ttsPitch)
-
-        settingsTtsSpeedHolder.setOnClickListener {
-            val items = arrayListOf(
-                RadioItem(1, "0.5x", 0.5f),
-                RadioItem(2, "0.8x", 0.8f),
-                RadioItem(3, "1.0x", 1.0f),
-                RadioItem(4, "1.2x", 1.2f),
-                RadioItem(5, "1.5x", 1.5f),
-                RadioItem(6, "2.0x", 2.0f)
-            )
-            val checkedId = items.find { it.value == config.ttsSpeed }?.id ?: 3
-            RadioGroupDialog(this@SettingsActivity, items, checkedId) {
-                config.ttsSpeed = it as Float
-                settingsTtsSpeed.text = String.format("%.1fx", config.ttsSpeed)
-                TTSHelper.getInstance(this@SettingsActivity).speak("This is a sample of the speech speed.")
-            }
-        }
-
-        settingsTtsPitchHolder.setOnClickListener {
-            val items = arrayListOf(
-                RadioItem(1, "0.5x", 0.5f),
-                RadioItem(2, "0.8x", 0.8f),
-                RadioItem(3, "1.0x", 1.0f),
-                RadioItem(4, "1.2x", 1.2f),
-                RadioItem(5, "1.5x", 1.5f),
-                RadioItem(6, "2.0x", 2.0f)
-            )
-            val checkedId = items.find { it.value == config.ttsPitch }?.id ?: 3
-            RadioGroupDialog(this@SettingsActivity, items, checkedId) {
-                config.ttsPitch = it as Float
-                settingsTtsPitch.text = String.format("%.1fx", config.ttsPitch)
-                TTSHelper.getInstance(this@SettingsActivity).speak("This is a sample of the speech pitch.")
-            }
-        }
-
-        settingsCheckVoiceDataHolder.setOnClickListener {
-            try {
-                val intent = Intent()
-                intent.action = TextToSpeech.Engine.ACTION_CHECK_TTS_DATA
-                startActivity(intent)
-            } catch (e: Exception) {
-                toast("Could not open TTS settings")
-            }
+    private fun setupDebugLogging() = binding.apply {
+        settingsEnableDebugLogs.isChecked = config.enableDebugLogs
+        settingsEnableDebugLogsHolder.setOnClickListener {
+            settingsEnableDebugLogs.toggle()
+            config.enableDebugLogs = settingsEnableDebugLogs.isChecked
+            toast(if (config.enableDebugLogs) "Logs Enabled" else "Logs Disabled")
         }
     }
 

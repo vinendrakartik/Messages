@@ -49,7 +49,11 @@ class TTSHelper private constructor(private val context: Context) {
         val currentLocale = Locale.getDefault()
 
         // Apply speed and pitch from settings
-        tts.setSpeechRate(context.config.ttsSpeed)
+        val speed = context.config.ttsSpeed
+        tts.setSpeechRate(speed)
+        
+        context.logDebug(TAG, "TTS Speed: Applied=$speed")
+
         tts.setPitch(context.config.ttsPitch)
 
         try {
@@ -62,7 +66,7 @@ class TTSHelper private constructor(private val context: Context) {
                     logVoiceDetails(selectedVoice)
                 } else {
                     tts.language = currentLocale
-                    Log.d(TAG, "Using default system voice selection for $currentLocale")
+                    context.logDebug(TAG, "Using default system voice selection for $currentLocale")
                 }
             }
         } catch (e: Exception) {
@@ -114,19 +118,14 @@ class TTSHelper private constructor(private val context: Context) {
         val quality = if (voice.name.contains("network", true)) "Neural/Network" else "Standard/Local"
         val latency = if (voice.isNetworkConnectionRequired) "Internet Required" else "Offline Ready"
 
-        Log.d(TAG, """
-            --- TTS VOICE ACTIVATED ---
-            Name: ${voice.name}
-            Locale: ${voice.locale}
-            Quality Type: $quality
-            Connectivity: $latency
-            Features: ${voice.features}
-            ---------------------------
-        """.trimIndent())
+        context.logDebug(TAG, "TTS Voice Activated: Name=${voice.name}, Locale=${voice.locale}, Quality=$quality, Connectivity=$latency, Features=${voice.features}")
+
     }
 
     fun speak(text: String) {
         if (isInitialized) {
+            // Re-apply settings before speaking to ensure they are up to date
+            setupVoice()
             tts?.speak(text, TextToSpeech.QUEUE_ADD, null, null)
         } else {
             pendingMessages.add(text)

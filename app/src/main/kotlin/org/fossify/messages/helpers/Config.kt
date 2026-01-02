@@ -161,19 +161,20 @@ class Config(context: Context) : BaseConfig(context) {
         set(keepConversationsArchived) = prefs.edit()
             .putBoolean(KEEP_CONVERSATIONS_ARCHIVED, keepConversationsArchived).apply()
 
-    var autoTranslate: Boolean
-        get() = prefs.getBoolean(AUTO_TRANSLATE, false)
-        set(autoTranslate) = prefs.edit().putBoolean(AUTO_TRANSLATE, autoTranslate).apply()
 
     var useNaturalVoices: Boolean
         get() = prefs.getBoolean(USE_NATURAL_VOICES, false)
         set(useNaturalVoices) = prefs.edit().putBoolean(USE_NATURAL_VOICES, useNaturalVoices).apply()
 
     var ttsSpeed: Float
-        get() = prefs.getFloat(TTS_SPEED, 1.0f)
+        get() = prefs.getFloat(TTS_SPEED, 1.2f).let { if (it < 1.1f) 1.2f else it }
         set(ttsSpeed) = prefs.edit().putFloat(TTS_SPEED, ttsSpeed).apply()
 
     var ttsPitch: Float
         get() = prefs.getFloat(TTS_PITCH, 1.0f)
         set(ttsPitch) = prefs.edit().putFloat(TTS_PITCH, ttsPitch).apply()
+
+    var enableDebugLogs: Boolean
+        get() = prefs.getBoolean("enable_debug_logs", false)
+        set(enableDebugLogs) = prefs.edit().putBoolean("enable_debug_logs", enableDebugLogs).apply()
 }

@@ -108,8 +108,7 @@
     <string name="outgoing_messages">Outgoing messages</string>
     <string name="group_message_mms">Send group messages as MMS</string>
     <string name="send_long_message_mms">Send long messages as MMS</string>
-    <string name="auto_translate">Auto translate message body to system language</string>
-    <string name="use_natural_voices">Use natural voices</string>
+    <string name="use_natural_voices">Natural Voice for Transaction Notifications</string>
     <string name="tts_speed">Speech speed</string>
     <string name="tts_pitch">Speech pitch</string>
     <string name="check_voice_data">Check voice data</string>

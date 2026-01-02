@@ -81,7 +81,7 @@ class NotificationHelper(private val context: Context) {
         if (isOtp) {
             copyToClipboard(otp!!)
         } else if (isTransaction) {
-            handleTransactionTTS(transaction!!)
+            handleTransactionTTS(transaction!!, body)
         }
 
         val hasCustomNotifications =
@@ -260,27 +260,40 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    private fun handleTransactionTTS(transaction: TransactionInfo) {
-        // We use commas for short pauses and periods for a drop in pitch (finality).
+    private fun handleTransactionTTS(transaction: TransactionInfo, originalBody: String) {
         val amount = transaction.ttsAmount
         val source = transaction.source
         val participant = transaction.participant
 
-        val speechText = when {
-            transaction.isInterest -> {
-                "Interest Received. $amount credited to your $source."
-            }
+        val humanReadableText = when {
+            transaction.isInterest -> "Interest Received! $amount credited to your $source."
             transaction.isDebit -> {
                 val toWhom = if (participant != null) "to $participant, " else ""
-                "$amount, paid  ${toWhom} from $source."
+                "$amount paid ${toWhom}from $source."
             }
             else -> {
                 val fromWhom = if (participant != null) "from $participant, " else ""
-                "$amount, received ${fromWhom} to $source."
+                "$amount received ${fromWhom}to $source."
             }
         }
-        Log.d("NotificationHelper", "Speaking transaction: $speechText")
-        ttsHelper.speak(speechText)
+
+        val ssmlText = when {
+            transaction.isInterest -> {
+                "<speak>Interest Received! <break time=\"250ms\"/> <prosody rate=\"130%\" pitch=\"+2st\">$amount</prosody> credited to your $source.</speak>"
+            }
+            transaction.isDebit -> {
+                val toWhom = if (participant != null) "to <emphasis level=\"moderate\">$participant</emphasis>, " else ""
+                "<speak><prosody rate=\"130%\">$amount</prosody> <break time=\"200ms\"/> paid ${toWhom}from $source.</speak>"
+            }
+            else -> {
+                val fromWhom = if (participant != null) "from <emphasis level=\"moderate\">$participant</emphasis>, " else ""
+                "<speak><prosody rate=\"130%\">$amount</prosody> <break time=\"200ms\"/> received ${fromWhom}to $source.</speak>"
+            }
+        }
+
+        context.logDebug("NotificationHelper", "Message Body: $originalBody")
+        context.logDebug("NotificationHelper", "Transaction: $humanReadableText")
+        ttsHelper.speak(ssmlText)
     }
 
     private fun copyToClipboard(otp: String) {
