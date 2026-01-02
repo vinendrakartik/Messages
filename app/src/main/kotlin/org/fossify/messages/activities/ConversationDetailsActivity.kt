@@ -64,7 +64,7 @@ class ConversationDetailsActivity : SimpleActivity() {
             runOnUiThread {
                 setupTextViews()
                 setupParticipants()
-                setupCustomNotifications()
+                setupNotifications()
             }
         }
     }
@@ -84,9 +84,21 @@ class ConversationDetailsActivity : SimpleActivity() {
         }
     }
 
-    private fun setupCustomNotifications() {
+    private fun setupNotifications() {
         binding.apply {
             notificationsHeading.beVisible()
+            
+            muteNotificationsHolder.beVisible()
+            muteNotifications.isChecked = config.mutedThreads.contains(threadId.toString())
+            muteNotificationsHolder.setOnClickListener {
+                muteNotifications.toggle()
+                if (muteNotifications.isChecked) {
+                    config.addMutedThread(threadId)
+                } else {
+                    config.removeMutedThread(threadId)
+                }
+            }
+
             customNotificationsHolder.beVisible()
             customNotifications.isChecked = config.customNotifications.contains(threadId.toString())
             customNotificationsButton.beVisibleIf(customNotifications.isChecked)

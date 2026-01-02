@@ -133,6 +133,8 @@ android {
     androidResources {
         @Suppress("UnstableApiUsage")
         generateLocaleConfig = true
+        // Limit languages to English and Indian languages to reduce APK size
+        localeFilters += listOf("en", "hi", "mr", "te", "ta", "kn", "ml")
     }
 
     tasks.withType<KotlinCompile> {

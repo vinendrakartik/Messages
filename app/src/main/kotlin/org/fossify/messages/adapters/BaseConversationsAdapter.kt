@@ -151,6 +151,13 @@ abstract class BaseConversationsAdapter(
             )
             pinIndicator.applyColorFilter(textColor)
 
+            val isMuted = activity.config.mutedThreads.contains(conversation.threadId.toString())
+            conversationMuteImage.apply {
+                beVisibleIf(isMuted)
+                applyColorFilter(textColor)
+                alpha = 0.5f // This "greys out" the bell/mute icon
+            }
+
             conversationFrame.isSelected = selectedKeys.contains(conversation.hashCode())
 
             conversationAddress.apply {

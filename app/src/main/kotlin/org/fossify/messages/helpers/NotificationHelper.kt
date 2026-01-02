@@ -14,6 +14,7 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.net.Uri
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
@@ -43,7 +44,9 @@ class NotificationHelper(private val context: Context) {
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
+        // Only suppress sound if it's detected as a valid transaction (since we use TTS for those)
         if (isTransaction) return null
+
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
         return if (resId != 0) {
@@ -64,21 +67,26 @@ class NotificationHelper(private val context: Context) {
         sender: String?,
         alertOnlyOnce: Boolean = false
     ) {
+        if (context.config.mutedThreads.contains(threadId.toString())) {
+            return
+        }
+
         val otp = body.extractOTP()
         val isOtp = otp != null
-        
-        val transaction = if (!isOtp) body.extractTransactionInfo() else null
+
+        // Pass the address (header) to extractTransactionInfo for better bank detection
+        val transaction = if (!isOtp) body.extractTransactionInfo(address) else null
         val isTransaction = transaction != null
 
         if (isOtp) {
             copyToClipboard(otp!!)
         } else if (isTransaction) {
-            handleTransactionTTS(transaction!!)
+            handleTransactionTTS(transaction!!, body)
         }
 
         val hasCustomNotifications =
             context.config.customNotifications.contains(threadId.toString())
-        
+
         val notificationChannelId = when {
             isOtp -> otpChannelId
             isTransaction -> transactionChannelId
@@ -97,7 +105,7 @@ class NotificationHelper(private val context: Context) {
             isTransaction -> transaction.hashCode()
             else -> threadId.hashCode()
         }
-        
+
         val contentIntent = Intent(context, ThreadActivity::class.java).apply {
             putExtra(THREAD_ID, threadId)
         }
@@ -131,6 +139,13 @@ class NotificationHelper(private val context: Context) {
         val deleteSmsIntent = Intent(context, DeleteSmsReceiver::class.java).apply {
             putExtra(THREAD_ID, threadId)
             putExtra(MESSAGE_ID, messageId)
+            if (isOtp) {
+                putExtra("otp", otp)
+            }
+            if (isTransaction) {
+                putExtra("is_transaction", true)
+                putExtra("transaction_hash", transaction.hashCode())
+            }
         }
         val deleteSmsPendingIntent =
             PendingIntent.getBroadcast(
@@ -200,10 +215,13 @@ class NotificationHelper(private val context: Context) {
             setCategory(Notification.CATEGORY_MESSAGE)
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
-            if (!isTransaction) {
-                setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
-            } else {
+
+            // Only use the silent channel if a valid transaction is detected.
+            // False transactions will fall through to use the default sound.
+            if (isTransaction) {
                 setSound(null)
+            } else {
+                setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
             }
         }
 
@@ -217,13 +235,13 @@ class NotificationHelper(private val context: Context) {
             markAsReadPendingIntent
         )
             .setChannelId(notificationChannelId)
-        if (isNoReplySms) {
-            builder.addAction(
-                org.fossify.commons.R.drawable.ic_delete_vector,
-                context.getString(org.fossify.commons.R.string.delete),
-                deleteSmsPendingIntent
-            ).setChannelId(notificationChannelId)
-        }
+
+        // Use the custom delete intent for OTP/Transactions too
+        builder.addAction(
+            org.fossify.commons.R.drawable.ic_delete_vector,
+            context.getString(org.fossify.commons.R.string.delete),
+            deleteSmsPendingIntent
+        ).setChannelId(notificationChannelId)
 
         var shortcut = context.shortcutHelper.getShortcut(threadId)
         if (shortcut == null) {
@@ -242,15 +260,39 @@ class NotificationHelper(private val context: Context) {
         }
     }
 
-    private fun handleTransactionTTS(transaction: TransactionInfo) {
-        val speechText = if (transaction.isDebit) {
-            val participantPart = if (transaction.participant != null) "to ${transaction.participant} " else ""
-            "Paid rupees, ${transaction.amount},  ${participantPart}from ${transaction.source}."
-        } else {
-            val participantPart = if (transaction.participant != null) "from ${transaction.participant} " else ""
-            "Received rupees, ${transaction.amount}, ${participantPart}on ${transaction.source}."
+    private fun handleTransactionTTS(transaction: TransactionInfo, originalBody: String) {
+        val amount = transaction.ttsAmount
+        val source = transaction.source
+        val participant = transaction.participant
+
+        val humanReadableText = when {
+            transaction.isInterest -> "Interest Received! $amount credited to your $source."
+            transaction.isDebit -> {
+                val toWhom = if (participant != null) "to $participant, " else ""
+                "$amount paid ${toWhom}from $source."
+            }
+            else -> {
+                val fromWhom = if (participant != null) "from $participant, " else ""
+                "$amount received ${fromWhom}to $source."
+            }
         }
-        ttsHelper.speak(speechText)
+
+        val ssmlText = when {
+            transaction.isInterest -> {
+                "<speak>Interest Received! <break time=\"250ms\"/> <say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> credited as <emphasis level=\"moderate\">interest</emphasis> to your $source.</speak>"
+            }
+            transaction.isDebit -> {
+                val toWhom = if (participant != null) "to <emphasis level=\"moderate\">$participant</emphasis>, " else ""
+                "<speak><say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> <break time=\"200ms\"/> paid ${toWhom}from your $source.</speak>"
+            }
+            else -> {
+                val fromWhom = if (participant != null) "from <emphasis level=\"moderate\">$participant</emphasis>, " else ""
+                "<speak><say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> <break time=\"200ms\"/> received ${fromWhom}to your $source.</speak>"
+            }
+        }
+        context.logDebug("NotificationHelper", "Message Body: $originalBody")
+        context.logDebug("NotificationHelper", "Transaction: $humanReadableText")
+        ttsHelper.speak(ssmlText)
     }
 
     private fun copyToClipboard(otp: String) {
@@ -350,14 +392,7 @@ class NotificationHelper(private val context: Context) {
     private fun getOldMessages(notificationId: Int): List<NotificationCompat.MessagingStyle.Message> {
         val currentNotification =
             notificationManager.activeNotifications.find { it.id == notificationId }
-        return if (currentNotification != null) {
-            val activeStyle =
-                NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(
-                    currentNotification.notification
-                )
-            activeStyle?.messages.orEmpty()
-        } else {
-            emptyList()
-        }
+        val messagingStyle = currentNotification?.notification?.let { NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(it) }
+        return messagingStyle?.messages ?: emptyList()
     }
 }

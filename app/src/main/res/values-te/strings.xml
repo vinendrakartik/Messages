@@ -1,2 +1,158 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <string name="app_launcher_name">సందేశాలు</string>
+    <string name="type_a_message">సందేశాన్ని టైప్ చేయండి…</string>
+    <string name="message_not_sent_short">సందేశం పంపబడలేదు</string>
+    <string name="message_not_sent_touch_retry">పంపబడలేదు. మళ్లీ ప్రయత్నించడానికి తాకండి.</string>
+    <string name="message_sending_error">\'%s\' కి మీ సందేశం పంపబడలేదు</string>
+    <string name="add_person">వ్యక్తిని జోడించు</string>
+    <string name="attachment">అటాచ్‌మెంట్</string>
+    <string name="no_conversations_found">స్టోర్ చేయబడిన సంభాషణలు ఏవీ కనుగొనబడలేదు</string>
+    <string name="start_conversation">సంభాషణను ప్రారంభించండి</string>
+    <string name="reply">సమాధానం</string>
+    <string name="show_character_counter">సందేశాలు రాసేటప్పుడు అక్షరాల కౌంటర్‌ను చూపించు</string>
+    <string name="loading_messages">సందేశాలను లోడ్ చేస్తోంది…</string>
+    <string name="no_reply_support">పంపినవారు సమాధానాలకు మద్దతు ఇవ్వరు</string>
+    <string name="draft">డ్రాఫ్ట్</string>
+    <string name="sending">పంపుతోంది…</string>
+    <string name="pin_conversation">పైభాగానికి పిన్ చేయండి</string>
+    <string name="unpin_conversation">అన్‌పిన్ చేయండి</string>
+    <string name="forward_message">ఫార్వర్డ్</string>
+    <string name="forward">ఫార్వర్డ్</string>
+    <string name="compress_error">ఎంచుకున్న పరిమాణానికి చిత్రాన్ని కంప్రెస్ చేయడం సాధ్యపడలేదు</string>
+    <!-- Attachments -->
+    <string name="duplicate_item_warning">నకిలీ అంశం చేర్చబడలేదు</string>
+    <!-- vCard -->
+    <plurals name="and_other_contacts">
+        <item quantity="one">మరియు %d ఇతర</item>
+        <item quantity="other">మరియు %d ఇతరులు</item>
+    </plurals>
+    <!-- New conversation -->
+    <string name="new_conversation">కొత్త సంభాషణ</string>
+    <string name="add_contact_or_number">కాంటాక్ట్ లేదా నంబర్‌ను జోడించండి…</string>
+    <string name="suggestions">సూచనలు</string>
+    <!-- Group conversation -->
+    <string name="members">సభ్యులు</string>
+    <string name="conversation_name">సంభాషణ పేరు</string>
+    <string name="conversation_details">సంభాషణ వివరాలు</string>
+    <string name="rename_conversation">సంభాషణ పేరు మార్చు</string>
+    <string name="rename_conversation_warning">ఈ సంభాషణ పేరును మీరు మాత్రమే చూడగలరు</string>
+    <!-- Schedule send -->
+    <string name="scheduled_message">షెడ్యూల్ చేసిన సందేశం</string>
+    <string name="schedule_message">సందేశాన్ని షెడ్యూల్ చేయండి</string>
+    <string name="schedule_send">షెడ్యూల్ పంపండి</string>
+    <string name="cancel_schedule_send">షెడ్యూల్ పంపడాన్ని రద్దు చేయి</string>
+    <string name="must_pick_time_in_the_future">మీరు భవిష్యత్తులో సమయాన్ని ఎంచుకోవాలి</string>
+    <string name="schedule_send_warning">ఫోన్ ఆన్‌లో ఉంచండి మరియు బ్యాక్‌గ్రౌండ్‌లో యాప్‌ను ఏదీ ఆపివేయకుండా చూసుకోండి.</string>
+    <string name="update_message">సందేశాన్ని నవీకరించండి</string>
+    <string name="send_now">ఇప్పుడే పంపండి</string>
+    <!-- Message details -->
+    <string name="message_details">సందేశ వివరాలు</string>
+    <string name="message_details_sender">పంపినవారు</string>
+    <string name="message_details_receiver">స్వీకరించినవారు</string>
+    <string name="message_details_sent_at">పంపిన సమయం</string>
+    <string name="message_details_received_at">స్వీకరించిన సమయం</string>
+    <!-- Notifications -->
+    <string name="channel_received_sms">స్వీకరించిన SMS</string>
+    <string name="new_message">కొత్త సందేశం</string>
+    <string name="mark_as_read">చదివినట్లుగా గుర్తించు</string>
+    <string name="mark_as_unread">చదవనట్లుగా గుర్తించు</string>
+    <string name="mark_all_as_read">అన్నీ చదివినట్లుగా గుర్తించు</string>
+    <string name="me">నేను</string>
+    <string name="enable_custom_notifications">అనుకూల నోటిఫికేషన్‌లను ప్రారంభించండి</string>
+    <string name="mute_notifications">నోటిఫికేషన్‌లను మ్యూట్ చేయండి</string>
+    <!-- Archive -->
+    <string name="unarchive">అన్-ఆర్కైవ్</string>
+    <string name="empty_archive">ఆర్కైవ్ చేసిన అన్ని సంభాషణలను తొలగించండి</string>
+    <string name="archived_conversations">ఆర్కైవ్</string>
+    <string name="show_archived_conversations">ఆర్కైవ్ చేసిన సంభాషణలను చూపించు</string>
+    <string name="archive">ఆర్కైవ్</string>
+    <string name="no_archived_conversations">ఆర్కైవ్ చేసిన సంభాషణలు ఏవీ కనుగొనబడలేదు</string>
+    <string name="archive_emptied_successfully">ఆర్కైవ్ విజయవంతంగా ఖాళీ చేయబడింది</string>
+    <string name="empty_archive_confirmation">మీరు ఖచ్చితంగా ఆర్కైవ్‌ను ఖాళీ చేయాలనుకుంటున్నారా? ఆర్కైవ్ చేసిన అన్ని సంభాషణలు శాశ్వతంగా కోల్పోతాయి.</string>
+    <string name="keep_conversations_archived">సంభాషణలను ఆర్కైవ్ చేసి ఉంచండి</string>
+    <!-- Recycle bin -->
+    <string name="restore">పునరుద్ధరించు</string>
+    <string name="restore_all_messages">అన్ని సందేశాలను పునరుద్ధరించండి</string>
+    <string name="empty_recycle_bin_messages_confirmation">మీరు ఖచ్చితంగా రీసైకిల్ బిన్‌ను ఖాళీ చేయాలనుకుంటున్నారా? సందేశాలు శాశ్వతంగా కోల్పోతాయి.</string>
+    <string name="skip_the_recycle_bin_messages">రీసైకిల్ బిన్‌ను దాటవేసి, నేరుగా సందేశాలను తొలగించండి</string>
+    <!-- Confirmation dialog -->
+    <string name="delete_whole_conversation_confirmation">మీరు ఖచ్చితంగా ఈ సంభాషణ యొక్క అన్ని సందేశాలను తొలగించాలనుకుంటున్నారా?</string>
+    <string name="archive_confirmation">మీరు ఖచ్చితంగా %s ని ఆర్కైవ్ చేయాలనుకుంటున్నారా?</string>
+    <string name="restore_whole_conversation_confirmation">మీరు ఖచ్చితంగా ఈ సంభాషణ యొక్క అన్ని సందేశాలను పునరుద్ధరించాలనుకుంటున్నారా?</string>
+    <string name="restore_confirmation">మీరు ఖచ్చితంగా %s ని పునరుద్ధరించాలనుకుంటున్నారా?</string>
+    <!-- Are you sure you want to delete 5 conversations? -->
+    <plurals name="delete_conversations">
+        <item quantity="one">%d సంభాషణ</item>
+        <item quantity="other">%d సంభాషణలు</item>
+    </plurals>
+    <!-- Are you sure you want to delete 5 messages? -->
+    <plurals name="delete_messages">
+        <item quantity="one">%d సందేశం</item>
+        <item quantity="other">%d సందేశాలు</item>
+    </plurals>
+    <!-- Settings -->
+    <string name="keyword">కీవర్డ్</string>
+    <string name="blocked_keywords">బ్లాక్ చేయబడిన కీవర్డ్లు</string>
+    <string name="manage_blocked_keywords">బ్లాక్ చేయబడిన కీవర్డ్లను నిర్వహించండి</string>
+    <string name="not_blocking_keywords">మీరు ఎటువంటి కీవర్డ్లను బ్లాక్ చేయడం లేదు. వాటిని కలిగి ఉన్న అన్ని సందేశాలను బ్లాక్ చేయడానికి మీరు ఇక్కడ కీవర్డ్లను జోడించవచ్చు.</string>
+    <string name="add_a_blocked_keyword">బ్లాక్ చేయబడిన కీవర్డ్‌ను జోడించండి</string>
+    <string name="lock_screen_visibility">లాక్ స్క్రీన్ నోటిఫికేషన్ దృశ్యమానత</string>
+    <string name="sender_and_message">పంపినవారు మరియు సందేశం</string>
+    <string name="sender_only">పంపినవారు మాత్రమే</string>
+    <string name="enable_delivery_reports">డెలివరీ నివేదికలను ప్రారంభించండి</string>
+    <string name="use_simple_characters">సందేశాలను పంపేటప్పుడు ఉచ్చారణ గుర్తులు మరియు డయాక్రిటిక్‌లను తీసివేయండి</string>
+    <string name="send_on_enter">Enter నొక్కినప్పుడు సందేశాన్ని పంపండి</string>
+    <string name="mms_file_size_limit">పంపిన MMS చిత్రాల పరిమాణాన్ని మార్చండి</string>
+    <string name="mms_file_size_limit_none">పరిమితి లేదు</string>
+    <string name="outgoing_messages">బయటకు వెళ్లే సందేశాలు</string>
+    <string name="group_message_mms">సమూహ సందేశాలను MMS గా పంపండి</string>
+    <string name="send_long_message_mms">సుదీర్ఘ సందేశాలను MMS గా పంపండి</string>
+    <string name="use_natural_voices">లావాదేవీల కోసం సహజ గొంతును ఉపయోగించండి</string>
+    <string name="check_voice_data">వాయిస్ డేటాను తనిఖీ చేయండి</string>
+    <string name="swipe_actions">స్వైప్ చర్యలు</string>
+    <string name="swipe_right">కుడికి స్వైప్ చేయండి</string>
+    <string name="swipe_left">ఎడమకు స్వైప్ చేయండి</string>
+    <string name="delete">తొలగించు</string>
+    <!-- Export / Import -->
+    <string name="messages">సందేశాలు</string>
+    <string name="keywords">కీవర్డ్లు</string>
+    <string name="export_messages">సందేశాలను ఎగుమతి చేయండి</string>
+    <string name="export_sms">SMS ఎగుమతి చేయండి</string>
+    <string name="export_mms">MMS ఎగుమతి చేయండి</string>
+    <string name="import_messages">సందేశాలను దిగుమతి చేయండి</string>
+    <string name="import_sms">SMS దిగుమతి చేయండి</string>
+    <string name="import_mms">MMS దిగుమతి చేయండి</string>
+    <string name="no_option_selected">మీరు కనీసం ఒక అంశాన్ని ఎంచుకోవాలి</string>
+    <string name="export_blocked_keywords">బ్లాక్ చేయబడిన కీవర్డ్లను ఎగుమతి చేయండి</string>
+    <string name="import_blocked_keywords">బ్లాక్ చేయబడిన కీవర్డ్లను దిగుమతి చేయండి</string>
+    <!-- Errors -->
+    <string name="empty_destination_address">ఖాళీ నంబర్‌కు సందేశాన్ని పంపడం సాధ్యం కాదు</string>
+    <string name="unable_to_save_message">టెలిఫోనీ డేటాబేస్‌కు సందేశాన్ని సేవ్ చేయడం సాధ్యపడలేదు</string>
+    <string name="error_service_is_unavailable">సందేశం పంపడం సాధ్యపడలేదు, సేవ అందుబాటులో లేదు</string>
+    <string name="error_radio_turned_off">సందేశం పంపడం సాధ్యపడలేదు, రేడియో ఆపివేయబడింది</string>
+    <string name="carrier_send_error">సందేశం పంపడం సాధ్యపడలేదు, క్యారియర్ లోపం</string>
+    <string name="unknown_error_occurred_sending_message">సందేశం పంపడం సాధ్యపడలేదు, లోపం కోడ్: %d</string>
+    <string name="invalid_short_code">ఇలాంటి షార్ట్ కోడ్‌లకు సమాధానం ఇవ్వలేరు</string>
+    <string name="invalid_short_code_desc">మీరు \"503501\" వంటి నంబర్‌లతో ఉన్న షార్ట్ కోడ్‌లకు మాత్రమే సమాధానం ఇవ్వగలరు కానీ \"AB-CD0\" వంటి అక్షరాలు మరియు నంబర్‌లు ఉన్న కోడ్‌లకు కాదు.</string>
+    <string name="attachment_sized_exceeds_max_limit">అటాచ్‌మెంట్ పరిమాణం గరిష్ట MMS పరిమితిని మించిపోయింది</string>
+    <string name="sim_card_not_available">SIM కార్డ్ అందుబాటులో లేదు</string>
+    <string name="couldnt_download_mms">MMS డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు</string>
+    <!-- FAQ -->
+    <string name="faq_1_title">యాప్‌కు ఇంటర్నెట్ సదుపాయం ఎందుకు అవసరం?</string>
+    <string name="faq_1_text">దురదృష్టవశాత్తు MMS అటాచ్‌మెంట్‌లను పంపడానికి ఇది అవసరం. MMS పంపలేకపోవడం ఇతర యాప్‌లతో పోలిస్తే నిజంగా పెద్ద ప్రతికూలత అవుతుంది, అందుకే మేము ఈ మార్గాన్ని ఎంచుకున్నాము. ఏదేమైనా, ఎప్పటిలాగే, ప్రకటనలు, ట్రాకింగ్ లేదా అనలిటిక్స్ ఏవీ లేవు, ఇంటర్నెట్ కేవలం MMS పంపడానికి మాత్రమే ఉపయోగించబడుతుంది.</string>
+    <string name="faq_2_title">అవతలి పక్షం నా MMSని స్వీకరించడం లేదు, నేను దాని గురించి ఏదైనా చేయగలనా?</string>
+    <string name="faq_2_text">క్యారియర్‌ల ద్వారా MMS పరిమాణం పరిమితం చేయబడింది, మీరు యాప్ సెట్టింగ్‌లలో చిన్న పరిమితిని సెట్ చేయడానికి ప్రయత్నించవచ్చు.</string>
+    <string name="faq_3_title">యాప్ షెడ్యూల్ చేసిన సందేశాలకు మద్దతు ఇస్తుందా?</string>
+    <string name="faq_3_text">అవును, పంపు బటన్‌ను ఎక్కువసేపు నొక్కి, కావలసిన తేదీ మరియు సమయాన్ని ఎంచుకోవడం ద్వారా మీరు భవిష్యత్తులో పంపడానికి సందేశాలను షెడ్యూల్ చేయవచ్చు.</string>
+    <string name="faq_4_title">నా సమూహ సందేశ సమాధానాలు స్వీకర్తలకు వ్యక్తిగత వచనాల వలె ఎందుకు కనిపిస్తాయి?</string>
+    <string name="faq_4_text">మీరు యాప్ సెట్టింగ్‌లలో \"సమూహ సందేశాలను MMS గా పంపండి\" ని ప్రారంభించాలి. ఇది సమూహ సందేశాలు సరైన MMS గా పంపబడతాయని నిర్ధారిస్తుంది, తద్వారా పాల్గొనే వారందరూ ఒకరి సమాధానాలను మరొకరు చూడగలరు.</string>
+
+    <string name="tts_speed">మాటల వేగం</string>
+    <string name="tts_pitch">మాటల స్థాయి (పిచ్)</string>
+    <string name="tts_interest_received"><![CDATA[<speak>వడ్డీ జమ చేయబడింది! <break time="250ms"/> <say-as interpret-as="currency" language="te-IN">Rs.%1$s</say-as> మీ %2$s ఖాతాలో వడ్డీగా జమ చేయబడింది.</speak>]]></string>
+    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="te-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s మీ %3$s నుండి చెల్లించబడింది.</speak>]]></string>
+    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="te-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s మీ %3$s ఖాతాలోకి చేరింది.</speak>]]></string>
+    <string name="tts_to_whom"><emphasis level="moderate">%1$s</emphasis> కి </string>
+    <string name="tts_from_whom"><emphasis level="moderate">%1$s</emphasis> నుండి </string>
+</resources>

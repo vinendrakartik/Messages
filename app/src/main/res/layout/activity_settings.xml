@@ -196,10 +196,75 @@
                 <org.fossify.commons.views.MyTextView
                     android:id="@+id/settings_customize_notifications_label"
                     style="@style/SettingsTextLabelStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="222dp"
                     android:layout_height="wrap_content"
                     android:text="@string/customize_notifications" />
 
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_use_natural_voices_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_use_natural_voices"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/use_natural_voices" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_tts_speed_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="@dimen/activity_margin"
+                android:paddingVertical="@dimen/small_margin">
+
+                <TextView
+                    android:id="@+id/settings_tts_speed_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tts_speed"
+                    android:textColor="?attr/android:textColorPrimary"
+                    android:textSize="@dimen/list_primary_text_size" />
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/settings_tts_speed_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/settings_tts_speed_label"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:max="25" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_tts_pitch_holder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:paddingHorizontal="@dimen/activity_margin"
+                android:paddingVertical="@dimen/small_margin">
+
+                <TextView
+                    android:id="@+id/settings_tts_pitch_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tts_pitch"
+                    android:textColor="?attr/android:textColorPrimary"
+                    android:textSize="@dimen/list_primary_text_size" />
+
+                <androidx.appcompat.widget.AppCompatSeekBar
+                    android:id="@+id/settings_tts_pitch_seekbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/settings_tts_pitch_label"
+                    android:layout_marginTop="@dimen/small_margin"
+                    android:max="20" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -227,6 +292,63 @@
 
             <include
                 android:id="@+id/settings_notifications_divider"
+                layout="@layout/divider" />
+
+            <TextView
+                android:id="@+id/settings_swipe_actions_label"
+                style="@style/SettingsSectionLabelStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/swipe_actions" />
+
+            <RelativeLayout
+                android:id="@+id/settings_swipe_right_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_swipe_right_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/swipe_right" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_swipe_right"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_swipe_right_label"
+                    tools:text="@string/mark_as_read" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_swipe_left_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_swipe_left_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/swipe_left" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_swipe_left"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/settings_swipe_left_label"
+                    tools:text="@string/delete" />
+
+            </RelativeLayout>
+
+            <include
+                android:id="@+id/settings_swipe_actions_divider"
                 layout="@layout/divider" />
 
             <TextView
@@ -447,6 +569,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/password_protect_whole_app" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/settings_enable_debug_logs_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/settings_enable_debug_logs"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Enable Debug Logs" />
 
             </RelativeLayout>
 

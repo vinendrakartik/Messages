@@ -358,6 +358,9 @@ class ThreadAdapter(
                 text = message.body
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
                 beVisibleIf(message.body.isNotEmpty())
+                
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
+                beVisibleIf(message.body.isNotEmpty())
                 setOnLongClickListener {
                     holder.viewLongClicked()
                     true

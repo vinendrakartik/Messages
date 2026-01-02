@@ -12,7 +12,8 @@ import kotlin.math.ceil
 class MapDeserializerDoubleAsIntFix : JsonDeserializer<Map<String, Any>?> {
     @Throws(JsonParseException::class)
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Map<String, Any>? {
-        return read(json) as Map<String, Any>?
+        @Suppress("UNCHECKED_CAST")
+        return read(json) as? Map<String, Any>
     }
 
     fun read(element: JsonElement): Any? {

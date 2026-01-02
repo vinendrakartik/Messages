@@ -34,10 +34,28 @@
         android:textDirection="locale"
         android:textSize="@dimen/list_primary_text_size"
         app:layout_constraintBottom_toTopOf="@id/conversation_body_short"
-        app:layout_constraintEnd_toStartOf="@id/conversation_date"
+        app:layout_constraintEnd_toStartOf="@id/conversation_mute_image"
         app:layout_constraintStart_toEndOf="@id/conversation_image"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="John" />
+
+
+    <ImageView
+        android:id="@+id/conversation_mute_image"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:alpha="0.5"
+        android:src="@drawable/ic_mute_vector"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/conversation_address"
+        app:layout_constraintEnd_toStartOf="@id/conversation_date"
+        app:layout_constraintTop_toTopOf="@id/conversation_address"
+        app:tint="@android:color/darker_gray"
+        tools:visibility="visible" />
+
+
 
     <TextView
         android:id="@+id/draft_indicator"

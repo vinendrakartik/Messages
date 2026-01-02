@@ -6,7 +6,7 @@ kotlinxSerializationJson = "1.9.0"
 ksp = "2.3.4"
 #Detekt
 detekt = "1.23.8"
-detektCompose = "0.4.28"
+detektCompose = "0.5.3"
 #AndroidX
 androidx-constraintlayout = "2.2.1"
 androidx-swiperefreshlayout = "1.2.0"
@@ -30,6 +30,8 @@ app-build-javaVersion = "VERSION_17"
 app-build-kotlinJVMTarget = "17"
 #Helpers
 ez-vcard = "0.12.1"
+
+
 [libraries]
 #AndroidX
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
@@ -52,6 +54,7 @@ eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 ez-vcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ez-vcard" }
 #Kotlin
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+
 [bundles]
 room = [
     "androidx-room-ktx",
