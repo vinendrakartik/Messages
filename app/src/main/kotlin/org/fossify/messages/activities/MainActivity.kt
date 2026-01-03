@@ -12,6 +12,7 @@ import android.provider.Telephony
 import android.text.TextUtils
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import org.fossify.commons.dialogs.ConfirmationDialog
@@ -22,6 +23,7 @@ import org.fossify.commons.models.FAQItem
 import org.fossify.commons.models.Release
 import org.fossify.messages.BuildConfig
 import org.fossify.messages.R
+import org.fossify.messages.adapters.BaseConversationsAdapter
 import org.fossify.messages.adapters.ConversationsAdapter
 import org.fossify.messages.adapters.SearchResultsAdapter
 import org.fossify.messages.databinding.ActivityMainBinding
@@ -199,11 +201,11 @@ class MainActivity : SimpleActivity() {
     // while SEND_SMS and READ_SMS permissions are mandatory, READ_CONTACTS is optional.
     // If we don't have it, we just won't be able to show the contact name in some cases
     private fun askPermissions() {
-        handlePermission(PERMISSION_READ_SMS) { it ->
-            if (it) {
-                handlePermission(PERMISSION_SEND_SMS) {
-                    if (it) {
-                        handlePermission(PERMISSION_READ_CONTACTS) {
+        handlePermission(PERMISSION_READ_SMS) { granted ->
+            if (granted) {
+                handlePermission(PERMISSION_SEND_SMS) { granted ->
+                    if (granted) {
+                        handlePermission(PERMISSION_READ_CONTACTS) { granted ->
                             handleNotificationPermission { granted ->
                                 if (!granted) {
                                     PermissionRequiredDialog(

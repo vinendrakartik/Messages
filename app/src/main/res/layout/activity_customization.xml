@@ -206,40 +206,65 @@
 
             </RelativeLayout>
 
-            <include
-                android:id="@+id/apply_to_all_divider"
-                layout="@layout/divider" />
-
-            <TextView
-                android:id="@+id/settings_all_fossify_apps_label"
-                style="@style/SettingsSectionLabelStyle"
+            <!-- Forced-hidden container for legacy/monetization elements -->
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/all_fossify_apps" />
-
-            <RelativeLayout
-                android:id="@+id/apply_to_all_holder"
-                style="@style/SettingsHolderSwitchStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:orientation="vertical"
                 android:visibility="gone"
-                tools:visibility="visible">
+                tools:ignore="UselessLeaf">
 
-                <org.fossify.commons.views.MyMaterialSwitch
-                    android:id="@+id/apply_to_all_switch"
-                    style="@style/SettingsSwitchStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true" />
+                <include
+                    android:id="@+id/font_divider"
+                    layout="@layout/divider" />
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/settings_font_label"
+                    style="@style/SettingsSectionLabelStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_toStartOf="@id/apply_to_all_switch"
-                    android:orientation="vertical">
+                    android:text="@string/font" />
+
+                <RelativeLayout
+                    android:id="@+id/customization_font_holder"
+                    style="@style/SettingsHolderTextViewStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/customization_font_label"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_font" />
+
+                    <org.fossify.commons.views.MyTextView
+                        android:id="@+id/customization_font"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </RelativeLayout>
+
+                <include
+                    android:id="@+id/apply_to_all_divider"
+                    layout="@layout/divider" />
+
+                <TextView
+                    android:id="@+id/settings_all_fossify_apps_label"
+                    style="@style/SettingsSectionLabelStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/all_fossify_apps" />
+
+                <RelativeLayout
+                    android:id="@+id/apply_to_all_holder"
+                    style="@style/SettingsHolderSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <org.fossify.commons.views.MyMaterialSwitch
+                        android:id="@+id/apply_to_all_switch"
+                        style="@style/SettingsSwitchStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
                     <org.fossify.commons.views.MyTextView
                         android:id="@+id/apply_to_all_label"
@@ -253,12 +278,9 @@
                         style="@style/SettingsTextValueStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/requires_fossify_thank_you"
-                        android:visibility="gone"
-                        tools:visibility="visible" />
-                </LinearLayout>
-
-            </RelativeLayout>
+                        android:text="@string/requires_fossify_thank_you" />
+                </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

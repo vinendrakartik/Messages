@@ -5,6 +5,13 @@
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
 
+# Keep all resource identifiers
+-keepclassmembers class **.R$* {
+    public static <fields>;
+}
+
+# Keep the customization activity fields
+-keep class org.fossify.commons.activities.CustomizationActivity { *; }
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **

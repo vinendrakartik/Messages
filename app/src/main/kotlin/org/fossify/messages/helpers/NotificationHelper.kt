@@ -79,9 +79,9 @@ class NotificationHelper(private val context: Context) {
         val isTransaction = transaction != null
 
         if (isOtp) {
-            copyToClipboard(otp!!)
+            copyToClipboard(otp)
         } else if (isTransaction) {
-            handleTransactionTTS(transaction!!, body)
+            handleTransactionTTS(transaction, body)
         }
 
         val hasCustomNotifications =
