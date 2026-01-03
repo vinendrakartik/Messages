@@ -30,6 +30,6 @@ Fossify Messages is your trusted messaging companion, designed to enhance your m
 • **Removed Monetization Prompts**: Completely hid the "Purchase Fossify Thank You" item from the General Settings to provide a cleaner, fully open-source experience (there is occassional pop up to buy and during first run).<br>
 
 ### Screenshots
-| Conversations | Mute Notifications | Settings | Mark All Read |
-|:---:|:---:|:---:|:---:|
+| Conversations | Mute Notifications | Settings | Custom Colors | Mark All Read |
+|:---:|:---:|:---:|:---:|:---:|
 | <img src="app_images/Conversations.png" width="200" /> | <img src="app_images/MuteNotifications.jpg" width="200" /> | <img src="app_images/Settings.png" width="200" /> |  <img src="app_images/Custom_colors.png" width="200" /> | <img src="app_images/MarkAllRead.png" width="200" /> |
