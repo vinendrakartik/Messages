@@ -2,7 +2,8 @@ package org.fossify.messages.helpers
 
 fun String.extractOTP(): String? {
     // 1. Check for common "trigger" words to ensure it's actually an OTP
-    val otpKeywords = listOf("code", "otp", "verification", "verify", "secret", "one time", "pin", "password")
+    //val otpKeywords = listOf("code", "otp", "verification", "verify", "secret", "one time", "pin", "password")
+    val otpKeywords = listOf("otp", "one time", "one-time", "code", "pin", "password", "verification", "verify", "secret")
     val containsKeyword = otpKeywords.any { this.contains(it, ignoreCase = true) }
 
     if (!containsKeyword) return null

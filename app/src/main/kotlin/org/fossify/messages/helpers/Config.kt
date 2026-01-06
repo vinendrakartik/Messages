@@ -167,7 +167,7 @@ class Config(context: Context) : BaseConfig(context) {
 
 
     var useNaturalVoices: Boolean
-        get() = prefs.getBoolean(USE_NATURAL_VOICES, false)
+        get() = prefs.getBoolean(USE_NATURAL_VOICES, true)
         set(useNaturalVoices) = prefs.edit().putBoolean(USE_NATURAL_VOICES, useNaturalVoices).apply()
 
     var ttsSpeed: Float

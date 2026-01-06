@@ -61,6 +61,7 @@
     <string name="me">Me</string>
     <string name="enable_custom_notifications">Enable custom notifications</string>
     <string name="mute_notifications">Mute notifications</string>
+    <string name="system_notification_settings">System Notification settings</string>
     <!-- Archive -->
     <string name="unarchive">Unarchive</string>
     <string name="empty_archive">Delete all archived conversations</string>
@@ -113,6 +114,7 @@
     <string name="swipe_actions">Swipe actions</string>
     <string name="swipe_right">Swipe right</string>
     <string name="swipe_left">Swipe left</string>
+    <string name="delete">Delete</string>
     <!-- Export / Import -->
     <string name="messages">Messages</string>
     <string name="keywords">Keywords</string>
@@ -147,18 +149,28 @@
     <string name="faq_3_text">Yes, you can schedule messages to be sent in the future by long pressing the Send button and picking the desired date and time.</string>
     <string name="faq_4_title">Why do my group message replies appear as individual texts to recipients?</string>
     <string name="faq_4_text">You need to enable \"Send group messages as MMS\" in the app settings. This will ensure that group messages are sent as proper MMS, allowing all participants to see each other\'s replies.</string>
-    <!--
-        Haven't found some strings? There's more at
-        https://github.com/FossifyOrg/Commons/tree/master/commons/src/main/res
-    -->
 
-
-    <!-- TTS strings -->
     <string name="tts_speed">Speech Speed</string>
     <string name="tts_pitch">Speech Pitch</string>
-    <string name="tts_interest_received"><![CDATA[<speak>Interest Received! <break time="250ms"/> <say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> credited as <emphasis level="moderate">interest</emphasis> to your %2$s.</speak>]]></string>
-    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> <break time="200ms"/> paid %2$sfrom your %3$s.</speak>]]></string>
-    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> <break time="200ms"/> received %2$sto your %3$s.</speak>]]></string>
-    <string name="tts_to_whom">to <emphasis level="moderate">%1$s</emphasis>, </string>
-    <string name="tts_from_whom">from <emphasis level="moderate">%1$s</emphasis>, </string>
+
+    <string name="logs_enabled">Logs Enabled</string>
+    <string name="logs_disabled">Logs Disabled</string>
+    <string name="otp_notifications">OTP Notifications</string>
+    <string name="transaction_notifications">Transaction Notifications</string>
+    <string name="otp">OTP</string>
+    <string name="otp_message">OTP: %1$s\n%2$s</string>
+    <string name="credit_card">Credit Card</string>
+    <string name="debit_card">Debit Card</string>
+    <string name="account">Account</string>
+    <string name="bank">Bank</string>
+    <string name="tide_ncmc_travel_card">Tide NCMC Travel Card</string>
+    <string name="tide_card">Tide Card</string>
+    <string name="account_ending">Account ending %1$s</string>
+    <string name="card_ending">Card ending %1$s</string>
+    <string name="character_counter">%1$d/%2$d</string>
+    <string name="ssml_interest_received">&lt;speak&gt;Interest Received! &lt;break time=\"250ms\"/&gt; &lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; credited as &lt;emphasis level=\"moderate\"&gt;interest&lt;/emphasis&gt; to your %2$s.&lt;/speak&gt;</string>
+    <string name="ssml_amount_paid_to">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; paid to &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt;, from your %3$s.&lt;/speak&gt;</string>
+    <string name="ssml_amount_paid">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; paid from your %2$s.&lt;/speak&gt;</string>
+    <string name="ssml_amount_received_from">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received from &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt;, to your %3$s.&lt;/speak&gt;</string>
+    <string name="ssml_amount_received">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received to your %2$s.&lt;/speak&gt;</string>
 </resources>

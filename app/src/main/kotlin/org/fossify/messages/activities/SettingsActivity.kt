@@ -2,7 +2,6 @@ package org.fossify.messages.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.SeekBar
 import androidx.activity.result.contract.ActivityResultContracts
 import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
@@ -47,7 +46,6 @@ import org.fossify.messages.helpers.LOCK_SCREEN_NOTHING
 import org.fossify.messages.helpers.LOCK_SCREEN_SENDER
 import org.fossify.messages.helpers.LOCK_SCREEN_SENDER_MESSAGE
 import org.fossify.messages.helpers.MessagesImporter
-import org.fossify.messages.helpers.TTSHelper
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.Config
 import java.util.Locale
@@ -108,8 +106,6 @@ class SettingsActivity : SimpleActivity() {
         setupManageBlockedKeywords()
         setupChangeDateTimeFormat()
         setupFontSize()
-        setupUseNaturalVoices()
-        setupTTSSettings()
         setupSwipeActions()
         setupDebugLogging()
         setupShowCharacterCounter()
@@ -177,7 +173,8 @@ class SettingsActivity : SimpleActivity() {
 
     private fun setupCustomizeNotifications() = binding.apply {
         settingsCustomizeNotificationsHolder.setOnClickListener {
-            launchCustomizeNotificationsIntent()
+            val intent = Intent(this@SettingsActivity, CustomizationNotificationsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -217,7 +214,11 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupManageBlockedKeywords() = binding.apply {
-        settingsManageBlockedKeywords.text = getString(R.string.manage_blocked_keywords)
+        settingsManageBlockedKeywords.text = getString(
+
+
+
+            R.string.manage_blocked_keywords)
         settingsManageBlockedKeywordsHolder.setOnClickListener {
             Intent(this@SettingsActivity, ManageBlockedKeywordsActivity::class.java).apply {
                 startActivity(this)
@@ -250,42 +251,6 @@ class SettingsActivity : SimpleActivity() {
                 config.fontSize = it as Int
                 settingsFontSize.text = getFontSizeText()
             }
-        }
-    }
-
-    private fun setupUseNaturalVoices() = binding.apply {
-        settingsUseNaturalVoices.isChecked = config.useNaturalVoices
-        settingsUseNaturalVoicesHolder.setOnClickListener {
-            settingsUseNaturalVoices.toggle()
-            config.useNaturalVoices = settingsUseNaturalVoices.isChecked
-        }
-    }
-
-    private fun setupTTSSettings() = binding.apply {
-        settingsTtsSpeedSeekbar.apply {
-            progress = ((config.ttsSpeed - 0.5f) * 10).toInt()
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    if (fromUser) config.ttsSpeed = (progress / 10.0f) + 0.5f
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    TTSHelper.getInstance(this@SettingsActivity).setupVoice()
-                }
-            })
-        }
-
-        settingsTtsPitchSeekbar.apply {
-            progress = ((config.ttsPitch - 0.5f) * 10).toInt()
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    if (fromUser) config.ttsPitch = (progress / 10.0f) + 0.5f
-                }
-                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-                override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                    TTSHelper.getInstance(this@SettingsActivity).setupVoice()
-                }
-            })
         }
     }
 
@@ -328,7 +293,7 @@ class SettingsActivity : SimpleActivity() {
         settingsEnableDebugLogsHolder.setOnClickListener {
             settingsEnableDebugLogs.toggle()
             config.enableDebugLogs = settingsEnableDebugLogs.isChecked
-            toast(if (config.enableDebugLogs) "Logs Enabled" else "Logs Disabled")
+            toast(if (config.enableDebugLogs) R.string.logs_enabled else R.string.logs_disabled)
         }
     }
 

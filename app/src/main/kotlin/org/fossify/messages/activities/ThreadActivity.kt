@@ -866,8 +866,7 @@ class ThreadActivity : SimpleActivity() {
                     it
                 }
                 val messageLength = SmsMessage.calculateLength(messageString, false)
-                @SuppressLint("SetTextI18n")
-                threadCharacterCounter.text = "${messageLength[2]}/${messageLength[0]}"
+                threadCharacterCounter.text = getString(R.string.character_counter, messageLength[2], messageLength[0])
             }
 
             if (config.sendOnEnter) {

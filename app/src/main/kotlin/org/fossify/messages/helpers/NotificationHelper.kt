@@ -14,7 +14,6 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.net.Uri
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
@@ -30,6 +29,9 @@ import org.fossify.messages.messaging.isShortCodeWithLetters
 import org.fossify.messages.receivers.DeleteSmsReceiver
 import org.fossify.messages.receivers.DirectReplyReceiver
 import org.fossify.messages.receivers.MarkAsReadReceiver
+import java.text.NumberFormat
+import java.util.Locale
+import kotlin.math.roundToLong
 
 class NotificationHelper(private val context: Context) {
 
@@ -44,8 +46,8 @@ class NotificationHelper(private val context: Context) {
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
-        // Only suppress sound if it's detected as a valid transaction (since we use TTS for those)
-        if (isTransaction) return null
+        // Suppress sound ONLY if it's a transaction AND TTS is enabled
+        if (isTransaction && context.config.useNaturalVoices) return null
 
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
@@ -75,12 +77,13 @@ class NotificationHelper(private val context: Context) {
         val isOtp = otp != null
 
         // Pass the address (header) to extractTransactionInfo for better bank detection
-        val transaction = if (!isOtp) body.extractTransactionInfo(address) else null
-        val isTransaction = transaction != null
+        val transaction = if (!isOtp) body.extractTransactionInfo(context, address) else null
+        // Treat statement messages as non-transactional notifications
+        val isTransaction = transaction != null && !transaction.isStatement
 
-        if (isOtp) {
+        if (otp != null) {
             copyToClipboard(otp)
-        } else if (isTransaction) {
+        } else if (transaction != null && !transaction.isStatement) {
             handleTransactionTTS(transaction, body)
         }
 
@@ -89,20 +92,20 @@ class NotificationHelper(private val context: Context) {
 
         val notificationChannelId = when {
             isOtp -> otpChannelId
-            isTransaction -> transactionChannelId
+            isTransaction && context.config.useNaturalVoices -> transactionChannelId
             hasCustomNotifications -> threadId.toString()
             else -> defaultChannelId
         }
 
         when {
-            isOtp -> createChannel(otpChannelId, "OTP Notifications", true, false)
-            isTransaction -> createChannel(transactionChannelId, "Transaction Notifications", false, true)
+            isOtp -> createChannel(otpChannelId, context.getString(R.string.otp_notifications), true, true)
+            isTransaction && context.config.useNaturalVoices -> createChannel(transactionChannelId, context.getString(R.string.transaction_notifications), false, false)
             !hasCustomNotifications -> createChannel(defaultChannelId, context.getString(R.string.channel_received_sms), false, false)
         }
 
         val notificationId = when {
-            isOtp -> otp.hashCode()
-            isTransaction -> transaction.hashCode()
+            otp != null -> otp.hashCode()
+            transaction != null && !transaction.isStatement -> transaction.hashCode()
             else -> threadId.hashCode()
         }
 
@@ -120,10 +123,10 @@ class NotificationHelper(private val context: Context) {
         val markAsReadIntent = Intent(context, MarkAsReadReceiver::class.java).apply {
             action = MARK_AS_READ
             putExtra(THREAD_ID, threadId)
-            if (isOtp) {
+            if (otp != null) {
                 putExtra("otp", otp)
             }
-            if (isTransaction) {
+            if (transaction != null && !transaction.isStatement) {
                 putExtra("is_transaction", true)
                 putExtra("transaction_hash", transaction.hashCode())
             }
@@ -139,10 +142,10 @@ class NotificationHelper(private val context: Context) {
         val deleteSmsIntent = Intent(context, DeleteSmsReceiver::class.java).apply {
             putExtra(THREAD_ID, threadId)
             putExtra(MESSAGE_ID, messageId)
-            if (isOtp) {
+            if (otp != null) {
                 putExtra("otp", otp)
             }
-            if (isTransaction) {
+            if (transaction != null && !transaction.isStatement) {
                 putExtra("is_transaction", true)
                 putExtra("transaction_hash", transaction.hashCode())
             }
@@ -190,7 +193,7 @@ class NotificationHelper(private val context: Context) {
             null
         }
         val builder = NotificationCompat.Builder(context, notificationChannelId).apply {
-            val contentBody = if (isOtp) "OTP: $otp\n$body" else body
+            val contentBody = if (otp != null) context.getString(R.string.otp_message, otp, body) else body
             when (context.config.lockScreenVisibilitySetting) {
                 LOCK_SCREEN_SENDER_MESSAGE -> {
                     setLargeIcon(largeIcon)
@@ -216,9 +219,8 @@ class NotificationHelper(private val context: Context) {
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
 
-            // Only use the silent channel if a valid transaction is detected.
-            // False transactions will fall through to use the default sound.
-            if (isTransaction) {
+            // Suppress sound ONLY if TTS is enabled for this transaction
+            if (isTransaction && context.config.useNaturalVoices) {
                 setSound(null)
             } else {
                 setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
@@ -258,47 +260,51 @@ class NotificationHelper(private val context: Context) {
                 context.shortcutHelper.reportReceiveMessageUsage(threadId)
             }
         }
+
+        // Log the notification posting
+        context.logDebug("NotificationHelper", "Posted notification id=$notificationId address=$address isOtp=$isOtp isTransaction=$isTransaction")
     }
 
     private fun handleTransactionTTS(transaction: TransactionInfo, originalBody: String) {
+        if (!context.config.useNaturalVoices) return
+
         val amount = transaction.ttsAmount
         val source = transaction.source
         val participant = transaction.participant
 
-        val humanReadableText = when {
-            transaction.isInterest -> "Interest Received! $amount credited to your $source."
-            transaction.isDebit -> {
-                val toWhom = if (participant != null) "to $participant, " else ""
-                "$amount paid ${toWhom}from $source."
-            }
-            else -> {
-                val fromWhom = if (participant != null) "from $participant, " else ""
-                "$amount received ${fromWhom}to $source."
-            }
-        }
-
         val ssmlText = when {
             transaction.isInterest -> {
-                "<speak>Interest Received! <break time=\"250ms\"/> <say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> credited as <emphasis level=\"moderate\">interest</emphasis> to your $source.</speak>"
+                context.getString(R.string.ssml_interest_received, amount.toString(), source)
             }
             transaction.isDebit -> {
-                val toWhom = if (participant != null) "to <emphasis level=\"moderate\">$participant</emphasis>, " else ""
-                "<speak><say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> <break time=\"200ms\"/> paid ${toWhom}from your $source.</speak>"
+                if (participant != null) {
+                    context.getString(R.string.ssml_amount_paid_to, amount.toString(), participant, source)
+                } else {
+                    context.getString(R.string.ssml_amount_paid, amount.toString(), source)
+                }
             }
             else -> {
-                val fromWhom = if (participant != null) "from <emphasis level=\"moderate\">$participant</emphasis>, " else ""
-                "<speak><say-as interpret-as=\"currency\" language=\"en-IN\">Rs.$amount</say-as> <break time=\"200ms\"/> received ${fromWhom}to your $source.</speak>"
+                if (participant != null) {
+                    context.getString(R.string.ssml_amount_received_from, amount.toString(), participant, source)
+                } else {
+                    context.getString(R.string.ssml_amount_received, amount.toString(), source)
+                }
             }
         }
         context.logDebug("NotificationHelper", "Message Body: $originalBody")
-        context.logDebug("NotificationHelper", "Transaction: $humanReadableText")
+        context.logDebug("NotificationHelper", "SSML Text: $ssmlText")
         ttsHelper.speak(ssmlText)
     }
 
     private fun copyToClipboard(otp: String) {
-        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText("OTP", otp)
-        clipboard.setPrimaryClip(clip)
+        try {
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(context.getString(R.string.otp), otp)
+            clipboard.setPrimaryClip(clip)
+            context.logDebug("NotificationHelper", "Copied OTP to clipboard")
+        } catch (t: Throwable) {
+            context.logDebug("NotificationHelper", "Failed to copy OTP: ${t.message}")
+        }
     }
 
     @SuppressLint("NewApi")
@@ -343,24 +349,28 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun createChannel(id: String, name: String, isOtp: Boolean, isTransaction: Boolean) {
-        val soundUri = getSoundUri(isOtp, isTransaction)
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-            .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-            .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
-            .build()
+        try {
+            val soundUri = getSoundUri(isOtp, isTransaction)
+            val audioAttributes = AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
+                .build()
 
-        val importance = IMPORTANCE_HIGH
-        NotificationChannel(id, name, importance).apply {
-            setBypassDnd(false)
-            enableLights(true)
-            if (isTransaction) {
-                setSound(null, null)
-            } else {
-                setSound(soundUri, audioAttributes)
+            val importance = IMPORTANCE_HIGH
+            NotificationChannel(id, name, importance).apply {
+                setBypassDnd(false)
+                enableLights(true)
+                if (isTransaction && context.config.useNaturalVoices) {
+                    setSound(null, null)
+                } else {
+                    setSound(soundUri, audioAttributes)
+                }
+                enableVibration(true)
+                notificationManager.createNotificationChannel(this)
             }
-            enableVibration(true)
-            notificationManager.createNotificationChannel(this)
+        } catch (t: Throwable) {
+            context.logDebug("NotificationHelper", "createChannel failed: ${t.message}")
         }
     }
 
@@ -394,5 +404,10 @@ class NotificationHelper(private val context: Context) {
             notificationManager.activeNotifications.find { it.id == notificationId }
         val messagingStyle = currentNotification?.notification?.let { NotificationCompat.MessagingStyle.extractMessagingStyleFromNotification(it) }
         return messagingStyle?.messages ?: emptyList()
+    }
+
+    // Utility used by notifications
+    private fun generateRandomId(): Int {
+        return ((System.currentTimeMillis() % Int.MAX_VALUE).toInt() xor (Math.random() * Int.MAX_VALUE).toInt())
     }
 }

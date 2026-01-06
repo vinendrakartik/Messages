@@ -181,4 +181,6 @@ dependencies {
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
     detektPlugins(libs.compose.detekt)
+    testImplementation("org.mockito:mockito-core:5.15.2")
+    testImplementation("junit:junit:4.13.2")
 }
