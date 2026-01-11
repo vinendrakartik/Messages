@@ -19,3 +19,4 @@ other_sms.json
 normal_sms.json
 Messages_20251231_234226.json
 Messages_20251231_225428.json
+app/src/test/kotlin/TransactionDetectorTest.kt

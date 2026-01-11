@@ -2,6 +2,7 @@ package org.fossify.messages.helpers
 
 import android.content.Context
 import android.content.Intent
+import android.media.AudioManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
 import android.util.Log
@@ -124,6 +125,12 @@ class TTSHelper private constructor(private val context: Context) {
     }
 
     fun speak(text: String) {
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val ringerMode = audioManager.ringerMode
+        if (ringerMode == AudioManager.RINGER_MODE_SILENT || ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
+            return
+        }
+
         if (isInitialized) {
             // Re-apply settings before speaking to ensure they are up to date
             setupVoice()
