@@ -107,6 +107,7 @@ class SettingsActivity : SimpleActivity() {
         setupChangeDateTimeFormat()
         setupFontSize()
         setupSwipeActions()
+        setupAutoCopyOtp()
         setupDebugLogging()
         setupShowCharacterCounter()
         setupUseSimpleCharacters()
@@ -133,6 +134,7 @@ class SettingsActivity : SimpleActivity() {
         arrayOf(
             binding.settingsColorCustomizationSectionLabel,
             binding.settingsGeneralSettingsLabel,
+            binding.settingsIncomingMessagesLabel,
             binding.settingsOutgoingMessagesLabel,
             binding.settingsNotificationsLabel,
             binding.settingsArchivedMessagesLabel,
@@ -214,11 +216,7 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupManageBlockedKeywords() = binding.apply {
-        settingsManageBlockedKeywords.text = getString(
-
-
-
-            R.string.manage_blocked_keywords)
+        settingsManageBlockedKeywords.text = getString(R.string.manage_blocked_keywords)
         settingsManageBlockedKeywordsHolder.setOnClickListener {
             Intent(this@SettingsActivity, ManageBlockedKeywordsActivity::class.java).apply {
                 startActivity(this)
@@ -287,6 +285,14 @@ class SettingsActivity : SimpleActivity() {
             else -> R.string.archive
         }
     )
+
+    private fun setupAutoCopyOtp() = binding.apply {
+        settingsAutoCopyOtp.isChecked = config.autoCopyOtp
+        settingsAutoCopyOtpHolder.setOnClickListener {
+            settingsAutoCopyOtp.toggle()
+            config.autoCopyOtp = settingsAutoCopyOtp.isChecked
+        }
+    }
 
     private fun setupDebugLogging() = binding.apply {
         settingsEnableDebugLogs.isChecked = config.enableDebugLogs

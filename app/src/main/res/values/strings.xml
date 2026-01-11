@@ -115,6 +115,8 @@
     <string name="swipe_right">Swipe right</string>
     <string name="swipe_left">Swipe left</string>
     <string name="delete">Delete</string>
+    <string name="incoming_messages">Incoming Messages</string>
+    <string name="auto_copy_otp">Enable automatic copy of OTP to clipboard</string>
     <!-- Export / Import -->
     <string name="messages">Messages</string>
     <string name="keywords">Keywords</string>

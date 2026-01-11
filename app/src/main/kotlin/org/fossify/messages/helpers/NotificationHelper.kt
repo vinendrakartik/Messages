@@ -14,6 +14,8 @@ import android.graphics.Bitmap
 import android.media.AudioAttributes
 import android.media.AudioManager
 import android.net.Uri
+import android.os.Handler
+import android.os.Looper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
@@ -295,11 +297,21 @@ class NotificationHelper(private val context: Context) {
     }
 
     private fun copyToClipboard(otp: String) {
+        if (!context.config.autoCopyOtp) return
         try {
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText(context.getString(R.string.otp), otp)
             clipboard.setPrimaryClip(clip)
             context.logDebug("NotificationHelper", "Copied OTP to clipboard")
+
+            // Clear clipboard after 60 seconds
+            Handler(Looper.getMainLooper()).postDelayed({
+                val currentClip = clipboard.primaryClip
+                if (currentClip != null && currentClip.itemCount > 0 && currentClip.getItemAt(0).text.toString() == otp) {
+                    clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
+                    context.logDebug("NotificationHelper", "Cleared clipboard")
+                }
+            }, 60000)
         } catch (t: Throwable) {
             context.logDebug("NotificationHelper", "Failed to copy OTP: ${t.message}")
         }

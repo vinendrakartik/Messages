@@ -12,6 +12,7 @@ class Config(context: Context) : BaseConfig(context) {
         const val SWIPE_MARK_READ = 1
         const val SWIPE_DELETE = 2
         const val SWIPE_ARCHIVE = 3
+        private const val auto_copy_otp = "auto_copy_otp"
     }
 
     fun saveUseSIMIdAtNumber(number: String, SIMId: Int) {
@@ -189,4 +190,8 @@ class Config(context: Context) : BaseConfig(context) {
     var swipeLeftAction: Int
         get() = prefs.getInt("swipe_left_action", SWIPE_DELETE)
         set(value) = prefs.edit().putInt("swipe_left_action", value).apply()
+
+    var autoCopyOtp: Boolean
+        get() = prefs.getBoolean(auto_copy_otp, true)
+        set(autoCopyOtp) = prefs.edit().putBoolean(auto_copy_otp, autoCopyOtp).apply()
 }
