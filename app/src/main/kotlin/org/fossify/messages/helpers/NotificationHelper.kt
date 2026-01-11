@@ -46,8 +46,11 @@ class NotificationHelper(private val context: Context) {
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
-        // Suppress sound ONLY if it's a transaction AND TTS is enabled
-        if (isTransaction && context.config.useNaturalVoices) return null
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val ringerMode = audioManager.ringerMode
+
+        // Suppress sound ONLY if it's a transaction AND TTS is enabled and not in vibrate mode
+        if (isTransaction && context.config.useNaturalVoices && ringerMode != AudioManager.RINGER_MODE_VIBRATE) return null
 
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
@@ -219,12 +222,7 @@ class NotificationHelper(private val context: Context) {
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
 
-            // Suppress sound ONLY if TTS is enabled for this transaction
-            if (isTransaction && context.config.useNaturalVoices) {
-                setSound(null)
-            } else {
-                setSound(getSoundUri(isOtp, false), AudioManager.STREAM_NOTIFICATION)
-            }
+            setSound(getSoundUri(isOtp, isTransaction), AudioManager.STREAM_NOTIFICATION)
         }
 
         if (replyAction != null && context.config.lockScreenVisibilitySetting == LOCK_SCREEN_SENDER_MESSAGE) {
@@ -361,11 +359,7 @@ class NotificationHelper(private val context: Context) {
             NotificationChannel(id, name, importance).apply {
                 setBypassDnd(false)
                 enableLights(true)
-                if (isTransaction && context.config.useNaturalVoices) {
-                    setSound(null, null)
-                } else {
-                    setSound(soundUri, audioAttributes)
-                }
+                setSound(soundUri, audioAttributes)
                 enableVibration(true)
                 notificationManager.createNotificationChannel(this)
             }

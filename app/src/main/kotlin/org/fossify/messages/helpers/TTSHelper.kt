@@ -1,7 +1,6 @@
 package org.fossify.messages.helpers
 
 import android.content.Context
-import android.content.Intent
 import android.media.AudioManager
 import android.speech.tts.TextToSpeech
 import android.speech.tts.Voice
@@ -52,7 +51,7 @@ class TTSHelper private constructor(private val context: Context) {
         // Apply speed and pitch from settings
         val speed = context.config.ttsSpeed
         tts.setSpeechRate(speed)
-        
+
         // Log to Log.e so it's easier to see in logcat
         Log.d(TAG, "TTS Speed: Applied=$speed")
 
