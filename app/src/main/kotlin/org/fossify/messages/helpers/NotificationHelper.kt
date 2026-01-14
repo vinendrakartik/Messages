@@ -48,11 +48,8 @@ class NotificationHelper(private val context: Context) {
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
-        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
-        val ringerMode = audioManager.ringerMode
-
-        // Suppress sound ONLY if it's a transaction AND TTS is enabled and not in vibrate mode
-        if (isTransaction && context.config.useNaturalVoices && ringerMode != AudioManager.RINGER_MODE_VIBRATE) return null
+        // Suppress sound if it's a transaction and TTS is enabled.
+        if (isTransaction && context.config.useNaturalVoices) return null
 
         val soundName = if (isOtp) "otp" else "message"
         val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
