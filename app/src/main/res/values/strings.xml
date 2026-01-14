@@ -175,4 +175,5 @@
     <string name="ssml_amount_paid">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; paid from your %2$s.&lt;/speak&gt;</string>
     <string name="ssml_amount_received_from">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received from &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt;, to your %3$s.&lt;/speak&gt;</string>
     <string name="ssml_amount_received">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received to your %2$s.&lt;/speak&gt;</string>
+    <string name="contributors_developers">Aga-C, AlbertoPellitteri, Alfavio, connyduck, correia55, dagkalis, DaPa, ForgottenUmbrella, KryptKode, naveensingh, qwertyfinger, vinendrakartik</string>
 </resources>
