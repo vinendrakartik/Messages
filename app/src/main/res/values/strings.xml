@@ -117,6 +117,10 @@
     <string name="delete">Delete</string>
     <string name="incoming_messages">Incoming Messages</string>
     <string name="auto_copy_otp">Enable automatic copy of OTP to clipboard</string>
+    <string name="tts_voice">TTS Voice</string>
+    <string name="test">Test</string>
+    <string name="default_text">Default</string>
+    <string name="tts_test_message">This is a test of the text to speech voice.</string>
     <!-- Export / Import -->
     <string name="messages">Messages</string>
     <string name="keywords">Keywords</string>

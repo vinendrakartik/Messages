@@ -44,15 +44,26 @@ class TTSHelper private constructor(private val context: Context) {
         }, defaultEngine)
     }
 
+    fun getAvailableVoices(): List<Voice>? {
+        return tts?.voices?.toList()?.sortedBy { it.name }
+    }
+
+    fun setVoice(voiceName: String) {
+        val targetVoice = tts?.voices?.find { it.name == voiceName }
+        if (targetVoice != null) {
+            tts?.voice = targetVoice
+        } else {
+            tts?.voice = tts?.defaultVoice
+        }
+    }
+
     fun setupVoice() {
         val tts = tts ?: return
         val currentLocale = Locale.getDefault()
 
-        // Apply speed and pitch from settings
         val speed = context.config.ttsSpeed
         tts.setSpeechRate(speed)
 
-        // Log to Log.e so it's easier to see in logcat
         Log.d(TAG, "TTS Speed: Applied=$speed")
 
         tts.setPitch(context.config.ttsPitch)
@@ -60,7 +71,12 @@ class TTSHelper private constructor(private val context: Context) {
         try {
             val voices = tts.voices
             if (!voices.isNullOrEmpty()) {
-                val selectedVoice = findBestVoice(voices, currentLocale)
+                val selectedVoiceName = context.config.selectedTtsVoice
+                val selectedVoice = if (selectedVoiceName.isNotEmpty()) {
+                    voices.find { it.name == selectedVoiceName }
+                } else {
+                    findBestVoice(voices, currentLocale)
+                }
 
                 if (selectedVoice != null) {
                     tts.voice = selectedVoice
@@ -77,7 +93,6 @@ class TTSHelper private constructor(private val context: Context) {
     }
 
     private fun findBestVoice(voices: Set<Voice>, currentLocale: Locale): Voice? {
-        // PRIORITY 1: Indian Female Network/Neural Voice (Expressive)
         voices.find { voice ->
             val isIndian = voice.locale.language == "en" && voice.locale.country == "IN"
             val isFemale = voice.name.contains("female", ignoreCase = true) ||
@@ -91,7 +106,6 @@ class TTSHelper private constructor(private val context: Context) {
             isIndian && isFemale && isHighQuality
         }?.let { return it }
 
-        // PRIORITY 2: Any Indian Female Voice (even local)
         voices.find { voice ->
             val isIndian = voice.locale.language == "en" && voice.locale.country == "IN"
             val isFemale = voice.name.contains("female", ignoreCase = true) ||
@@ -100,7 +114,6 @@ class TTSHelper private constructor(private val context: Context) {
             isIndian && isFemale
         }?.let { return it }
 
-        // PRIORITY 3: Best available Local/Network voice for current system language
         if (context.config.useNaturalVoices) {
             voices.find { voice ->
                 voice.locale.language == currentLocale.language &&
@@ -109,7 +122,6 @@ class TTSHelper private constructor(private val context: Context) {
             }?.let { return it }
         }
 
-        // PRIORITY 4: Fallback to best local (offline) voice
         return voices.find {
             it.locale.language == currentLocale.language && !it.isNetworkConnectionRequired
         }
@@ -131,7 +143,6 @@ class TTSHelper private constructor(private val context: Context) {
         }
 
         if (isInitialized) {
-            // Re-apply settings before speaking to ensure they are up to date
             setupVoice()
             tts?.speak(text, TextToSpeech.QUEUE_ADD, null, null)
         } else {

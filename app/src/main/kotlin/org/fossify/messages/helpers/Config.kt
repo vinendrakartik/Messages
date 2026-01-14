@@ -13,6 +13,7 @@ class Config(context: Context) : BaseConfig(context) {
         const val SWIPE_DELETE = 2
         const val SWIPE_ARCHIVE = 3
         private const val auto_copy_otp = "auto_copy_otp"
+        private const val SELECTED_TTS_VOICE = "selected_tts_voice"
     }
 
     fun saveUseSIMIdAtNumber(number: String, SIMId: Int) {
@@ -170,6 +171,10 @@ class Config(context: Context) : BaseConfig(context) {
     var useNaturalVoices: Boolean
         get() = prefs.getBoolean(USE_NATURAL_VOICES, true)
         set(useNaturalVoices) = prefs.edit().putBoolean(USE_NATURAL_VOICES, useNaturalVoices).apply()
+
+    var selectedTtsVoice: String
+        get() = prefs.getString(SELECTED_TTS_VOICE, "")!!
+        set(selectedTtsVoice) = prefs.edit().putString(SELECTED_TTS_VOICE, selectedTtsVoice).apply()
 
     var ttsSpeed: Float
         get() = prefs.getFloat(TTS_SPEED, 1.2f).let { if (it < 1.1f) 1.2f else it }
