@@ -31,9 +31,6 @@ import org.fossify.messages.messaging.isShortCodeWithLetters
 import org.fossify.messages.receivers.DeleteSmsReceiver
 import org.fossify.messages.receivers.DirectReplyReceiver
 import org.fossify.messages.receivers.MarkAsReadReceiver
-import java.text.NumberFormat
-import java.util.Locale
-import kotlin.math.roundToLong
 
 class NotificationHelper(private val context: Context) {
 
@@ -44,7 +41,7 @@ class NotificationHelper(private val context: Context) {
         .build()
 
     private val otpChannelId = "otp_channel"
-    private val transactionChannelId = "transaction_channel"
+    private val transactionChannelId = "transaction_channel_tts" // Changed ID to force re-creation
     private val defaultChannelId = NOTIFICATION_CHANNEL_ID
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
@@ -100,9 +97,9 @@ class NotificationHelper(private val context: Context) {
         }
 
         when {
-            isOtp -> createChannel(otpChannelId, context.getString(R.string.otp_notifications), true, true)
-            isTransaction && context.config.useNaturalVoices -> createChannel(transactionChannelId, context.getString(R.string.transaction_notifications), false, false)
-            !hasCustomNotifications -> createChannel(defaultChannelId, context.getString(R.string.channel_received_sms), false, false)
+            isOtp -> createChannel(otpChannelId, context.getString(R.string.otp_notifications), isOtp = true, isTransaction = false)
+            isTransaction && context.config.useNaturalVoices -> createChannel(transactionChannelId, context.getString(R.string.transaction_notifications), isOtp = false, isTransaction = true)
+            !hasCustomNotifications -> createChannel(defaultChannelId, context.getString(R.string.channel_received_sms), isOtp = false, isTransaction = false)
         }
 
         val notificationId = when {
@@ -273,6 +270,7 @@ class NotificationHelper(private val context: Context) {
             transaction.isInterest -> {
                 context.getString(R.string.ssml_interest_received, amount.toString(), source)
             }
+
             transaction.isDebit -> {
                 if (participant != null) {
                     context.getString(R.string.ssml_amount_paid_to, amount.toString(), participant, source)
@@ -280,6 +278,7 @@ class NotificationHelper(private val context: Context) {
                     context.getString(R.string.ssml_amount_paid, amount.toString(), source)
                 }
             }
+
             else -> {
                 if (participant != null) {
                     context.getString(R.string.ssml_amount_received_from, amount.toString(), participant, source)
@@ -321,7 +320,7 @@ class NotificationHelper(private val context: Context) {
         val notificationChannelId =
             if (hasCustomNotifications) threadId.toString() else defaultChannelId
         if (!hasCustomNotifications) {
-            createChannel(notificationChannelId, context.getString(R.string.message_not_sent_short), false, false)
+            createChannel(notificationChannelId, context.getString(R.string.message_not_sent_short), isOtp = false, isTransaction = false)
         }
 
         val notificationId = generateRandomId().hashCode()
@@ -369,7 +368,8 @@ class NotificationHelper(private val context: Context) {
                 setBypassDnd(false)
                 enableLights(true)
                 setSound(soundUri, audioAttributes)
-                enableVibration(true)
+                val shouldVibrate = !(isTransaction && context.config.useNaturalVoices)
+                enableVibration(shouldVibrate)
                 notificationManager.createNotificationChannel(this)
             }
         } catch (t: Throwable) {
