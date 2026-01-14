@@ -6,6 +6,9 @@ import java.text.NumberFormat
 import java.util.Locale
 import kotlin.math.roundToLong
 
+/**
+ * Data class representing extracted transaction details.
+ */
 data class TransactionInfo(
     val amount: Double,
     val ttsAmount: Double,
@@ -15,12 +18,15 @@ data class TransactionInfo(
     val isInterest: Boolean = false,
     val isStatement: Boolean = false,
     val isCreditCard: Boolean = false,
+    val isRecurring: Boolean = false,
     val confidence: Double = 0.0
 )
 
 private const val MIN_CONFIDENCE = 0.6
 
-// --- Regex lists and helpers ---
+// ==========================================
+// REGEX PATTERNS & CONSTANTS
+// ==========================================
 
 private val NON_TRANSACTION_PHRASES = listOf(
     "\\byou have successfully set the upi pin\\b",
@@ -49,7 +55,8 @@ private val NON_TRANSACTION_PHRASES = listOf(
     "\\bcould not be processed\\b",
     "\\bnot processed\\b",
     "\\btransaction .* failed\\b",
-    "\\bpayment .* failed\\b"
+    "\\bpayment .* failed\\b",
+    "\\brequest to pay\\b"
 ).map { Regex(it, RegexOption.IGNORE_CASE) }
 
 private val FALSE_POSITIVE_REGEX = listOf(
@@ -82,14 +89,22 @@ private val DEBIT_REGEX = listOf(
     "\\btxn of\\b", "\\btransaction\\b", "\\bpurchase\\b", "\\bpaid to\\b", "\\bpaid from\\b",
     "\\bspent via\\b", "\\bsent via\\b", "\\bsent to\\b", "\\bwithdrawal\\b", "\\batm cash withdrawal\\b",
     "\\bdebited with\\b", "\\bdebited by\\b", "\\bdebited for\\b", "\\bsent from\\b", "\\bsent to\\b",
-    "\\bamt deducted\\b", "\\bamt deducted!\\b"
+    "\\bamt deducted\\b", "\\bamt deducted!\\b", "\\bsent\\b", "\\bsent rs\\b",
+    "\\bused for\\b", "\\busing\\b" // Added to catch "Credit Card is used for..."
 ).map { Regex(it, RegexOption.IGNORE_CASE) }
 
 private val CREDIT_REGEX = listOf(
     "\\bcredited\\b", "\\bpayment received\\b", "\\bpayment of\\b", "\\badded to\\b", "\\bdeposited\\b",
     "\\bcredited to your\\b", "\\bcredited by\\b", "\\bhas been credited\\b", "\\breceived to your\\b",
     "\\breceived in your\\b", "\\breceived by\\b", "\\bpayment towards\\b", "\\brefund\\b", "\\breceived a payment\\b",
-    "\\bwe have received a payment\\b", "\\bpayment of rs\\b", "\\breceived rs\\b"
+    "\\bwe have received a payment\\b", "\\bpayment of rs\\b", "\\breceived rs\\b",
+    "\\breceived in a/c\\b", "\\breceived in account\\b",
+    "\\breceived in (?:[a-z]+ )*(?:account|a/c)\\b"
+).map { Regex(it, RegexOption.IGNORE_CASE) }
+
+private val RECURRING_REGEX = listOf(
+    "\\bemi\\b", "\\bstanding instruction\\b", "\\bauto-?debit\\b", "\\bsubscription\\b",
+    "\\binstallment\\b", "\\bplan payment\\b", "\\brecurring\\b"
 ).map { Regex(it, RegexOption.IGNORE_CASE) }
 
 private val INTEREST_REGEX = listOf("\\binterest\\b", "\\bint of\\b", "\\binterest credited\\b").map { Regex(it, RegexOption.IGNORE_CASE) }
@@ -99,21 +114,18 @@ private val ACRONYMS_TO_SPACE = setOf(
     "IOB", "KVI", "UPI", "IMPS", "NEFT", "RTGS", "CSB"
 )
 
-// Primary amount regex: currency symbol before number.
-// Fix: Apply \b only to text codes (Rs, INR). Do NOT apply \b to symbols (₹, $) as they are non-word characters.
 private val AMOUNT_REGEX = Regex(
     """(?i)(?:(?:\b(?:rs\.?|inr))|₹|\u20b9|\p{Sc})\s?(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)\b""",
     RegexOption.IGNORE_CASE
 )
 
-// Fallback amount regex: number followed by currency word
 private val AMOUNT_FALLBACK_REGEX = Regex(
     """(?i)\b(\d{1,3}(?:,\d{2,3})*(?:\.\d{1,2})?|\d+(?:\.\d{1,2})?)\s?(?:inr|rupees|rs|₹|\p{Sc})\b""",
     RegexOption.IGNORE_CASE
 )
 
 private val OTP_PROXIMITY_REGEX = Regex(
-    """(?i)\b(?:otp|code|pin|one[\s-]?time|verification|secret|use)\b(?=.{0,30}\b(\d{3,8})\b)""",
+    """(?i)\b(?:otp|code|pin|pw|password)\b[:\s-]*(?<!\d)(?![1-9]{1}800)\d{4,8}(?!\d)""",
     RegexOption.IGNORE_CASE
 )
 
@@ -138,20 +150,22 @@ private val SOURCE_MAP = mapOf(
     "HDFCBK" to "HDFC Bank", "HDFCBN" to "HDFC Bank",
     "AXISBK" to "Axis Bank", "UTIBNK" to "Axis Bank", "AXISBN" to "Axis Bank",
     "ICICIB" to "ICICI Bank", "ICICIP" to "ICICI Bank", "ICICIT" to "ICICI Bank", "ICIC" to "ICICI Bank",
-    "SBIN" to "SBI", "SBIINB" to "SBI", "SBIPS" to "SBI", "SBICRD" to "SBI Credit Card",
+    "SBIN" to "SBI", "SBIINB" to "SBI", "SBIPS" to "SBI", "SBICRD" to "SBI Credit Card", "SBIC" to "SBI",
     "JTEDGE" to "Jupiter Bank", "JUPITR" to "Jupiter Bank",
-    "KOTAKB" to "Kotak Bank", "KOTAKM" to "Kotak Bank",
+    "KOTAKB" to "Kotak Bank", "KOTAKM" to "Kotak Bank", "KKBK" to "Kotak Bank",
     "FDRL" to "Federal Bank", "FEDBNK" to "Federal Bank",
     "IDFCBK" to "IDFC FIRST Bank", "IDFB" to "IDFC FIRST Bank", "IDFCFB" to "IDFC FIRST Bank",
     "ONECRD" to "One Card", "SLICE" to "Slice Card", "SLCE" to "Slice Card", "SLCEIT" to "Slice Account",
-    "PAYTM" to "Paytm", "PYTM" to "Paytm",
-    "BARODA" to "BOB", "BOB" to "BOB",
-    "PUNBNB" to "PNB", "PNBSMS" to "PNB",
-    "CANBK" to "Canara Bank", "YESBNK" to "Yes Bank",
-    "UBIN" to "Union Bank", "UBINBK" to "Union Bank",
-    "IDIBNK" to "Indian Bank", "CBIN" to "Central Bank", "CBIND" to "Central Bank",
-    "BKID" to "BOI", "BOISMS" to "BOI",
-    "RBLBNK" to "RBL Bank", "RBLBK" to "RBL Bank",
+    "PAYTM" to "Paytm", "PYTM" to "Paytm", "IPAYTM" to "Paytm Bank",
+    "BARODA" to "BOB", "BOB" to "BOB", "BOBTXN" to "BOB",
+    "PUNBNB" to "PNB", "PNBSMS" to "PNB", "PNBBK" to "PNB",
+    "CANBK" to "Canara Bank", "CNRB" to "Canara Bank",
+    "YESBNK" to "Yes Bank", "YESB" to "Yes Bank",
+    "UBIN" to "Union Bank", "UBINBK" to "Union Bank", "UNBK" to "Union Bank",
+    "IDIBNK" to "Indian Bank", "INDIAN" to "Indian Bank",
+    "CBIN" to "Central Bank", "CBIND" to "Central Bank", "CBI" to "Central Bank",
+    "BKID" to "BOI", "BOISMS" to "BOI", "BOI" to "BOI",
+    "RBLBNK" to "RBL Bank", "RBLBK" to "RBL Bank", "RBL" to "RBL Bank",
     "AUBNK" to "AU Bank", "AUFIRA" to "AU Bank",
     "EQUTAS" to "Equitas Bank", "UJJIVN" to "Ujjivan Bank",
     "DBSSMS" to "DBS Bank", "DBSBK" to "DBS Bank",
@@ -160,7 +174,13 @@ private val SOURCE_MAP = mapOf(
     "HSBCBK" to "HSBC Bank", "HSBC" to "HSBC Bank", "HSBCIM" to "HSBC Bank",
     "BAJAJF" to "Bajaj Finance", "BAJAJ" to "Bajaj Finance",
     "AMEX" to "American Express", "AMEXIN" to "American Express",
-    "TIDEPF" to "Tide Bank"
+    "TIDEPF" to "Tide Card", "TIDE" to "Tide Card",
+    "JKBANK" to "J&K Bank", "JKGRAM" to "J&K Grameen Bank",
+    "SIB" to "South Indian Bank", "SIBL" to "South Indian Bank",
+    "KARB" to "Karnataka Bank", "KTKBNK" to "Karnataka Bank",
+    "MAHAB" to "Bank of Maharashtra", "MAHBNK" to "Bank of Maharashtra",
+    "UCOBNK" to "UCO Bank", "UCO" to "UCO Bank",
+    "IOB" to "IOB", "IOBA" to "IOB"
 ).mapKeys { it.key.uppercase() }
 
 private val PARTICIPANT_EXCLUSIONS = listOf(
@@ -168,13 +188,18 @@ private val PARTICIPANT_EXCLUSIONS = listOf(
     "on", "at", "Not you", "Call", "to report", "towards",
     "Bharat Bill", "BBPS", "Team", "Help", "Helpline", "NetBanking",
     "Block", "SMS", "Urgent", "Click", "Link", "Touch",
-    "Rs", "INR", "₹", "\u20b9", "invoice", "emi",
+    "Rs", "INR", "₹", "\u20b9", "invoice", "dispute", "clearing", "update", "report", "issue", "report issue",
     "Dear Customer", "Dear Customer,", "Dear", "Pay Now", "Realization",
     "Available Bal", "Avl Bal", "An A", "An Account", "A/C", "Declined",
-    "Cardmember", "Bank Cardmember"
+    "Cardmember", "Bank Cardmember", "Thank", "Thank you", "Thanks", "Congratulations",
+    "Cash Deposit", "Cash Withdrawal", "IMPS", "RTGS", "UPI"
 )
 
 private val VPA_REGEX = Regex("""[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+""")
+
+// ==========================================
+// MAIN EXTRACTOR FUNCTION
+// ==========================================
 
 fun String.extractTransactionInfo(context: Context, address: String): TransactionInfo? {
     val raw = this.trim()
@@ -183,13 +208,8 @@ fun String.extractTransactionInfo(context: Context, address: String): Transactio
     val lowerBody = body.lowercase(Locale.getDefault())
     val upperAddress = address.uppercase(Locale.getDefault())
 
-    // 0. Non-transaction explicit phrases (Includes "Declined", "Failed")
     if (NON_TRANSACTION_PHRASES.any { it.containsMatchIn(body) }) return null
 
-    // 1. Short-circuit: OTP detection
-    if (OTP_PROXIMITY_REGEX.containsMatchIn(body)) return null
-
-    // 2. Statement detection
     val isStatement = STATEMENT_REGEX.any { it.containsMatchIn(body) } ||
         (lowerBody.contains("minimum") && lowerBody.contains("due"))
 
@@ -203,38 +223,57 @@ fun String.extractTransactionInfo(context: Context, address: String): Transactio
             isInterest = false,
             isStatement = true,
             isCreditCard = false,
+            isRecurring = false,
             confidence = 1.0
         )
     }
 
-    // 3. Signals
     val debitSignal = DEBIT_REGEX.any { it.containsMatchIn(body) }
-    val creditSignal = CREDIT_REGEX.any { it.containsMatchIn(body) }
+    val rawCreditSignal = CREDIT_REGEX.any { it.containsMatchIn(body) }
     val interestSignal = INTEREST_REGEX.any { it.containsMatchIn(body) }
+    val recurringSignal = RECURRING_REGEX.any { it.containsMatchIn(body) }
     val amount = extractAmount(body)
 
-    // 4. False positive heuristics
     val hasFalsePositive = FALSE_POSITIVE_REGEX.any { it.containsMatchIn(body) }
     val hasFalseNegative = FALSE_NEGATIVE_REGEX.any { it.containsMatchIn(body) }
+    val isStrongTransaction = amount != null && (debitSignal || rawCreditSignal)
 
-    // Fix: If false positive is detected (e.g., "Recharge of", "OTP") and NOT explicitly
-    // whitelisted (e.g., "payment successful"), return null immediately.
-    // This ignores the message even if an amount is found.
-    if (hasFalsePositive && !hasFalseNegative) {
-        return null
+    if (OTP_PROXIMITY_REGEX.containsMatchIn(body)) {
+        if (!isStrongTransaction && !hasFalseNegative) return null
     }
 
-    if (!debitSignal && !creditSignal && !interestSignal && amount == null) return null
+    if (hasFalsePositive && !hasFalseNegative) {
+        if (!isStrongTransaction) return null
+    }
+
+    if (!debitSignal && !rawCreditSignal && !interestSignal && amount == null) return null
     if (amount == null) return null
 
-    // 5. Source & Participant
     val (sourceRaw, detectedCard) = identifySource(context, upperAddress, body)
-    val participant = extractParticipant(body, debitSignal)
 
-    // 6. Confidence Scoring
+    val isRefund = lowerBody.contains("refund") || lowerBody.contains("reversal")
+    val creditedToSelfRegex = Regex("""(?i)credited\s+to\s+(?:your|a/c|acct|account|card|my)""")
+    val isSelfCredit = rawCreditSignal && (creditedToSelfRegex.containsMatchIn(body) || !body.contains("credited to", ignoreCase = true))
+
+    var isCredit = isRefund || (isSelfCredit && !debitSignal)
+    var isDebit = debitSignal || (rawCreditSignal && !isCredit)
+
+    if (isDebit && isCredit) {
+        if (lowerBody.contains("spent") || lowerBody.contains("paid") || lowerBody.contains("debited") || lowerBody.contains("sent") || lowerBody.contains("used")) {
+            isCredit = false
+        } else {
+            isDebit = false
+        }
+    }
+
+    if (!isDebit && !isCredit && !interestSignal) return null
+
+    // Pass sourceRaw to avoid extracting bank name as participant
+    val participant = extractParticipant(body, isDebit, sourceRaw)
+
     val confidence = computeConfidence(
-        debitSignal = debitSignal,
-        creditSignal = creditSignal,
+        debitSignal = isDebit,
+        creditSignal = isCredit,
         hasSource = sourceRaw.isNotBlank(),
         hasParticipant = !participant.isNullOrBlank(),
         interestSignal = interestSignal,
@@ -243,7 +282,6 @@ fun String.extractTransactionInfo(context: Context, address: String): Transactio
 
     if (confidence < MIN_CONFIDENCE) return null
 
-    val isDebit = debitSignal && !creditSignal
     val ttsAmount = formatForTts(amount)
     val source = sourceRaw.ifBlank { context.getString(R.string.bank) }
 
@@ -256,9 +294,14 @@ fun String.extractTransactionInfo(context: Context, address: String): Transactio
         isInterest = interestSignal,
         isStatement = false,
         isCreditCard = detectedCard,
+        isRecurring = recurringSignal,
         confidence = (confidence * 100.0).roundToLong() / 100.0
     )
 }
+
+// ==========================================
+// HELPER FUNCTIONS
+// ==========================================
 
 private fun normalizeWhitespace(s: String): String {
     return s.replace(Regex("\\s+"), " ").trim()
@@ -291,7 +334,6 @@ private fun computeConfidence(
     if (hasParticipant) score += 0.1
     if (interestSignal) score += 0.05
 
-    // Explicitly penalize declined/failed messages if they leaked through
     if (body.contains("declined", ignoreCase = true) || body.contains("failed", ignoreCase = true)) {
         score -= 0.5
     }
@@ -316,14 +358,30 @@ private fun identifySource(context: Context, upperAddress: String, body: String)
 
     val lowerBody = body.lowercase(Locale.getDefault())
     val headerSuggestsCard = CREDIT_SENDER_INDICATORS.any { upperAddress.contains(it) }
+    val explicitDebitCard = lowerBody.contains("debit card")
+
+    fun formatDigits(token: String): String {
+        val lastFour = token.filter { it.isDigit() }.takeLast(4)
+        return lastFour.map { "$it " }.joinToString("").trim()
+    }
+
+    fun combineParts(base: String, digits: String, isCard: Boolean): String {
+        val suffix = if (isCard && !explicitDebitCard) context.getString(R.string.credit_card) else context.getString(R.string.account)
+        val spacedDigits = if (digits.isNotEmpty()) digits else ""
+        if (base.contains(suffix, ignoreCase = true)) {
+            return "$base $spacedDigits".trim()
+        }
+        return "$base $suffix $spacedDigits".trim()
+    }
 
     for ((key, value) in SOURCE_MAP) {
         if (upperAddress.contains(key)) {
             val base = formatSourceName(value)
             val shouldBeCard = headerSuggestsCard || key.contains("CRD", ignoreCase = true) || value.contains("Credit", ignoreCase = true)
-            val final = appendTypeSuffix(context, base, lowerBody, forceCredit = shouldBeCard)
-            val isCard = shouldBeCard || final.contains(context.getString(R.string.credit_card), ignoreCase = true)
-            return Pair(final, isCard)
+            val digits = SOURCE_FALLBACK_REGEX.find(body)?.let { formatDigits(it.groupValues[1]) } ?: ""
+            val finalSource = combineParts(base, digits, shouldBeCard)
+            val isCreditCardBool = (shouldBeCard || finalSource.contains(context.getString(R.string.credit_card), ignoreCase = true)) && !explicitDebitCard
+            return Pair(finalSource, isCreditCardBool)
         }
     }
 
@@ -331,9 +389,10 @@ private fun identifySource(context: Context, upperAddress: String, body: String)
         if (lowerBody.contains(key.lowercase())) {
             val base = formatSourceName(value)
             val shouldBeCard = headerSuggestsCard || key.contains("CRD", ignoreCase = true) || value.contains("Credit", ignoreCase = true)
-            val final = appendTypeSuffix(context, base, lowerBody, forceCredit = shouldBeCard)
-            val isCard = shouldBeCard || final.contains(context.getString(R.string.credit_card), ignoreCase = true)
-            return Pair(final, isCard)
+            val digits = SOURCE_FALLBACK_REGEX.find(body)?.let { formatDigits(it.groupValues[1]) } ?: ""
+            val finalSource = combineParts(base, digits, shouldBeCard)
+            val isCreditCardBool = (shouldBeCard || finalSource.contains(context.getString(R.string.credit_card), ignoreCase = true)) && !explicitDebitCard
+            return Pair(finalSource, isCreditCardBool)
         }
     }
 
@@ -342,20 +401,22 @@ private fun identifySource(context: Context, upperAddress: String, body: String)
         val found = it.groupValues[1].trim()
         val base = formatSourceName(found)
         val explicitCard = it.value.contains("credit", ignoreCase = true) || CARD_PHRASE_REGEX.containsMatchIn(body)
-        val final = appendTypeSuffix(context, base, lowerBody, forceCredit = explicitCard)
-        val isCard = explicitCard || final.contains(context.getString(R.string.credit_card), ignoreCase = true)
-        return Pair(final, isCard)
+        val digits = SOURCE_FALLBACK_REGEX.find(body)?.let { formatDigits(it.groupValues[1]) } ?: ""
+        val finalSource = combineParts(base, digits, explicitCard)
+        val isCreditCardBool = (explicitCard || finalSource.contains(context.getString(R.string.credit_card), ignoreCase = true)) && !explicitDebitCard
+        return Pair(finalSource, isCreditCardBool)
     }
 
     SOURCE_FALLBACK_REGEX.find(body)?.let {
-        val token = it.groupValues[1]
-        val lastFour = token.filter { ch -> ch.isDigit() || ch == '*' }.takeLast(4)
+        val digits = formatDigits(it.groupValues[1])
         val isCard = it.value.contains("card", ignoreCase = true) ||
             CARD_PHRASE_REGEX.containsMatchIn(body) ||
             MASKED_CARD_REGEX.containsMatchIn(body) ||
             headerSuggestsCard
-        val label = if (isCard) context.getString(R.string.card_ending, lastFour) else context.getString(R.string.account_ending, lastFour)
-        return Pair(label, isCard)
+        val suffix = if (isCard && !explicitDebitCard) context.getString(R.string.credit_card) else context.getString(R.string.account)
+        val finalSource = "$suffix $digits".trim()
+        val isCreditCardBool = isCard && !explicitDebitCard
+        return Pair(finalSource, isCreditCardBool)
     }
 
     if (MASKED_CARD_REGEX.containsMatchIn(body) || CARD_PHRASE_REGEX.containsMatchIn(body) || headerSuggestsCard) {
@@ -366,126 +427,90 @@ private fun identifySource(context: Context, upperAddress: String, body: String)
     return Pair("", false)
 }
 
-private fun appendTypeSuffix(context: Context, baseName: String, lowerBody: String, forceCredit: Boolean = false): String {
-    val isCreditCard = forceCredit || lowerBody.contains("credit card") || lowerBody.contains("card ending") ||
-        lowerBody.contains("card no") || lowerBody.contains("card number") ||
-        Regex("""\bcc\b""", RegexOption.IGNORE_CASE).containsMatchIn(lowerBody)
-
-    val isDebitCard = lowerBody.contains("debit card")
-    val isAccount = lowerBody.contains("a/c") || lowerBody.contains("account")
-
-    val typeSuffix = when {
-        isCreditCard -> context.getString(R.string.credit_card)
-        isDebitCard -> context.getString(R.string.debit_card)
-        isAccount -> context.getString(R.string.account)
-        else -> ""
-    }
-    return if (typeSuffix.isNotEmpty() && !baseName.contains(typeSuffix, ignoreCase = true)) "$baseName $typeSuffix" else baseName
-}
-
-private fun extractParticipant(body: String, isDebit: Boolean): String? {
+private fun extractParticipant(body: String, isDebit: Boolean, bankName: String): String? {
     val normalized = normalizeWhitespace(body)
     if (normalized.contains("linked to your", ignoreCase = true)) return null
 
-    // 1. High Priority "Spent ... at" (Handles "Spent on Card at Merchant")
-    // Fix: This regex scans specifically for "at [Merchant]" to avoid capturing the card name
-    // when the pattern is "Spent on Axis Bank Credit Card at MCDONALDS"
+    fun isInvalidParticipant(name: String?): Boolean {
+        if (name == null) return true
+        val lower = name.lowercase()
+        if (bankName.lowercase().contains(lower) || lower.contains(bankName.lowercase())) return true
+        return false
+    }
+
+    // 1. "Spent...at"
     val spentAtRegex = Regex("""(?i)\bspent\s+.*?\s+at\s+([A-Za-z0-9&.\- ]{2,80})""")
     spentAtRegex.find(normalized)?.let {
         val cleaned = cleanParticipantName(it.groupValues[1])
-        if (!cleaned.isNullOrBlank()) return cleaned
+        if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
     }
 
-    // 2. Generic "Spent" patterns (Lower priority)
-    // Added lookahead (?!on\b) to avoid capturing "on CardName" immediately
+    // 2. Generic "Spent"
     val spentRegex = Regex("""(?i)\bspent\s?(?!on\b)@?\s?([A-Za-z0-9\s&.\-]{3,60})""")
     spentRegex.find(normalized)?.let {
         val cleaned = cleanParticipantName(it.groupValues[1])
-        if (!cleaned.isNullOrBlank()) return cleaned
+        if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
     }
 
-    // 3. Try specific "Paid to/from" patterns (Connected phrases)
+    // 3. "Paid to/from"
     val paidRegex = Regex("""(?i)\bpaid\s+(?:to|from)\s+([A-Za-z0-9@._&.\- ]{3,80})""")
     paidRegex.findAll(normalized).forEach { match ->
         val cleaned = cleanParticipantName(match.groupValues[1])
-        if (!cleaned.isNullOrBlank()) return cleaned
+        if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
     }
 
-    // 4. Directional Search (General to/at/from/by)
+    // 4. Directional
     val debitSearch = Regex("""(?i)(?:to|at|towards|via|@)\s+([A-Za-z0-9@._&.\- ]{2,80})""")
     val creditSearch = Regex("""(?i)(?:from|by)\s+([A-Za-z0-9@._&.\- ]{2,80})""")
 
     val primary = if (isDebit) debitSearch else creditSearch
     primary.findAll(normalized).forEach { match ->
         val cleaned = cleanParticipantName(match.groupValues[1])
-        if (!cleaned.isNullOrBlank()) return cleaned
+        if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
     }
 
     val secondary = if (isDebit) creditSearch else debitSearch
     secondary.findAll(normalized).forEach { match ->
         val cleaned = cleanParticipantName(match.groupValues[1])
-        if (!cleaned.isNullOrBlank()) return cleaned
+        if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
     }
 
-    // 5. Fallback: Explicit "To/From" Scan
     if (normalized.contains(" to ", ignoreCase = true)) {
-        val fallbackTo = Regex("""(?i)\bto\s+([A-Za-z0-9&.\-]{2,50})""")
+        val fallbackTo = Regex("""(?i)\bto\s+([A-Za-z0-9&.\- ]{2,50})""")
         fallbackTo.findAll(normalized).forEach { match ->
             val cleaned = cleanParticipantName(match.groupValues[1])
-            if (!cleaned.isNullOrBlank()) return cleaned
+            if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
         }
     }
     if (normalized.contains(" from ", ignoreCase = true)) {
-        val fallbackFrom = Regex("""(?i)\bfrom\s+([A-Za-z0-9&.\-]{2,50})""")
+        val fallbackFrom = Regex("""(?i)\bfrom\s+([A-Za-z0-9&.\- ]{2,50})""")
         fallbackFrom.findAll(normalized).forEach { match ->
             val cleaned = cleanParticipantName(match.groupValues[1])
-            if (!cleaned.isNullOrBlank()) return cleaned
+            if (!cleaned.isNullOrBlank() && !isInvalidParticipant(cleaned)) return cleaned
         }
     }
 
-    // 6. Line-based heuristic
-    val lines = normalized.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
-    if (lines.size > 2) {
-        for (i in 2 until lines.size) {
-            val candidate = lines[i]
-            if (candidate.length < 3 || candidate.length > 80) continue
-            if (candidate.contains("avl", ignoreCase = true) || candidate.contains("limit", ignoreCase = true)) continue
-            val cleaned = cleanParticipantName(candidate)
-            if (!cleaned.isNullOrBlank()) return cleaned
-        }
+    val trailingRegex = Regex("""(?i)(?:on\s+[\d-]{5,})?\.?\s*\b(ATM\s+Cash|Cash\s+Withdrawal|POS|E-COM)\b$""")
+    trailingRegex.find(normalized)?.let {
+        return it.groupValues[1]
     }
 
-    // 7. Capitalized Sequence
-    val capSeq = Regex("""([A-Z][a-zA-Z0-9&.\-]{2,30}(?:\s+[A-Z][a-zA-Z0-9&.\-]{2,30})*)""")
-    capSeq.find(normalized)?.let {
-        val cleaned = cleanParticipantName(it.groupValues[1])
-        if (!cleaned.isNullOrBlank()) return cleaned
-    }
-
-    // 8. Info/Ref Parsing (For Axis/Bank headers)
-    // Matches: "Info - NEFT/HSBC.../E-IN" or "Ref: UPI/..."
     val infoRegex = Regex("""(?i)\b(?:Info|Ref|Narration)\s?[-:]\s?([A-Za-z0-9\s/.\-]+)""")
     infoRegex.find(normalized)?.let {
         val rawInfo = it.groupValues[1]
-
-        // Strategy: If it contains '/', it's likely a banking string (NEFT/Ref/Name).
-        // We usually want the LAST component (the name), or sometimes the first if it's "Name/Ref".
-        // For "NEFT/HSBC.../E-IN", splitting gives [NEFT, HSBC..., E-IN]. "E-IN" is the name.
-        if (rawInfo.contains("/")) {
-            val tokens = rawInfo.split("/")
-            // Try tokens in reverse order to find a valid name
-            for (token in tokens.reversed()) {
-                val cleaned = cleanParticipantName(token)
-                if (!cleaned.isNullOrBlank() && !cleaned.equals("NEFT", true) && !cleaned.equals("IMPS", true) && !cleaned.equals("UPI", true)) {
-                    return cleaned
-                }
+        val tokens = rawInfo.split("/")
+        for (token in tokens.reversed()) {
+            val cleaned = cleanParticipantName(token)
+            if (!cleaned.isNullOrBlank() && !cleaned.equals("NEFT", true) && !cleaned.equals("IMPS", true) && !cleaned.equals("UPI", true) && !isInvalidParticipant(cleaned)) {
+                return cleaned
             }
-        } else {
-            // No slashes, try the whole info string (e.g. "Info - AMAZON PAY")
-            val cleaned = cleanParticipantName(rawInfo)
-            if (!cleaned.isNullOrBlank()) return cleaned
         }
     }
+
+    if (normalized.contains("UPI", ignoreCase = true)) return "UPI Transfer"
+    if (normalized.contains("IMPS", ignoreCase = true)) return "IMPS Transfer"
+    if (normalized.contains("NEFT", ignoreCase = true)) return "NEFT Transfer"
+
     return null
 }
 
@@ -500,7 +525,6 @@ private fun cleanParticipantName(raw: String): String? {
         }
     }
 
-    // Fix: Trim non-alphanumeric chars from start/end (e.g. "..ECO" -> "ECO")
     name = name.trim { !it.isLetterOrDigit() }
 
     if (name.isEmpty()) return null
@@ -508,26 +532,33 @@ private fun cleanParticipantName(raw: String): String? {
     if (name.contains("http", ignoreCase = true) || name.contains("www", ignoreCase = true)) return null
 
     val lower = name.lowercase(Locale.getDefault())
-    val genericTokens = listOf("your", "payment", "received", "sent", "avl", "limit", "not you", "not you?", "total", "outstanding", "transaction")
+    val genericTokens = listOf("your", "payment", "received", "sent", "avl", "limit", "not you", "not you?", "total", "outstanding", "transaction", "thank")
     if (genericTokens.any { lower.startsWith(it) || lower.contains(" $it") }) return null
     if (lower.startsWith("spent") || lower.startsWith("inr") || lower.startsWith("rs") || lower.startsWith("avl")) return null
     if (lower.startsWith("not you") || lower.startsWith("call") || lower.startsWith("ref")) return null
     if (lower.contains("thank you") || lower.contains("dear customer") || lower.contains("this message")) return null
 
-    // Fix: Explicitly block "on [Bank]" if regex leaks it
-    if (lower.startsWith("on ") || lower.startsWith("via ")) return null
+    if (lower.startsWith("congratulations") || lower.contains("cashback")) return null
+
+    // Hardened Mask/Number rejection: Filter names with 'mobile' or high 'X' count or pure accounts
+    if (lower.contains("mobile") && (name.contains("X", ignoreCase = true) || name.any { it.isDigit() })) return null
+    if (name.contains("XXXX", ignoreCase = true) || (name.count { it == '*' } > 2)) return null
+    if (lower.contains("a/c") || lower.contains("account")) return null
 
     if (PARTICIPANT_EXCLUSIONS.any { name.equals(it, ignoreCase = true) || name.startsWith(it, ignoreCase = true) }) return null
-    if (lower.startsWith("an a") || lower.contains("linked to")) return null
-    if (name.count { it.isDigit() } > 4) return null
+    if (name.count { it.isDigit() } > 3) return null
     if (name.length < 2) return null
 
-    // Fix: Block common 2-letter stopwords
-    if (name.length == 2) {
-        val shortStopWords = setOf("me", "my", "to", "at", "on", "an", "is", "of", "or", "by", "it", "us", "we", "up", "do", "go", "if", "in", "no")
-        if (shortStopWords.contains(lower)) return null
+    val noiseWords = listOf("pvt", "ltd", "private", "limited", "solutions", "services")
+    var cleanNameParts = name.split(" ").filter {
+        !noiseWords.contains(it.lowercase(Locale.getDefault()).replace(".", ""))
     }
 
+    cleanNameParts = cleanNameParts.filterIndexed { index, s ->
+        index == 0 || !s.equals(cleanNameParts[index - 1], ignoreCase = true)
+    }
+
+    name = cleanNameParts.joinToString(" ")
     name = name.trim().trimEnd('.', ',', ';', ':')
 
     val words = name.split("\\s+".toRegex())
@@ -536,7 +567,6 @@ private fun cleanParticipantName(raw: String): String? {
         if (name.contains("INR", ignoreCase = true) || name.contains("RS", ignoreCase = true) || name.contains("AVL", ignoreCase = true)) return null
     }
 
-    // Fix: Convert ALL CAPS participants to Title Case (e.g. "AMAZON INDIA" -> "Amazon India")
     val isAllUppercase = name.all { !it.isLetter() || it.isUpperCase() }
     if (isAllUppercase && name.any { it.isLetter() }) {
         return name.lowercase(Locale.getDefault())
