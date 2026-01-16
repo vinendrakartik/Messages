@@ -58,11 +58,12 @@ class CustomizationNotificationsActivity : SimpleActivity() {
     private fun updateTTSSlidersState(isEnabled: Boolean) = binding.apply {
         settingsTtsSpeedSeekbar.isEnabled = isEnabled
         settingsTtsPitchSeekbar.isEnabled = isEnabled
-        settingsTtsVoiceHolder.alpha = if (isEnabled) 1.0f else 0.5f
+        settingsTestTtsVoiceButton.isEnabled = isEnabled // 1. Disable Test Button
 
         val alpha = if (isEnabled) 1.0f else 0.5f
         settingsTtsSpeedHolder.alpha = alpha
         settingsTtsPitchHolder.alpha = alpha
+        settingsTtsVoiceHolder.alpha = alpha
     }
 
     private fun setupTtsVoice() = binding.apply {
@@ -104,30 +105,41 @@ class CustomizationNotificationsActivity : SimpleActivity() {
     }
 
     private fun setupTTSSettings() = binding.apply {
-        settingsTtsSpeedSeekbar.apply {
-            progress = ((config.ttsSpeed - 0.5f) * 10).toInt()
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(s: SeekBar?, p: Int, fromUser: Boolean) {
-                    if (fromUser) config.ttsSpeed = (p / 10.0f) + 0.5f
-                }
-                override fun onStartTrackingTouch(s: SeekBar?) {}
-                override fun onStopTrackingTouch(s: SeekBar?) {
-                    TTSHelper.getInstance(this@CustomizationNotificationsActivity).setupVoice()
-                }
-            })
-        }
+        // 2. Helper to format the float value to string (e.g. "1.0x")
+        fun formatValue(value: Float): String = String.format("%.1fx", value)
 
-        settingsTtsPitchSeekbar.apply {
-            progress = ((config.ttsPitch - 0.5f) * 10).toInt()
-            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-                override fun onProgressChanged(s: SeekBar?, p: Int, fromUser: Boolean) {
-                    if (fromUser) config.ttsPitch = (p / 10.0f) + 0.5f
-                }
-                override fun onStartTrackingTouch(s: SeekBar?) {}
-                override fun onStopTrackingTouch(s: SeekBar?) {
-                    TTSHelper.getInstance(this@CustomizationNotificationsActivity).setupVoice()
-                }
-            })
-        }
+        // --- SPEED SETTINGS ---
+        val currentSpeed = config.ttsSpeed
+        settingsTtsSpeedSeekbar.progress = ((currentSpeed - 0.5f) * 10).toInt()
+        settingsTtsSpeedValue.text = formatValue(currentSpeed) // Set initial text
+
+        settingsTtsSpeedSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(s: SeekBar?, p: Int, fromUser: Boolean) {
+                val value = (p / 10.0f) + 0.5f
+                settingsTtsSpeedValue.text = formatValue(value) // Update text dynamically
+                if (fromUser) config.ttsSpeed = value
+            }
+            override fun onStartTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {
+                TTSHelper.getInstance(this@CustomizationNotificationsActivity).setupVoice()
+            }
+        })
+
+        // --- PITCH SETTINGS ---
+        val currentPitch = config.ttsPitch
+        settingsTtsPitchSeekbar.progress = ((currentPitch - 0.5f) * 10).toInt()
+        settingsTtsPitchValue.text = formatValue(currentPitch) // Set initial text
+
+        settingsTtsPitchSeekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(s: SeekBar?, p: Int, fromUser: Boolean) {
+                val value = (p / 10.0f) + 0.5f
+                settingsTtsPitchValue.text = formatValue(value) // Update text dynamically
+                if (fromUser) config.ttsPitch = value
+            }
+            override fun onStartTrackingTouch(s: SeekBar?) {}
+            override fun onStopTrackingTouch(s: SeekBar?) {
+                TTSHelper.getInstance(this@CustomizationNotificationsActivity).setupVoice()
+            }
+        })
     }
 }

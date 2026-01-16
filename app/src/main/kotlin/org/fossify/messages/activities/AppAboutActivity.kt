@@ -1,12 +1,9 @@
 package org.fossify.messages.activities
 
-import android.app.ProgressDialog
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -153,13 +150,17 @@ class AppAboutActivity : BaseSimpleActivity() {
             }
         }
 
-        val progressDialog = ProgressDialog(this)
-        progressDialog.setMessage("Downloading update...")
-        progressDialog.isIndeterminate = false
-        progressDialog.max = 100
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL)
-        progressDialog.setCancelable(false)
-        progressDialog.show()
+        val dialogView = layoutInflater.inflate(R.layout.dialog_update_progress, null)
+        val progressBar = dialogView.findViewById<android.widget.ProgressBar>(R.id.progress_bar)
+        val progressPercent = dialogView.findViewById<TextView>(R.id.progress_percent)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Updating")
+            .setView(dialogView)
+            .setCancelable(false) // Prevent user from closing it by accident
+            .create()
+
+        dialog.show()
 
         thread {
             try {
@@ -170,33 +171,39 @@ class AppAboutActivity : BaseSimpleActivity() {
                 val fileLength = connection.contentLength
                 val input = connection.inputStream
 
-                // Save to cache directory so we don't need extra storage permissions
                 val file = File(externalCacheDir, "update.apk")
                 val output = FileOutputStream(file)
 
                 val data = ByteArray(1024)
                 var total: Long = 0
                 var count: Int
+
                 while (input.read(data).also { count = it } != -1) {
                     total += count
                     output.write(data, 0, count)
+
                     if (fileLength > 0) {
                         val progress = (total * 100 / fileLength).toInt()
-                        Handler(Looper.getMainLooper()).post { progressDialog.progress = progress }
+
+                        // Update UI on Main Thread
+                        Handler(Looper.getMainLooper()).post {
+                            progressBar.progress = progress
+                            progressPercent.text = "$progress%"
+                        }
                     }
                 }
                 output.close()
                 input.close()
 
                 Handler(Looper.getMainLooper()).post {
-                    progressDialog.dismiss()
+                    dialog.dismiss()
                     installAPK(file)
                 }
 
             } catch (e: Exception) {
                 e.printStackTrace()
                 Handler(Looper.getMainLooper()).post {
-                    progressDialog.dismiss()
+                    dialog.dismiss()
                     Toast.makeText(this, "Download failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
