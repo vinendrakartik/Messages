@@ -4,7 +4,7 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "org.fossify.messages",
+  "applicationId": "com.vk.messages",
   "variantName": "coreRelease",
   "elements": [
     {
@@ -12,7 +12,7 @@
       "filters": [],
       "attributes": [],
       "versionCode": 20,
-      "versionName": "1.8.1-vk",
+      "versionName": "1.8.3-vk",
       "outputFile": "messages-20-core-release.apk"
     }
   ],

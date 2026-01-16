@@ -228,7 +228,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="org.fossify.messages.action.mark_as_read" />
+                <action android:name="com.vk.messages.action.mark_as_read" />
             </intent-filter>
         </receiver>
 
@@ -237,7 +237,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="org.fossify.messages.action.reply" />
+                <action android:name="com.vk.messages.action.reply" />
             </intent-filter>
         </receiver>
 
@@ -246,7 +246,7 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="org.fossify.messages.action.delete" />
+                <action android:name="com.vk.messages.action.delete" />
             </intent-filter>
         </receiver>
 
@@ -258,7 +258,7 @@
             android:name=".receivers.DebugReceiver"
             android:exported="true">
             <intent-filter>
-                <action android:name="org.fossify.messages.TEST_SMS" />
+                <action android:name="com.vk.messages.TEST_SMS" />
             </intent-filter>
         </receiver>
 
@@ -278,7 +278,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_red"
             android:roundIcon="@mipmap/ic_launcher_red"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -292,7 +292,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_pink"
             android:roundIcon="@mipmap/ic_launcher_pink"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -306,7 +306,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_purple"
             android:roundIcon="@mipmap/ic_launcher_purple"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -320,7 +320,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_deep_purple"
             android:roundIcon="@mipmap/ic_launcher_deep_purple"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -334,7 +334,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_indigo"
             android:roundIcon="@mipmap/ic_launcher_indigo"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -348,7 +348,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_blue"
             android:roundIcon="@mipmap/ic_launcher_blue"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -362,7 +362,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_light_blue"
             android:roundIcon="@mipmap/ic_launcher_light_blue"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -376,7 +376,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_cyan"
             android:roundIcon="@mipmap/ic_launcher_cyan"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -390,7 +390,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_teal"
             android:roundIcon="@mipmap/ic_launcher_teal"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -404,7 +404,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:roundIcon="@mipmap/ic_launcher"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -418,7 +418,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_light_green"
             android:roundIcon="@mipmap/ic_launcher_light_green"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -432,7 +432,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_lime"
             android:roundIcon="@mipmap/ic_launcher_lime"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -446,7 +446,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_yellow"
             android:roundIcon="@mipmap/ic_launcher_yellow"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -460,7 +460,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_amber"
             android:roundIcon="@mipmap/ic_launcher_amber"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -474,7 +474,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_orange"
             android:roundIcon="@mipmap/ic_launcher_orange"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -487,7 +487,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_deep_orange"
             android:roundIcon="@mipmap/ic_launcher_deep_orange"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -501,7 +501,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_brown"
             android:roundIcon="@mipmap/ic_launcher_brown"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -515,7 +515,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_blue_grey"
             android:roundIcon="@mipmap/ic_launcher_blue_grey"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -529,7 +529,7 @@
             android:exported="true"
             android:icon="@mipmap/ic_launcher_grey_black"
             android:roundIcon="@mipmap/ic_launcher_grey_black"
-            android:targetActivity="org.fossify.messages.activities.SplashActivity">
+            android:targetActivity="com.vk.messages.activities.SplashActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

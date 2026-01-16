@@ -56,7 +56,7 @@
                     android:layout_marginTop="4dp"
                     android:textSize="14sp"
                     android:textColor="?android:attr/textColorSecondary"
-                    tools:text="org.fossify.messages.debug" />
+                    tools:text="com.vk.messages.debug" />
 
             </LinearLayout>
 
