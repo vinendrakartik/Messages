@@ -72,10 +72,6 @@ class MainActivity : SimpleActivity() {
             loadMessages()
         }
 
-        if (checkAppSideloading()) {
-            return
-        }
-
         setupSwipeActions()
         setupFilterChips()
     }
@@ -643,6 +639,7 @@ class MainActivity : SimpleActivity() {
     private fun launchAbout() {
         val licenses = LICENSE_EVENT_BUS or LICENSE_SMS_MMS or LICENSE_INDICATOR_FAST_SCROLL
 
+
         val faqItems = arrayListOf(
             FAQItem(
                 title = R.string.faq_2_title,
@@ -655,37 +652,12 @@ class MainActivity : SimpleActivity() {
             FAQItem(
                 title = R.string.faq_4_title,
                 text = R.string.faq_4_text
-            ),
-            FAQItem(
-                title = org.fossify.commons.R.string.faq_9_title_commons,
-                text = org.fossify.commons.R.string.faq_9_text_commons
             )
         )
 
-        if (!resources.getBoolean(org.fossify.commons.R.bool.hide_google_relations)) {
-            faqItems.add(
-                FAQItem(
-                    title = org.fossify.commons.R.string.faq_2_title_commons,
-                    text = org.fossify.commons.R.string.faq_2_text_commons
-                )
-            )
-            faqItems.add(
-                FAQItem(
-                    title = org.fossify.commons.R.string.faq_6_title_commons,
-                    text = org.fossify.commons.R.string.faq_6_text_commons
-                )
-            )
-        }
-
-        startAboutActivity(
-            appNameId = R.string.app_name,
-            licenseMask = licenses,
-            versionName = BuildConfig.VERSION_NAME,
-            faqItems = faqItems,
-            showFAQBeforeMail = true
-        )
+        val intent = android.content.Intent(this, org.fossify.messages.activities.AppAboutActivity::class.java)
+        startActivity(intent)
     }
-
     private fun setupSwipeActions() {
         val swipeCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
