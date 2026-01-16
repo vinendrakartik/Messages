@@ -85,6 +85,37 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/settings_tts_voice_holder"
+                style="@style/SettingsHolderTextViewStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_tts_voice_label"
+                    style="@style/SettingsTextLabelStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tts_voice" />
+
+                <org.fossify.commons.views.MyTextView
+                    android:id="@+id/settings_tts_voice"
+                    style="@style/SettingsTextValueStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/settings_tts_voice_label"
+                    tools:text="Default" />
+
+                <Button
+                    android:id="@+id/settings_test_tts_voice_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/test"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"/>
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/settings_tts_speed_holder"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

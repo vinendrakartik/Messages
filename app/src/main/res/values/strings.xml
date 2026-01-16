@@ -117,6 +117,10 @@
     <string name="delete">Delete</string>
     <string name="incoming_messages">Incoming Messages</string>
     <string name="auto_copy_otp">Enable automatic copy of OTP to clipboard</string>
+    <string name="tts_voice">TTS Voice</string>
+    <string name="test">Test</string>
+    <string name="default_text">Default</string>
+    <string name="tts_test_message">This is a test of the text to speech voice.</string>
     <!-- Export / Import -->
     <string name="messages">Messages</string>
     <string name="keywords">Keywords</string>
@@ -176,4 +180,27 @@
     <string name="ssml_amount_received_from">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received from &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt;, to your %3$s.&lt;/speak&gt;</string>
     <string name="ssml_amount_received">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received to your %2$s.&lt;/speak&gt;</string>
     <string name="contributors_developers">Aga-C, AlbertoPellitteri, Alfavio, connyduck, correia55, dagkalis, DaPa, ForgottenUmbrella, KryptKode, naveensingh, qwertyfinger, vinendrakartik</string>
+    <string name="all">All</string>
+    <string name="personal">Personal</string>
+    <string name="banking">Banking</string>
+    <string name="orders">Orders</string>
+    <string name="spam">Spam</string>
+    <string name="govt">Govt</string>
+    <string name="operator">Operator</string>
+    <string name="unread">Unread</string>
+    <string name="transaction">Transaction</string>
+    <string name="marketing">Marketing</string>
+    <string name="investments">Investments</string>
+    <string name="service">Service</string>
+    <string name="filter_all">All</string>
+    <string name="filter_unread">Unread</string>
+    <string name="filter_personal">Personal</string>
+    <string name="filter_transactional">Transactions</string>
+    <string name="filter_banking">Banking</string>
+    <string name="filter_marketing">Promos</string>
+    <string name="filter_investments">Investments</string>
+    <string name="filter_govt">Govt</string>
+    <string name="filter_orders">Orders</string>
+    <string name="filter_service">Service</string>
+    <string name="spam_indicator" />
 </resources>

@@ -1,5 +1,6 @@
 [versions]
 #jetbrains
+junit = "4.13.2"
 kotlin = "2.3.0"
 kotlinxSerializationJson = "1.9.0"
 #KSP
@@ -15,6 +16,7 @@ androidx-documentfile = "1.1.0"
 #Eventbus
 eventbus = "3.3.1"
 #Room
+mockitoCore = "5.21.0"
 room = "2.8.4"
 #Fossify
 commons = "5.13.1"
@@ -30,6 +32,7 @@ app-build-javaVersion = "VERSION_17"
 app-build-kotlinJVMTarget = "17"
 #Helpers
 ez-vcard = "0.12.1"
+tensorflowLite = "2.17.0"
 
 
 [libraries]
@@ -47,6 +50,7 @@ compose-detekt = { module = "io.nlopez.compose.rules:detekt", version.ref = "det
 #Fossify
 fossify-commons = { module = "org.fossify:commons", version.ref = "commons" }
 indicator-fast-scroll = { module = "org.fossify:IndicatorFastScroll", version.ref = "indicator-fast-scroll" }
+junit = { module = "junit:junit", version.ref = "junit" }
 mmslib = { module = "org.fossify:mmslib", version.ref = "mmslib" }
 #EventBus
 eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
@@ -54,6 +58,8 @@ eventbus = { module = "org.greenrobot:eventbus", version.ref = "eventbus" }
 ez-vcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ez-vcard" }
 #Kotlin
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflowLite" }
 
 [bundles]
 room = [

@@ -11,16 +11,8 @@ import org.fossify.commons.helpers.SimpleContactsHelper
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.models.PhoneNumber
 import org.fossify.commons.models.SimpleContact
-import org.fossify.messages.extensions.getConversations
-import org.fossify.messages.extensions.getNameFromAddress
-import org.fossify.messages.extensions.getNotificationBitmap
-import org.fossify.messages.extensions.getThreadId
-import org.fossify.messages.extensions.insertNewSMS
-import org.fossify.messages.extensions.insertOrUpdateConversation
-import org.fossify.messages.extensions.messagesDB
-import org.fossify.messages.extensions.shouldUnarchive
-import org.fossify.messages.extensions.showReceivedMessageNotification
-import org.fossify.messages.extensions.updateConversationArchivedStatus
+import org.fossify.messages.data.SmsRepository
+import org.fossify.messages.extensions.*
 import org.fossify.messages.helpers.ReceiverUtils.isMessageFilteredOut
 import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.helpers.refreshMessages
@@ -56,6 +48,8 @@ class SmsReceiver : BroadcastReceiver() {
                 val date = System.currentTimeMillis()
                 val threadId = appContext.getThreadId(address)
                 val subscriptionId = intent.getIntExtra("subscription", -1)
+
+                SmsRepository.onNewSmsReceived(appContext, address, body)
 
                 handleMessageSync(
                     context = appContext,

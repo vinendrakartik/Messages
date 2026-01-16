@@ -15,6 +15,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.runBlocking
 import org.fossify.commons.dialogs.ConfirmationDialog
 import org.fossify.commons.dialogs.PermissionRequiredDialog
 import org.fossify.commons.extensions.*
@@ -26,6 +27,8 @@ import org.fossify.messages.R
 import org.fossify.messages.adapters.BaseConversationsAdapter
 import org.fossify.messages.adapters.ConversationsAdapter
 import org.fossify.messages.adapters.SearchResultsAdapter
+import org.fossify.messages.data.SmsRepository
+import org.fossify.messages.data.SmsTag
 import org.fossify.messages.databinding.ActivityMainBinding
 import org.fossify.messages.extensions.*
 import org.fossify.messages.helpers.Config
@@ -42,7 +45,7 @@ import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : SimpleActivity() {
     override var isSearchBarEnabled = true
-    
+
     private val makeDefaultAppLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         askPermissions()
     }
@@ -74,6 +77,47 @@ class MainActivity : SimpleActivity() {
         }
 
         setupSwipeActions()
+        setupFilterChips()
+    }
+
+    private fun setupFilterChips() {
+        binding.filterChipGroup.setOnCheckedChangeListener { _, checkedId ->
+            val tag = when (checkedId) {
+                R.id.chip_all -> SmsTag.ALL
+                R.id.chip_unread -> SmsTag.UNREAD
+                R.id.chip_personal -> SmsTag.PERSONAL
+                R.id.chip_transactional -> SmsTag.TRANSACTIONAL
+                R.id.chip_banking -> SmsTag.BANKING
+                R.id.chip_marketing -> SmsTag.MARKETING
+                R.id.chip_investments -> SmsTag.INVESTMENTS
+                R.id.chip_govt -> SmsTag.GOVT
+                R.id.chip_orders -> SmsTag.ORDERS
+                R.id.chip_service -> SmsTag.SERVICE
+                else -> SmsTag.ALL
+            }
+            filterConversations(tag)
+        }
+        binding.chipAll.isChecked = true
+    }
+
+    private fun filterConversations(tag: SmsTag) {
+        ensureBackgroundThread {
+            val conversations = when (tag) {
+                SmsTag.ALL -> conversationsDB.getNonArchived()
+                SmsTag.UNREAD -> conversationsDB.getUnreadConversations()
+                else -> {
+                    val addresses = SmsRepository.getSendersForTag(tag)
+                    if (addresses.isNotEmpty()) {
+                        conversationsDB.getConversationsWithAddresses(addresses)
+                    } else {
+                        arrayListOf()
+                    }
+                }
+            }
+            runOnUiThread {
+                setupConversations(conversations as ArrayList<Conversation>)
+            }
+        }
     }
 
     override fun onResume() {
@@ -235,7 +279,9 @@ class MainActivity : SimpleActivity() {
     private fun initMessenger() {
         checkWhatsNewDialog()
         storeStateVariables()
+        // This function syncs messages from the system. Do NOT remove it.
         getCachedConversations()
+
         binding.noConversationsPlaceholder2.setOnClickListener {
             launchNewConversation()
         }
@@ -276,6 +322,16 @@ class MainActivity : SimpleActivity() {
         ensureBackgroundThread {
             val privateContacts = MyContactsContentProvider.getSimpleContacts(this, privateCursor)
             val conversations = getConversations(privateContacts = privateContacts)
+
+            // 1. Tagging Logic (Added Here)
+            // Using runBlocking to fix the "suspend function called from non-suspend" error
+            try {
+                runBlocking {
+                    SmsRepository.loadAndTagSenders(this@MainActivity)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
 
             conversations.forEach { clonedConversation ->
                 val threadIds = cachedConversations.map { it.threadId }
@@ -323,10 +379,9 @@ class MainActivity : SimpleActivity() {
                 }
             }
 
-            val allConversations = conversationsDB.getNonArchived() as ArrayList<Conversation>
-            runOnUiThread {
-                setupConversations(allConversations)
-            }
+            // 2. Refresh UI with Filter (Modified Here)
+            // Instead of just showing all, we apply the default "ALL" filter which handles the DB query correctly
+            filterConversations(SmsTag.ALL)
 
             if (config.appRunCount == 1) {
                 conversations.map { it.threadId }.forEach { threadId ->
