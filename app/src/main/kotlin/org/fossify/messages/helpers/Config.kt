@@ -87,11 +87,15 @@ class Config(context: Context) : BaseConfig(context) {
         set(mutedThreads) = prefs.edit().putStringSet(MUTED_THREADS, mutedThreads).apply()
 
     fun addMutedThread(threadId: Long) {
-        mutedThreads = mutedThreads.plus(threadId.toString())
+        val newMutedThreads = HashSet(mutedThreads)
+        newMutedThreads.add(threadId.toString())
+        mutedThreads = newMutedThreads
     }
 
     fun removeMutedThread(threadId: Long) {
-        mutedThreads = mutedThreads.minus(threadId.toString())
+        val newMutedThreads = HashSet(mutedThreads)
+        newMutedThreads.remove(threadId.toString())
+        mutedThreads = newMutedThreads
     }
 
     var blockedKeywords: Set<String>

@@ -180,4 +180,27 @@
     <string name="ssml_amount_received_from">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received from &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt;, to your %3$s.&lt;/speak&gt;</string>
     <string name="ssml_amount_received">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"en-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; received to your %2$s.&lt;/speak&gt;</string>
     <string name="contributors_developers">Aga-C, AlbertoPellitteri, Alfavio, connyduck, correia55, dagkalis, DaPa, ForgottenUmbrella, KryptKode, naveensingh, qwertyfinger, vinendrakartik</string>
+    <string name="all">All</string>
+    <string name="personal">Personal</string>
+    <string name="banking">Banking</string>
+    <string name="orders">Orders</string>
+    <string name="spam">Spam</string>
+    <string name="govt">Govt</string>
+    <string name="operator">Operator</string>
+    <string name="unread">Unread</string>
+    <string name="transaction">Transaction</string>
+    <string name="marketing">Marketing</string>
+    <string name="investments">Investments</string>
+    <string name="service">Service</string>
+    <string name="filter_all">All</string>
+    <string name="filter_unread">Unread</string>
+    <string name="filter_personal">Personal</string>
+    <string name="filter_transactional">Transactions</string>
+    <string name="filter_banking">Banking</string>
+    <string name="filter_marketing">Promos</string>
+    <string name="filter_investments">Investments</string>
+    <string name="filter_govt">Govt</string>
+    <string name="filter_orders">Orders</string>
+    <string name="filter_service">Service</string>
+    <string name="spam_indicator" />
 </resources>

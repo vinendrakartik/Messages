@@ -53,6 +53,9 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     val sKeyAlias = getSigningProperty("keyAlias")
@@ -135,6 +138,7 @@ android {
         generateLocaleConfig = true
         // Limit languages to English and Indian languages to reduce APK size
         localeFilters += listOf("en", "hi", "mr", "te", "ta", "kn", "ml")
+        noCompress += "tflite"
     }
 
     tasks.withType<KotlinCompile> {
@@ -181,6 +185,7 @@ dependencies {
     implementation(libs.bundles.room)
     ksp(libs.androidx.room.compiler)
     detektPlugins(libs.compose.detekt)
-    testImplementation("org.mockito:mockito-core:5.15.2")
-    testImplementation("junit:junit:4.13.2")
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.junit)
+    implementation(libs.tensorflow.lite)
 }
