@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_launcher_name">संदेश</string>
-    <string name="type_a_message">संदेश लिखें…</string>
+    <string name="type_a_message">संदेश टाइप करें…</string>
     <string name="message_not_sent_short">संदेश नहीं भेजा गया</string>
     <string name="message_not_sent_touch_retry">नहीं भेजा गया। पुनः प्रयास करने के लिए स्पर्श करें।</string>
-    <string name="message_sending_error">\'%s\' को आपका संदेश नहीं भेजा गया है</string>
+    <string name="message_sending_error">\'%s\' को आपका संदेश नहीं भेजा गया</string>
     <string name="add_person">व्यक्ति जोड़ें</string>
     <string name="attachment">अटैचमेंट</string>
     <string name="no_conversations_found">कोई सहेजी गई बातचीत नहीं मिली</string>
@@ -19,7 +19,7 @@
     <string name="unpin_conversation">अनपिन करें</string>
     <string name="forward_message">फॉरवर्ड</string>
     <string name="forward">फॉरवर्ड</string>
-    <string name="compress_error">चयनित आकार में छवि को संपीड़ित करने में असमर्थ</string>
+    <string name="compress_error">इमेज को चयनित आकार में संपीड़ित करने में असमर्थ</string>
     <string name="duplicate_item_warning">डुप्लिकेट आइटम शामिल नहीं किया गया</string>
     <plurals name="and_other_contacts">
         <item quantity="one">और %d अन्य</item>
@@ -33,10 +33,10 @@
     <string name="conversation_details">बातचीत का विवरण</string>
     <string name="rename_conversation">बातचीत का नाम बदलें</string>
     <string name="rename_conversation_warning">केवल आप ही इस बातचीत का नाम देख सकते हैं</string>
-    <string name="scheduled_message">अनुसूचित संदेश</string>
-    <string name="schedule_message">संदेश अनुसूचित करें</string>
-    <string name="schedule_send">भेजना अनुसूचित करें</string>
-    <string name="cancel_schedule_send">अनुसूचित संदेश रद्द करें</string>
+    <string name="scheduled_message">नियोजित संदेश</string>
+    <string name="schedule_message">संदेश शेड्यूल करें</string>
+    <string name="schedule_send">भेजना शेड्यूल करें</string>
+    <string name="cancel_schedule_send">शेड्यूल रद्द करें</string>
     <string name="must_pick_time_in_the_future">आपको भविष्य का समय चुनना होगा</string>
     <string name="schedule_send_warning">फ़ोन चालू रखें और सुनिश्चित करें कि बैकग्राउंड में ऐप बंद न हो।</string>
     <string name="update_message">संदेश अपडेट करें</string>
@@ -44,16 +44,17 @@
     <string name="message_details">संदेश का विवरण</string>
     <string name="message_details_sender">प्रेषक</string>
     <string name="message_details_receiver">प्राप्तकर्ता</string>
-    <string name="message_details_sent_at">भेजा गया</string>
-    <string name="message_details_received_at">प्राप्त हुआ</string>
+    <string name="message_details_sent_at">भेजने का समय</string>
+    <string name="message_details_received_at">प्राप्त होने का समय</string>
     <string name="channel_received_sms">प्राप्त SMS</string>
     <string name="new_message">नया संदेश</string>
-    <string name="mark_as_read">पढ़ा गया चिह्नित करें</string>
+    <string name="mark_as_read">पढ़ा हुआ चिह्नित करें</string>
     <string name="mark_as_unread">बिना पढ़ा चिह्नित करें</string>
-    <string name="mark_all_as_read">सभी को पढ़ा गया चिह्नित करें</string>
+    <string name="mark_all_as_read">सभी को पढ़ा हुआ चिह्नित करें</string>
     <string name="me">मैं</string>
     <string name="enable_custom_notifications">कस्टम सूचनाएं सक्षम करें</string>
     <string name="mute_notifications">सूचनाएं म्यूट करें</string>
+    <string name="system_notification_settings">सिस्टम नोटिफिकेशन सेटिंग्स</string>
     <string name="unarchive">अनारकाइव</string>
     <string name="empty_archive">सभी आर्काइव की गई बातचीत हटाएं</string>
     <string name="archived_conversations">आर्काइव</string>
@@ -61,11 +62,11 @@
     <string name="archive">आर्काइव</string>
     <string name="no_archived_conversations">कोई आर्काइव की गई बातचीत नहीं मिली</string>
     <string name="archive_emptied_successfully">आर्काइव सफलतापूर्वक खाली कर दिया गया है</string>
-    <string name="empty_archive_confirmation">क्या आप वाकई आर्काइव खाली करना चाहते हैं? सभी आर्काइव की गई बातचीत स्थायी रूप से खो जाएगी।</string>
+    <string name="empty_archive_confirmation">क्या आप वाकई आर्काइव खाली करना चाहते हैं? सभी आर्काइव की गई बातचीत स्थायी रूप से मिट जाएगी।</string>
     <string name="keep_conversations_archived">बातचीत को आर्काइव रखें</string>
     <string name="restore">पुनर्स्थापित करें</string>
     <string name="restore_all_messages">सभी संदेश पुनर्स्थापित करें</string>
-    <string name="empty_recycle_bin_messages_confirmation">क्या आप वाकई रीसायकल बिन खाली करना चाहते हैं? संदेश स्थायी रूप से खो जाएंगे।</string>
+    <string name="empty_recycle_bin_messages_confirmation">क्या आप वाकई रीसायकल बिन खाली करना चाहते हैं? संदेश स्थायी रूप से मिट जाएंगे।</string>
     <string name="skip_the_recycle_bin_messages">रीसायकल बिन छोड़ें, सीधे संदेश हटाएं</string>
     <string name="delete_whole_conversation_confirmation">क्या आप वाकई इस बातचीत के सभी संदेश हटाना चाहते हैं?</string>
     <string name="archive_confirmation">क्या आप वाकई %s को आर्काइव करना चाहते हैं?</string>
@@ -80,14 +81,14 @@
         <item quantity="other">%d संदेश</item>
     </plurals>
     <string name="keyword">कीवर्ड</string>
-    <string name="blocked_keywords">अवरुद्ध कीवर्ड</string>
-    <string name="manage_blocked_keywords">अवरुद्ध कीवर्ड प्रबंधित करें</string>
-    <string name="not_blocking_keywords">आप किसी भी कीवर्ड को अवरुद्ध नहीं कर रहे हैं। आप उन्हें शामिल करने वाले सभी संदेशों को अवरुद्ध करने के लिए यहां कीवर्ड जोड़ सकते हैं।</string>
-    <string name="add_a_blocked_keyword">अवरुद्ध कीवर्ड जोड़ें</string>
+    <string name="blocked_keywords">ब्लॉक किए गए कीवर्ड</string>
+    <string name="manage_blocked_keywords">ब्लॉक किए गए कीवर्ड प्रबंधित करें</string>
+    <string name="not_blocking_keywords">आप किसी भी कीवर्ड को ब्लॉक नहीं कर रहे हैं। आप विशिष्ट शब्दों वाले सभी संदेशों को ब्लॉक करने के लिए यहां कीवर्ड जोड़ सकते हैं।</string>
+    <string name="add_a_blocked_keyword">ब्लॉक कीवर्ड जोड़ें</string>
     <string name="lock_screen_visibility">लॉक स्क्रीन सूचना दृश्यता</string>
     <string name="sender_and_message">प्रेषक और संदेश</string>
     <string name="sender_only">केवल प्रेषक</string>
-    <string name="enable_delivery_reports">डिलीवरी रिपोर्ट सक्षम करें</string>
+    <string name="enable_delivery_reports">डिलिवरी रिपोर्ट सक्षम करें</string>
     <string name="use_simple_characters">संदेश भेजते समय लहजे और विशेष चिह्नों को हटाएं</string>
     <string name="send_on_enter">Enter दबाने पर संदेश भेजें</string>
     <string name="mms_file_size_limit">भेजे गए MMS चित्रों का आकार बदलें</string>
@@ -101,6 +102,12 @@
     <string name="swipe_right">दाएं स्वाइप करें</string>
     <string name="swipe_left">बाएं स्वाइप करें</string>
     <string name="delete">हटाएं</string>
+    <string name="incoming_messages">आने वाले संदेश</string>
+    <string name="auto_copy_otp">OTP को क्लिपबोर्ड पर ऑटो-कॉपी करना सक्षम करें</string>
+    <string name="tts_voice">TTS आवाज़</string>
+    <string name="test">टेस्ट</string>
+    <string name="default_text">डिफ़ॉल्ट</string>
+    <string name="tts_test_message">यह टेक्स्ट-टू-स्पीच आवाज़ का एक परीक्षण है।</string>
     <string name="messages">संदेश</string>
     <string name="keywords">कीवर्ड</string>
     <string name="export_messages">संदेश निर्यात करें</string>
@@ -110,8 +117,8 @@
     <string name="import_sms">SMS आयात करें</string>
     <string name="import_mms">MMS आयात करें</string>
     <string name="no_option_selected">आपको कम से कम एक आइटम चुनना होगा</string>
-    <string name="export_blocked_keywords">अवरुद्ध कीवर्ड निर्यात करें</string>
-    <string name="import_blocked_keywords">अवरुद्ध कीवर्ड आयात करें</string>
+    <string name="export_blocked_keywords">ब्लॉक कीवर्ड निर्यात करें</string>
+    <string name="import_blocked_keywords">ब्लॉक कीवर्ड आयात करें</string>
     <string name="empty_destination_address">खाली नंबर पर संदेश नहीं भेजा जा सकता</string>
     <string name="unable_to_save_message">टेलीफोनी डेटाबेस में संदेश सहेजने में असमर्थ</string>
     <string name="error_service_is_unavailable">संदेश नहीं भेजा जा सका, सेवा उपलब्ध नहीं है</string>
@@ -120,14 +127,70 @@
     <string name="unknown_error_occurred_sending_message">संदेश भेजने में अज्ञात त्रुटि हुई, त्रुटि कोड: %d</string>
     <string name="invalid_short_code">इस तरह के शॉर्ट कोड का उत्तर नहीं दिया जा सकता</string>
     <string name="invalid_short_code_desc">आप केवल \"503501\" जैसे नंबरों वाले शॉर्ट कोड का उत्तर दे सकते हैं, अक्षरों वाले कोड का नहीं।</string>
-    <string name="attachment_sized_exceeds_max_limit">अटैachment का आकार अधिकतम MMS सीमा से अधिक है</string>
+    <string name="attachment_sized_exceeds_max_limit">अटैचमेंट का आकार अधिकतम MMS सीमा से अधिक है</string>
     <string name="sim_card_not_available">SIM कार्ड उपलब्ध नहीं है</string>
     <string name="couldnt_download_mms">MMS डाउनलोड नहीं किया जा सका</string>
+    <string name="faq_1_title">ऐप को इंटरनेट एक्सेस की आवश्यकता क्यों है?</string>
+    <string name="faq_1_text">MMS अटैचमेंट भेजने के लिए इसकी आवश्यकता होती है। MMS भेजने में सक्षम न होना अन्य ऐप्स की तुलना में एक बहुत बड़ा नुकसान होगा।\nहालाँकि, इसमें कोई विज्ञापन, ट्रैकिंग या एनालिटिक्स नहीं है, इंटरनेट का उपयोग केवल MMS भेजने के लिए किया जाता है।</string>
+    <string name="faq_2_title">दूसरा पक्ष मेरा MMS प्राप्त नहीं कर रहा है, मैं क्या कर सकता हूँ?</string>
+    <string name="faq_2_text">MMS का आकार मोबाइल ऑपरेटरों द्वारा सीमित होता है, आप ऐप सेटिंग्स में छोटी आकार सीमा सेट करने का प्रयास कर सकते हैं।</string>
+    <string name="faq_3_title">क्या ऐप शेड्यूल संदेशों का समर्थन करता है?</string>
+    <string name="faq_3_text">हाँ, आप \'भेजें\' बटन को देर तक दबाकर और वांछित तिथि और समय चुनकर भविष्य में भेजे जाने वाले संदेशों को शेड्यूल कर सकते हैं।</string>
+    <string name="faq_4_title">मेरे समूह संदेश (Group message) के उत्तर प्राप्तकर्ताओं को अलग-अलग टेक्स्ट के रूप में क्यों दिखाई देते हैं?</string>
+    <string name="faq_4_text">आपको ऐप सेटिंग्स में \"समूह संदेशों को MMS के रूप में भेजें\" सक्षम करने की आवश्यकता है। यह सुनिश्चित करेगा कि समूह संदेश उचित MMS के रूप में भेजे जाएं।</string>
+    <string name="faq_auto_copy_title">OTP की ऑटो कॉपी कैसे बंद करें?</string>
+    <string name="faq_auto_copy_text">सेटिंग्स -> आने वाले संदेश में जाएं और \'OTP को क्लिपबोर्ड पर ऑटो-कॉपी करना\' अक्षम करें।</string>
+    <string name="faq_disable_tts_title">TTS सूचनाएं कैसे बंद करें?</string>
+    <string name="faq_disable_tts_text">सेटिंग्स -> नोटिफिकेशन -> नोटिफिकेशन कस्टमाइज़ करें में जाएं और \'लेन-देन के लिए प्राकृतिक आवाज़ का उपयोग करें\' को अक्षम करें।</string>
+    <string name="faq_tts_voice_title">TTS आवाज़ कैसे बदलें?</string>
+    <string name="faq_tts_voice_text">सेटिंग्स -> नोटिफिकेशन -> नोटिफिकेशन कस्टमाइज़ करें में जाएं और \'TTS आवाज़\' पर टैप करें।</string>
+    <string name="faq_mute_title">बातचीत को म्यूट कैसे करें?</string>
+    <string name="faq_mute_text">बातचीत खोलें, ऊपर दाईं ओर तीन बिंदुओं पर टैप करें, और \'बातचीत का विवरण\' चुनें। वहां \'सूचनाएं म्यूट करें\' को सक्षम करें।</string>
     <string name="tts_speed">बोलने की गति</string>
-    <string name="tts_pitch">आवाज़ का उतार-चढ़ाव (पिच)</string>
-    <string name="tts_interest_received"><![CDATA[<speak>Interest Received! <break time="250ms"/> <say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> credited as <emphasis level="moderate">interest</emphasis> to your %2$s.</speak>]]></string>
-    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> <break time="200ms"/> paid %2$sfrom your %3$s.</speak>]]></string>
-    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="en-IN">Rs.%1$s</say-as> <break time="200ms"/> received %2$sto your %3$s.</speak>]]></string>
-    <string name="tts_to_whom">to <emphasis level="moderate">%1$s</emphasis>, </string>
-    <string name="tts_from_whom">from <emphasis level="moderate">%1$s</emphasis>, </string>
+    <string name="tts_pitch">आवाज़ का पिच</string>
+    <string name="logs_enabled">लॉग सक्षम</string>
+    <string name="logs_disabled">लॉग अक्षम</string>
+    <string name="otp_notifications">OTP सूचनाएं</string>
+    <string name="transaction_notifications">लेनदेन सूचनाएं</string>
+    <string name="otp">OTP</string>
+    <string name="otp_message">OTP: %1$s\n%2$s</string>
+    <string name="credit_card">क्रेडिट कार्ड</string>
+    <string name="debit_card">डेबिट कार्ड</string>
+    <string name="account">खाता</string>
+    <string name="bank">बैंक</string>
+    <string name="tide_ncmc_travel_card">Tide NCMC ट्रैवल कार्ड</string>
+    <string name="tide_card">Tide कार्ड</string>
+    <string name="account_ending">%1$s पर समाप्त होने वाला खाता</string>
+    <string name="card_ending">%1$s पर समाप्त होने वाला कार्ड</string>
+    <string name="character_counter">%1$d/%2$d</string>
+    <string name="ssml_interest_received">&lt;speak&gt;ब्याज प्राप्त हुआ! &lt;break time=\"250ms\"/&gt; &lt;say-as interpret-as=\"currency\" language=\"hi-IN\"&gt;Rs.%1$s&lt;/say-as&gt; आपके %2$s में &lt;emphasis level=\"moderate\"&gt;ब्याज&lt;/emphasis&gt; के रूप में जमा किए गए।&lt;/speak&gt;</string>
+    <string name="ssml_amount_paid_to">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"hi-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; आपके %3$s से &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt; को भुगतान किया गया।&lt;/speak&gt;</string>
+    <string name="ssml_amount_paid">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"hi-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; आपके %2$s से भुगतान किया गया।&lt;/speak&gt;</string>
+    <string name="ssml_amount_received_from">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"hi-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt; से आपके %3$s में प्राप्त हुए।&lt;/speak&gt;</string>
+    <string name="ssml_amount_received">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"hi-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; आपके %2$s में प्राप्त हुए।&lt;/speak&gt;</string>
+    <string name="contributors_developers">Aga-C, AlbertoPellitteri, Alfavio, connyduck, correia55, dagkalis, DaPa, ForgottenUmbrella, KryptKode, naveensingh, qwertyfinger, vinendrakartik</string>
+    <string name="all">सभी</string>
+    <string name="personal">व्यक्तिगत</string>
+    <string name="banking">बैंकिंग</string>
+    <string name="orders">ऑर्डर</string>
+    <string name="spam">स्पैम</string>
+    <string name="govt">सरकारी</string>
+    <string name="operator">ऑपरेटर</string>
+    <string name="unread">बिना पढ़े</string>
+    <string name="transaction">लेनदेन</string>
+    <string name="marketing">मार्केटिंग</string>
+    <string name="investments">निवेश</string>
+    <string name="service">सेवा</string>
+    <string name="filter_all">सभी</string>
+    <string name="filter_unread">बिना पढ़े</string>
+    <string name="filter_personal">व्यक्तिगत</string>
+    <string name="filter_transactional">लेनदेन</string>
+    <string name="filter_banking">बैंकिंग</string>
+    <string name="filter_marketing">प्रोमो</string>
+    <string name="filter_investments">निवेश</string>
+    <string name="filter_govt">सरकारी</string>
+    <string name="filter_orders">ऑर्डर</string>
+    <string name="filter_service">सेवा</string>
+    <string name="spam_indicator" />
+    <string name="version">संस्करण</string>
 </resources>

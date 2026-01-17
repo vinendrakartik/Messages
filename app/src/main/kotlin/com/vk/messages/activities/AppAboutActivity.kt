@@ -93,7 +93,7 @@ class AppAboutActivity : BaseSimpleActivity() {
                 val url = URL("https://api.github.com/repos/$repo/releases/latest")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
-                connection.setRequestProperty("User-Agent", "Fossify-Messages")
+                connection.setRequestProperty("User-Agent", "Messages")
 
                 if (connection.responseCode == 200) {
                     val response = connection.inputStream.bufferedReader().readText()
