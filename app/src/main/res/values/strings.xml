@@ -155,6 +155,18 @@
     <string name="faq_3_text">Yes, you can schedule messages to be sent in the future by long pressing the Send button and picking the desired date and time.</string>
     <string name="faq_4_title">Why do my group message replies appear as individual texts to recipients?</string>
     <string name="faq_4_text">You need to enable \"Send group messages as MMS\" in the app settings. This will ensure that group messages are sent as proper MMS, allowing all participants to see each other\'s replies.</string>
+    <string name="faq_auto_copy_title">How to Disable Auto Copy of OTP?</string>
+    <string name="faq_auto_copy_text">Go to Settings -> Incoming Messages and disable \'Enable automatic copy of OTP to clipboard\'.</string>
+
+    <string name="faq_disable_tts_title">How to Disable TTS Notifications?</string>
+    <string name="faq_disable_tts_text">Go to Settings -> Notifications -> Customize Notifications and disable \'Use Natural Voice for Transactions\'.</string>
+
+    <string name="faq_tts_voice_title">How to Change TTS Voice?</string>
+    <string name="faq_tts_voice_text">Go to Settings -> Notifications -> Customize Notifications and tap \'TTS Voice\'. If you only see \'Default\', go back and return to refresh the list (Internet required). Select a voice and tap \'Test\'. You can also adjust Speed and Pitch below.</string>
+
+    <string name="faq_mute_title">How to Mute a Conversation?</string>
+    <string name="faq_mute_text">Open the conversation, tap the three dots in the top right, and select \'Conversation details\'. Under Notifications, enable \'Mute notifications\'.</string>
+
 
     <string name="tts_speed">Speech Speed</string>
     <string name="tts_pitch">Speech Pitch</string>
@@ -203,4 +215,7 @@
     <string name="filter_orders">Orders</string>
     <string name="filter_service">Service</string>
     <string name="spam_indicator" />
+    <string name="version">Version</string>
+
+
 </resources>

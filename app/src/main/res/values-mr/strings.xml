@@ -27,7 +27,7 @@
     </plurals>
     <string name="new_conversation">नवीन संभाषण</string>
     <string name="add_contact_or_number">संपर्क किंवा नंबर जोडा…</string>
-    <string name="suggestions">सुझाव</string>
+    <string name="suggestions">सुचवलेले</string>
     <string name="members">सदस्य</string>
     <string name="conversation_name">संभाषणाचे नाव</string>
     <string name="conversation_details">संभाषणाचा तपशील</string>
@@ -37,7 +37,7 @@
     <string name="schedule_message">संदेश नियोजित करा</string>
     <string name="schedule_send">पाठवणे नियोजित करा</string>
     <string name="cancel_schedule_send">नियोजित पाठवणे रद्द करा</string>
-    <string name="must_pick_time_in_the_future">तुम्ही भविಷ್ಯಾತೀಲ್ वेळ निवडली पाहिजे</string>
+    <string name="must_pick_time_in_the_future">तुम्ही भविष्यातील वेळ निवडली पाहिजे</string>
     <string name="schedule_send_warning">फोन चालू ठेवा आणि बॅकग्राउंडमध्ये अ‍ॅप बंद होणार नाही याची खात्री करा.</string>
     <string name="update_message">संदेश अपडेट करा</string>
     <string name="send_now">आत्ताच पाठवा</string>
@@ -54,6 +54,7 @@
     <string name="me">मी</string>
     <string name="enable_custom_notifications">सानुकूल अ‍धिसूचना सक्षम करा</string>
     <string name="mute_notifications">अ‍धिसूचना म्यूट करा</string>
+    <string name="system_notification_settings">सिस्टम अ‍धिसूचना सेटिंग्ज</string>
     <string name="unarchive">अनअर्काइव्ह करा</string>
     <string name="empty_archive">सर्व अर्काइव्ह केलेली संभाषणे हटवा</string>
     <string name="archived_conversations">अर्काइव्ह</string>
@@ -99,8 +100,14 @@
     <string name="check_voice_data">व्हॉइस डेटा तपासा</string>
     <string name="swipe_actions">स्वाईप कृती</string>
     <string name="swipe_right">उजवीकडे स्वाईप करा</string>
-    <string name="swipe_left">डावीकडे स्वाईಪ करा</string>
+    <string name="swipe_left">डावीकडे स्वाईप करा</string>
     <string name="delete">हटवा</string>
+    <string name="incoming_messages">येणारे संदेश</string>
+    <string name="auto_copy_otp">OTP क्लिपबोर्डवर आपोआप कॉपी करणे सक्षम करा</string>
+    <string name="tts_voice">TTS आवाज</string>
+    <string name="test">चाचणी</string>
+    <string name="default_text">डीफॉल्ट</string>
+    <string name="tts_test_message">ही टेक्स्ट-टू-स्पीच आवाजाची चाचणी आहे.</string>
     <string name="messages">संदेश</string>
     <string name="keywords">कीवर्ड</string>
     <string name="export_messages">संदेश एक्सपोर्ट करा</string>
@@ -123,11 +130,67 @@
     <string name="attachment_sized_exceeds_max_limit">अ‍ॅटॅचमेंटचा आकार कमाल MMS मर्यादेपेक्षा जास्त आहे</string>
     <string name="sim_card_not_available">SIM कार्ड उपलब्ध नाही</string>
     <string name="couldnt_download_mms">MMS डाउनलोड करता आला नाही</string>
+    <string name="faq_1_title">अ‍ॅपला इंटरनेट प्रवेशाची आवश्यकता का आहे?</string>
+    <string name="faq_1_text">MMS अ‍ॅटॅचमेंट पाठवण्यासाठी याची गरज असते. इतर अ‍ॅप्सच्या तुलनेत MMS पाठवू न शकणे हा मोठा तोटा ठरेल, म्हणून आम्ही हा निर्णय घेतला.\nतरीही, नेहमीप्रमाणे, यात कोणत्याही जाहिराती, ट्रॅकिंग किंवा अ‍ॅनालिटिक्स नाहीत, इंटरनेटचा वापर फक्त MMS पाठवण्यासाठी केला जातो.</string>
+    <string name="faq_2_title">समोरच्या व्यक्तीला माझा MMS मिळत नाहीये, मी यासाठी काही करू शकतो का?</string>
+    <string name="faq_2_text">MMS चा आकार मोबाइल ऑपरेटरद्वारे मर्यादित असतो, तुम्ही अ‍ॅप सेटिंग्जमध्ये लहान आकार मर्यादा सेट करून पाहू शकता.</string>
+    <string name="faq_3_title">अ‍ॅप नियोजित संदेशांना समर्थन देते का?</string>
+    <string name="faq_3_text">होय, तुम्ही पाठवा (Send) बटण दाबून धरून आणि इच्छित तारीख व वेळ निवडून भविष्यात पाठवण्यासाठी संदेश नियोजित करू शकता.</string>
+    <string name="faq_4_title">माझ्या ग्रुप मेसेजची उत्तरे प्राप्तकर्त्यांना वैयक्तिक संदेश म्हणून का दिसतात?</string>
+    <string name="faq_4_text">तुम्हाला अ‍ॅप सेटिंग्जमध्ये \"ग्रुप संदेश MMS म्हणून पाठवा\" सक्षम करणे आवश्यक आहे. हे सुनिश्चित करेल की ग्रुप संदेश योग्य MMS म्हणून पाठवले जातील, ज्यामुळे सर्व सहभागींना एकमेकांची उत्तरे पाहता येतील.</string>
+    <string name="faq_auto_copy_title">OTP चे ऑटो कॉपी कसे बंद करावे?</string>
+    <string name="faq_auto_copy_text">सेटिंग्ज -> येणारे संदेश (Incoming Messages) मध्ये जा आणि \'OTP क्लिपबोर्डवर आपोआप कॉपी करणे\' अक्षम करा.</string>
+    <string name="faq_disable_tts_title">TTS अ‍धिसूचना कशा बंद कराव्यात?</string>
+    <string name="faq_disable_tts_text">सेटिंग्ज -> अ‍धिसूचना -> अ‍धिसूचना सानुकूल करा मध्ये जा आणि \'व्यवहारांसाठी नैसर्गिक आवाज वापरा\' अक्षम करा.</string>
+    <string name="faq_tts_voice_title">TTS आवाज कसा बदलावा?</string>
+    <string name="faq_tts_voice_text">सेटिंग्ज -> अ‍धिसूचना -> अ‍धिसूचना सानुकूल करा मध्ये जा आणि \'TTS आवाज\' वर टॅप करा. तुम्हाला फक्त \'डीफॉल्ट\' दिसत असल्यास, परत जा आणि यादी रिफ्रेश करण्यासाठी पुन्हा या (इंटरनेट आवश्यक). आवाज निवडा आणि \'चाचणी\' वर टॅप करा. तुम्ही खाली वेग आणि पिच देखील समायोजित करू शकता.</string>
+    <string name="faq_mute_title">संभाषण म्यूट कसे करावे?</string>
+    <string name="faq_mute_text">संभाषण उघडा, वर उजव्या कोपर्यात तीन ठिपक्यांवर टॅप करा आणि \'संभाषणाचा तपशील\' निवडा. सूचनांच्या खाली, \'अ‍धिसूचना म्यूट करा\' सक्षम करा.</string>
     <string name="tts_speed">बोलण्याचा वेग</string>
     <string name="tts_pitch">बोलण्याची पातळी (पिच)</string>
-    <string name="tts_interest_received"><![CDATA[<speak>व्याज प्राप्त झाले! <break time="250ms"/> <say-as interpret-as="currency" language="mr-IN">Rs.%1$s</say-as> तुमच्या %2$s मध्ये व्याज म्हणून जमा झाले आहे.</speak>]]></string>
-    <string name="tts_debit_message"><![CDATA[<speak><say-as interpret-as="currency" language="mr-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s तुमच्या %3$s मधून दिले गेले.</speak>]]></string>
-    <string name="tts_credit_message"><![CDATA[<speak><say-as interpret-as="currency" language="mr-IN">Rs.%1$s</say-as> <break time="200ms"/> %2$s तुमच्या %3$s मध्ये प्राप्त झाले.</speak>]]></string>
-    <string name="tts_to_whom"><emphasis level="moderate">%1$s</emphasis> यांना </string>
-    <string name="tts_from_whom"><emphasis level="moderate">%1$s</emphasis> कडून </string>
+    <string name="logs_enabled">लॉग सक्षम केले</string>
+    <string name="logs_disabled">लॉग अक्षम केले</string>
+    <string name="otp_notifications">OTP अ‍धिसूचना</string>
+    <string name="transaction_notifications">व्यवहाराच्या अ‍धिसूचना</string>
+    <string name="otp">OTP</string>
+    <string name="otp_message">OTP: %1$s\n%2$s</string>
+    <string name="credit_card">क्रेडिट कार्ड</string>
+    <string name="debit_card">डेबिट कार्ड</string>
+    <string name="account">खाते</string>
+    <string name="bank">बँक</string>
+    <string name="tide_ncmc_travel_card">टाइड NCMC ट्रॅव्हल कार्ड</string>
+    <string name="tide_card">टाइड कार्ड</string>
+    <string name="account_ending">%1$s ने संपणारे खाते</string>
+    <string name="card_ending">%1$s ने संपणारे कार्ड</string>
+    <string name="character_counter">%1$d/%2$d</string>
+    <string name="ssml_interest_received">&lt;speak&gt;व्याज मिळाले! &lt;break time=\"250ms\"/&gt; &lt;say-as interpret-as=\"currency\" language=\"mr-IN\"&gt;Rs.%1$s&lt;/say-as&gt; तुमच्या %2$s वर &lt;emphasis level=\"moderate\"&gt;व्याज&lt;/emphasis&gt; म्हणून जमा झाले.&lt;/speak&gt;</string>
+    <string name="ssml_amount_paid_to">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"mr-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; तुमच्या %3$s मधून &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt; ला दिले.&lt;/speak&gt;</string>
+    <string name="ssml_amount_paid">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"mr-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; तुमच्या %2$s मधून दिले.&lt;/speak&gt;</string>
+    <string name="ssml_amount_received_from">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"mr-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; &lt;emphasis level=\"moderate\"&gt;%2$s&lt;/emphasis&gt; कडून तुमच्या %3$s वर मिळाले.&lt;/speak&gt;</string>
+    <string name="ssml_amount_received">&lt;speak&gt;&lt;say-as interpret-as=\"currency\" language=\"mr-IN\"&gt;Rs.%1$s&lt;/say-as&gt; &lt;break time=\"200ms\"/&gt; तुमच्या %2$s वर मिळाले.&lt;/speak&gt;</string>
+    <string name="contributors_developers">Aga-C, AlbertoPellitteri, Alfavio, connyduck, correia55, dagkalis, DaPa, ForgottenUmbrella, KryptKode, naveensingh, qwertyfinger, vinendrakartik</string>
+    <string name="all">सर्व</string>
+    <string name="personal">वैयक्तिक</string>
+    <string name="banking">बँकिंग</string>
+    <string name="orders">ऑर्डर</string>
+    <string name="spam">स्पॅम</string>
+    <string name="govt">सरकारी</string>
+    <string name="operator">ऑपरेटर</string>
+    <string name="unread">न वाचलेले</string>
+    <string name="transaction">व्यवहार</string>
+    <string name="marketing">मार्केटिंग</string>
+    <string name="investments">गुंतवणूक</string>
+    <string name="service">सेवा</string>
+    <string name="filter_all">सर्व</string>
+    <string name="filter_unread">न वाचलेले</string>
+    <string name="filter_personal">वैयक्तिक</string>
+    <string name="filter_transactional">व्यवहार</string>
+    <string name="filter_banking">बँकिंग</string>
+    <string name="filter_marketing">प्रोमो</string>
+    <string name="filter_investments">गुंतवणूक</string>
+    <string name="filter_govt">सरकारी</string>
+    <string name="filter_orders">ऑर्डर</string>
+    <string name="filter_service">सेवा</string>
+    <string name="spam_indicator" />
+    <string name="version">आवृत्ती</string>
 </resources>
