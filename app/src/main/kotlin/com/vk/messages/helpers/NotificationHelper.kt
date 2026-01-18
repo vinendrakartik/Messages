@@ -31,6 +31,7 @@ import com.vk.messages.messaging.isShortCodeWithLetters
 import com.vk.messages.receivers.DeleteSmsReceiver
 import com.vk.messages.receivers.DirectReplyReceiver
 import com.vk.messages.receivers.MarkAsReadReceiver
+import androidx.core.net.toUri
 
 class NotificationHelper(private val context: Context) {
 
@@ -48,14 +49,8 @@ class NotificationHelper(private val context: Context) {
         // Suppress sound if it's a transaction and TTS is enabled.
         if (isTransaction && context.config.useNaturalVoices) return null
 
-        val soundName = if (isOtp) "otp" else "message"
-        val resId = context.resources.getIdentifier(soundName, "raw", context.packageName)
-        return if (resId != 0) {
-            Uri.parse("${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/$resId")
-        } else {
-            @Suppress("DEPRECATION")
-            android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION)
-        }
+        val resId = if (isOtp) R.raw.otp else R.raw.message
+        return "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/$resId".toUri()
     }
 
     @SuppressLint("NewApi")
