@@ -5,7 +5,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
@@ -49,7 +48,7 @@ android {
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
-        setProperty("archivesBaseName", "messages-$versionCode")
+        
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -119,10 +118,6 @@ android {
         register("gplay")
     }
 
-    sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
-    }
-
     compileOptions {
         val currentJavaVersionFromLibs = JavaVersion.valueOf(libs.versions.app.build.javaVersion.get())
         sourceCompatibility = currentJavaVersionFromLibs
@@ -171,11 +166,19 @@ detekt {
     allRules = false
 }
 
+kotlin {
+    jvmToolchain(libs.versions.app.build.kotlinJVMTarget.get().toInt())
+}
+
 dependencies {
     implementation("org.fossify:commons:1.0.0-local")
     implementation(libs.eventbus)
-    implementation(libs.indicator.fast.scroll)
-    implementation(libs.mmslib)
+    implementation(libs.indicator.fast.scroll) {
+        exclude(group = "org.fossify", module = "commons")
+    }
+    implementation(libs.mmslib) {
+        exclude(group = "org.fossify", module = "commons")
+    }
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.documentfile)
