@@ -192,5 +192,9 @@
     <string name="filter_orders">ऑर्डर</string>
     <string name="filter_service">सेवा</string>
     <string name="spam_indicator" />
-    <string name="version">संस्करण</string>
+    <string name="version">V</string>
+    <string name="fork_from">यह ऐप फॉसिफाइ मैसेजेस का एक फोर्क(fork) है</string>
+    <string name="share">शेयर करें</string>
+    <string name="releases">रिलीज</string>
+    <string name="share_text">%1$s देखें, फॉसिफाइ मैसेजेस का एक फोर्क जिसमें अतिरिक्त शानदार विशेषताएं हैं: https://github.com/vinendrakartik/Messages</string>
 </resources>

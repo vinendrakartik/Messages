@@ -192,5 +192,9 @@
     <string name="filter_orders">ஆர்டர்கள்</string>
     <string name="filter_service">சேவை</string>
     <string name="spam_indicator" />
-    <string name="version">பதிப்பு</string>
+    <string name="version">V</string>
+    <string name="fork_from">இந்த செயலி ஃபோசிஃபை மெசேஜஸின் ஒரு ஃபோர்க்(fork) ஆகும்</string>
+    <string name="share">பகிர்</string>
+    <string name="releases">வெளியீடுகள்</string>
+    <string name="share_text">%1$s-ஐப் பாருங்கள், இது AI அம்சங்களுடன் கூடிய ஃபோசிஃபை மெசேஜஸின் ஒரு ஃபோர்க்: https://github.com/vinendrakartik/Messages</string>
 </resources>

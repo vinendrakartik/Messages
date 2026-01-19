@@ -17,6 +17,7 @@ import androidx.core.content.FileProvider
 import org.fossify.commons.activities.BaseSimpleActivity
 import org.fossify.commons.models.FAQItem
 import com.vk.messages.BuildConfig
+import com.vk.messages.BuildConfig.*
 import com.vk.messages.R
 import org.json.JSONObject
 import java.io.File
@@ -39,14 +40,34 @@ class AppAboutActivity : BaseSimpleActivity() {
 
         val versionTextView = findViewById<TextView>(R.id.about_version_text)
         val packageTextView = findViewById<TextView>(R.id.about_package_text)
-        val versionName = BuildConfig.VERSION_NAME
+        val forkTextView = findViewById<TextView>(R.id.about_fork)
+        val shareTextView = findViewById<TextView>(R.id.about_share)
+        val releasesTextView = findViewById<TextView>(R.id.about_releases)
+        val versionName = VERSION_NAME
+        val appName = getString(R.string.app_name)
 
-        versionTextView.text = "${getString(R.string.version)} $versionName"
-        packageTextView.text = BuildConfig.APPLICATION_ID
+
+        versionTextView.text = "$appName ${getString(R.string.version)} $versionName"
+        packageTextView.text = APPLICATION_ID
+        forkTextView.text = getString(R.string.fork_from)
 
         // CHECK FOR UPDATES ON CLICK
         versionTextView.setOnClickListener {
             checkAppUpdate(versionName)
+        }
+
+        shareTextView.setOnClickListener {
+            val shareIntent = Intent(Intent.ACTION_SEND)
+            shareIntent.type = "text/plain"
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, appName)
+            val shareMessage = "Check out $appName, a fork of Fossify Messages with additional great features: https://github.com/vinendrakartik/Messages"
+            shareIntent.putExtra(Intent.EXTRA_TEXT, shareMessage)
+            startActivity(Intent.createChooser(shareIntent, "Share via"))
+        }
+
+        releasesTextView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/vinendrakartik/Messages/releases"))
+            startActivity(intent)
         }
 
         setupFAQ(arrayListOf(
@@ -182,13 +203,18 @@ class AppAboutActivity : BaseSimpleActivity() {
                     total += count
                     output.write(data, 0, count)
 
+                    // FIX: Only calculate progress if we know the file size
                     if (fileLength > 0) {
                         val progress = (total * 100 / fileLength).toInt()
 
-                        // Update UI on Main Thread
                         Handler(Looper.getMainLooper()).post {
                             progressBar.progress = progress
                             progressPercent.text = "$progress%"
+                        }
+                    } else {
+                        // Optional: Show indeterminate state if size is unknown
+                        Handler(Looper.getMainLooper()).post {
+                            progressPercent.text = "${total / 1024} KB"
                         }
                     }
                 }

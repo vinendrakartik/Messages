@@ -1,35 +1,40 @@
-# Fossify Messages with OTP and transaction detection
+# Messages - A Fork of Fossify Messages but Better
+
 <img alt="Logo" src="graphics/icon.webp" width="120" />
 
+This is a fork of the official [Fossify Messages](https://github.com/FossifyOrg/Messages) app, enhanced with several additional features to improve your messaging experience. Mainly targeting Indian Users.
 
-Fossify Messages is your trusted messaging companion, designed to enhance your messaging experience in various ways.
-**The above is the official fossify message links however in my fork the following changes**<br><br><br>
-**1. Build & Compatibility Fixes**<br>
-• **Resolved Build Error 25**: Added --enable-native-access, --add-opens, and -XX:+UseParallelGC to gradle.properties to ensure compatibility with Gradle 8.13 and JDK 21. This is personal preference<br>
-• **Robust APK Signing**: Updated app/build.gradle.kts to automatically detect signing credentials from your global ~/.gradle/gradle.properties using SIGNING_ snake_case naming conventions.<br>
-• **Warning Cleanup**: Fixed various deprecation warnings in Context.kt (Glide into calls) and resolved unresolved references during the build process.<br><br>
-**2. New Feature**s: OTP & Transaction Automation<br>
-• **OTP Detection**: Created OTPDetector.kt to identify verification codes. The app now automatically copies OTPs to the clipboard and plays a dedicated otp.mp3 sound (the present audio file is my daughter SAYING PAPPA OTP 😍). Once everything is stable I'll update to other tone.<br>
-• **Smart Transaction Announcements**:<br>
-◦ Added TransactionDetector.kt to parse debit/credit alerts from major banks (Axis, HDFC, IDFC, Kotak, Federal, etc.).<br>
-◦ Implemented a Singleton TTSHelper to announce transactions out loud (e.g., "Paid 100 rupees to Amazon from HDFC bank").<br>
-◦ **SSML Integration**: Uses Speech Synthesis Markup Language for expressive and natural-sounding announcements (e.g., higher pitch for interest, emphasis on recipients).<br>
-◦ **Statement Filtering**: Intelligent detection to skip non-transactional messages like bill generation or "minimum due" alerts.<br>
-• **TTS Customization**: Added interactive sliders in Settings to adjust speech speed and pitch to your preference.<br>
-• **Dedicated Notification Channels**: Created separate Android notification channels for OTP and Transactions to allow for independent customization and audio routing.<br><br>
-**3. App Functionality Enhancements**<br>
-• **Customizable Swipe Actions**: Added support for left and right swipe actions in the conversation list. Users can choose between "Mark as Read/Unread", "Delete", or "Archive" for each direction.<br>
-• **Mute Indicators**: Muted conversations now display a visual indicator in the main list, allowing you to easily identify silent threads.<br>
-• **Mark All as Read**: Fully implemented this missing feature by adding the necessary Room DAO queries, a Context extension, and a new menu option in the MainActivity toolbar.<br>
-• **Notification Actions**: Fixed the "Mark as read" button in the notification bar to correctly dismiss unique OTP and Transaction notifications by passing their specific hash IDs to the MarkAsReadReceiver.<br><br>
-**4. Privacy, Security & Optimization**<br>
-• **Privacy-focused Debugging**: Added a "Enable Debug Logs" toggle under Security settings. All sensitive transaction and OTP logs are hidden by default.<br>
-• **Broadcast Security**: The `org.fossify.messages.TEST_SMS` ADB testing command is now strictly restricted and only works when Debug Logs are enabled.<br>
-• **Size Optimization**: Reduced the final APK size by ~1.5MB by using `localeFilters` to strip out all non-essential language resources, keeping only English and major Indian languages (Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam).<br>
-• **Unlocked Premium Features**: Removed the purchase requirement and "locked" labels for Blocked Numbers and Blocked Keywords settings.<br>
-• **Removed Monetization Prompts**: Completely hid the "Purchase Fossify Thank You" item from the General Settings to provide a cleaner, fully open-source experience (there is occassional pop up to buy and during first run).<br>
+## Key Features
+
+### 1. Smart Messaging Automation
+*   **OTP Handling**: Automatically detects and copies One-Time Passwords (OTPs) to your clipboard for quick access. It also features a unique notification sound for OTPs.
+*   **Transaction Announcements**: The app intelligently parses transaction alerts (debit/credit) from major banks and announces them out loud using Text-to-Speech (TTS).
+*   **Natural Sounding TTS**: Utilizes SSML (Speech Synthesis Markup Language) for more expressive and natural-sounding voice announcements.
+*   **Customizable TTS**: You can now choose from multiple TTS voices and adjust the speech speed and pitch to your liking in the settings.
+*   **Message Filtering**: Quickly filter messages type like personal/unread/transactional/service/govt/promotion/banking/orders.
+
+### 2. Enhanced User Experience
+*   **Customizable Swipe Gestures**: Swipe left or right on a conversation to perform quick actions. You can customize these gestures to Mark as Read/Unread, Delete, or Archive conversations.
+*   **Mark All as Read**: Easily mark all your conversations as read with a single tap from the main menu.
+*   **Mute Indicators**: A visual indicator is now shown for muted conversations, making them easy to spot in your conversation list.
+*   **Spam Indicators**: A visual as well as chip indicator for a potential spam message
+*   **Dedicated Notification Channels**: Separate notification channels for OTPs and Transactions allow for fine-grained control over alerts.
+
+### 3. Privacy & Open Source
+*   **Unlocked Features**: All features, including Blocked Numbers and Blocked Keywords, are available for free.
+*   **No Monetization**: All "Thank You" purchase prompts have been removed for a cleaner, fully open-source experience.
+*   **Git hub update**: In About section click the version number to check and download updates.
+*   **Privacy-Focused Logging**: Debug logs for sensitive information (like OTPs and transactions) are disabled by default and can only be enabled in the security settings.
+
+### 4. Build & Optimization
+*   **Optimized Size**: The app size is reduced by including only English and major Indian languages (Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam).
+*   **Modern Build Compatibility**: Includes fixes to ensure the app builds successfully with the latest versions of Gradle and JDK.
 
 ### Screenshots
-| Conversations | Mute Notifications | Settings | Custom Colors | Mark All Read |
-|:---:|:---:|:---:|:---:|:---:|
-| <img src="app_images/Conversations.png" width="200" /> | <img src="app_images/MuteNotifications.jpg" width="200" /> | <img src="app_images/Settings.png" width="200" /> |  <img src="app_images/Custom_colors.png" width="200" /> | <img src="app_images/MarkAllRead.png" width="200" /> |
+| Conversations | Mute Notifications |
+|:---:|:---:|
+| <img src="app_images/Conversations.png" width="200" /> | <img src="app_images/MuteNotifications.jpg" width="200" /> |
+| **Settings** | **More Settings** |
+| <img src="app_images/Settings.png" width="200" /> | <img src="app_images/Settings2.png" width="200" /> |
+| **About** | **Custom Colors** |
+| <img src="app_images/About.png" width="200" /> | <img src="app_images/Custom_colors.png" width="200" /> |

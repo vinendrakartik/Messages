@@ -192,5 +192,9 @@
     <string name="filter_orders">ऑर्डर</string>
     <string name="filter_service">सेवा</string>
     <string name="spam_indicator" />
-    <string name="version">आवृत्ती</string>
+    <string name="version">V</string>
+    <string name="fork_from">हे अॅप फॉसिफाय मेसेजेसचा एक फोर्क(fork) आहे</string>
+    <string name="share">शेअर करा</string>
+    <string name="releases">रिलीज</string>
+    <string name="share_text">%1$s पहा, फॉसिफाय मेसेजेसचा एक फोर्क ज्यात अतिरिक्त उत्कृष्ट वैशिष्ट्ये आहेत: https://github.com/vinendrakartik/Messages</string>
 </resources>

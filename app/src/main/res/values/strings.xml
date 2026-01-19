@@ -215,7 +215,10 @@
     <string name="filter_orders">Orders</string>
     <string name="filter_service">Service</string>
     <string name="spam_indicator" />
-    <string name="version">Version</string>
-
+    <string name="version">V</string>
+    <string name="fork_from">This app is a fork of Fossify Messages</string>
+    <string name="share">Share</string>
+    <string name="releases">Releases</string>
+    <string name="share_text">Check out %1$s, a fork of Fossify Messages with AI features: https://github.com/vinendrakartik/Messages</string>
 
 </resources>

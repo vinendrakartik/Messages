@@ -45,13 +45,15 @@ class ConversationsAdapter(
         val archiveAvailable = activity.config.isArchiveAvailable
 
         menu.apply {
+            // UPDATED: Removed addLockedLabelIfNeeded wrapper
             findItem(R.id.cab_block_number).title =
-                activity.addLockedLabelIfNeeded(org.fossify.commons.R.string.block_number)
+                activity.getString(org.fossify.commons.R.string.block_number)
+
             findItem(R.id.cab_add_number_to_contact).isVisible =
                 isSingleSelection && !isGroupConversation
             findItem(R.id.cab_dial_number).isVisible =
                 isSingleSelection && !isGroupConversation &&
-                        !isShortCodeWithLetters(selectedConversation.phoneNumber)
+                    !isShortCodeWithLetters(selectedConversation.phoneNumber)
             findItem(R.id.cab_copy_number).isVisible = isSingleSelection && !isGroupConversation
             findItem(R.id.cab_rename_conversation).isVisible =
                 isSingleSelection && isGroupConversation
@@ -88,11 +90,7 @@ class ConversationsAdapter(
     }
 
     private fun tryBlocking() {
-        if (activity.isOrWasThankYouInstalled()) {
-            askConfirmBlock()
-        } else {
-            FeatureLockedDialog(activity) { }
-        }
+        askConfirmBlock()
     }
 
     private fun askConfirmBlock() {

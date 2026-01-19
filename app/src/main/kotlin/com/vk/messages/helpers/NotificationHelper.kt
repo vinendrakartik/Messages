@@ -41,9 +41,36 @@ class NotificationHelper(private val context: Context) {
         .setName(context.getString(R.string.me))
         .build()
 
+
     private val otpChannelId = "otp_channel"
-    private val transactionChannelId = "transaction_channel_tts" // Changed ID to force re-creation
-    private val defaultChannelId = NOTIFICATION_CHANNEL_ID
+    private val transactionChannelId = "transaction_channel_tts"
+    private val defaultChannelId = "sms_channel"
+
+    // Heartbeat: [Pause, Thump, Short Pause, Thump, Long Pause]
+    private val heartbeatPattern = longArrayOf(
+        0, 100, 50, 100, 500,
+        100, 50, 100, 500,
+        100, 50, 100, 300
+    )
+
+    // Transaction: "Cha-Ching"
+    // Tick-Tick... BOOM
+    private val transactionPattern = longArrayOf(
+        0,
+        200, 80, 200,
+        300,
+        600
+    )
+
+    // Morse Code "OTP"
+    private val otpPattern = longArrayOf(
+        0,
+        160, 80, 160, 80, 160,
+        150,
+        150,
+        150,
+        80, 80, 150, 80, 150, 80, 80
+    )
 
     private fun getSoundUri(isOtp: Boolean, isTransaction: Boolean): Uri? {
         // Suppress sound if it's a transaction and TTS is enabled.
@@ -70,9 +97,7 @@ class NotificationHelper(private val context: Context) {
         val otp = body.extractOTP()
         val isOtp = otp != null
 
-        // Pass the address (header) to extractTransactionInfo for better bank detection
         val transaction = if (!isOtp) body.extractTransactionInfo(context, address) else null
-        // Treat statement messages as non-transactional notifications
         val isTransaction = transaction != null && !transaction.isStatement
 
         if (otp != null) {
@@ -91,6 +116,7 @@ class NotificationHelper(private val context: Context) {
             else -> defaultChannelId
         }
 
+        // Ensure channel exists
         when {
             isOtp -> createChannel(otpChannelId, context.getString(R.string.otp_notifications), isOtp = true, isTransaction = false)
             isTransaction && context.config.useNaturalVoices -> createChannel(transactionChannelId, context.getString(R.string.transaction_notifications), isOtp = false, isTransaction = true)
@@ -101,6 +127,13 @@ class NotificationHelper(private val context: Context) {
             otp != null -> otp.hashCode()
             transaction != null && !transaction.isStatement -> transaction.hashCode()
             else -> threadId.hashCode()
+        }
+
+        // Determine correct vibration pattern for the Builder
+        val vibrationPattern = when {
+            isOtp -> otpPattern
+            isTransaction -> transactionPattern
+            else -> heartbeatPattern
         }
 
         val contentIntent = Intent(context, ThreadActivity::class.java).apply {
@@ -186,6 +219,7 @@ class NotificationHelper(private val context: Context) {
         } else {
             null
         }
+
         val builder = NotificationCompat.Builder(context, notificationChannelId).apply {
             val contentBody = if (otp != null) context.getString(R.string.otp_message, otp, body) else body
             when (context.config.lockScreenVisibilitySetting) {
@@ -208,11 +242,14 @@ class NotificationHelper(private val context: Context) {
             setSmallIcon(R.drawable.ic_messenger)
             setContentIntent(contentPendingIntent)
             priority = NotificationCompat.PRIORITY_MAX
-            setDefaults(Notification.DEFAULT_LIGHTS)
             setCategory(Notification.CATEGORY_MESSAGE)
             setAutoCancel(true)
             setOnlyAlertOnce(alertOnlyOnce)
 
+            // CRITICAL: Explicitly set vibration on Builder too
+            setVibrate(vibrationPattern)
+
+            // Set sound (might be null for TTS transactions)
             setSound(getSoundUri(isOtp, isTransaction), AudioManager.STREAM_NOTIFICATION)
         }
 
@@ -227,7 +264,6 @@ class NotificationHelper(private val context: Context) {
         )
             .setChannelId(notificationChannelId)
 
-        // Use the custom delete intent for OTP/Transactions too
         builder.addAction(
             org.fossify.commons.R.drawable.ic_delete_vector,
             context.getString(org.fossify.commons.R.string.delete),
@@ -250,7 +286,6 @@ class NotificationHelper(private val context: Context) {
             }
         }
 
-        // Log the notification posting
         context.logDebug("NotificationHelper", "Posted notification id=$notificationId address=$address isOtp=$isOtp isTransaction=$isTransaction")
     }
 
@@ -295,7 +330,6 @@ class NotificationHelper(private val context: Context) {
             clipboard.setPrimaryClip(clip)
             context.logDebug("NotificationHelper", "Copied OTP to clipboard")
 
-            // Clear clipboard after 60 seconds
             Handler(Looper.getMainLooper()).postDelayed({
                 val currentClip = clipboard.primaryClip
                 if (currentClip != null && currentClip.itemCount > 0 && currentClip.getItemAt(0).text.toString() == otp) {
@@ -352,19 +386,38 @@ class NotificationHelper(private val context: Context) {
     private fun createChannel(id: String, name: String, isOtp: Boolean, isTransaction: Boolean) {
         try {
             val soundUri = getSoundUri(isOtp, isTransaction)
-            val audioAttributes = AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
-                .build()
+            val audioAttributes = if (soundUri != null) {
+                AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .setLegacyStreamType(AudioManager.STREAM_NOTIFICATION)
+                    .build()
+            } else {
+                null
+            }
 
             val importance = IMPORTANCE_HIGH
             NotificationChannel(id, name, importance).apply {
                 setBypassDnd(false)
                 enableLights(true)
-                setSound(soundUri, audioAttributes)
-                val shouldVibrate = !(isTransaction && context.config.useNaturalVoices)
-                enableVibration(shouldVibrate)
+
+                // Only set sound if we have a URI, otherwise it's silent (but we want vibration!)
+                if (soundUri != null) {
+                    setSound(soundUri, audioAttributes)
+                } else {
+                    // Explicitly set no sound if intended (for TTS)
+                    setSound(null, null)
+                }
+
+                // ENABLED VIBRATION ALWAYS
+                enableVibration(true)
+
+                vibrationPattern = when {
+                    isOtp -> otpPattern
+                    isTransaction -> transactionPattern
+                    else -> heartbeatPattern
+                }
+
                 notificationManager.createNotificationChannel(this)
             }
         } catch (t: Throwable) {
@@ -404,7 +457,6 @@ class NotificationHelper(private val context: Context) {
         return messagingStyle?.messages ?: emptyList()
     }
 
-    // Utility used by notifications
     private fun generateRandomId(): Int {
         return ((System.currentTimeMillis() % Int.MAX_VALUE).toInt() xor (Math.random() * Int.MAX_VALUE).toInt())
     }

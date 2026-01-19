@@ -9,7 +9,7 @@ fun String.extractOTP(): String? {
     if (!containsKeyword) return null
     
     // Avoid false positives for mutual fund statements, folio numbers, and PDF passwords
-    val exclusionKeywords = listOf("folio", "nav", "statement", "pan as the password", "to open", "pdf", "units")
+    val exclusionKeywords = listOf("folio", "nav", "statement", "pan as the password", "to open", "pdf", "units","successful")
     if (exclusionKeywords.any { this.contains(it, ignoreCase = true) }) return null
 
     // 2. Extract 4 to 8 digit numbers

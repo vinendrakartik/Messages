@@ -192,5 +192,9 @@
     <string name="filter_orders">ಆರ್ಡರ್‌ಗಳು</string>
     <string name="filter_service">ಸೇವೆ</string>
     <string name="spam_indicator" />
-    <string name="version">ಆವೃತ್ತಿ</string>
+    <string name="version">V</string>
+    <string name="fork_from">ಈ ಅಪ್ಲಿಕೇಶನ್ ಫಾಸಿಫೈ ಸಂದೇಶಗಳ ಫೋರ್ಕ್(fork) ಆಗಿದೆ</string>
+    <string name="share">ಹಂಚಿಕೊಳ್ಳಿ</string>
+    <string name="releases">ಬಿಡುಗಡೆಗಳು</string>
+    <string name="share_text">%1$s ಅನ್ನು ಪರಿಶೀಲಿಸಿ, ಇದು ಹೆಚ್ಚುವರಿ ಉತ್ತಮ ವೈಶಿಷ್ಟ್ಯಗಳೊಂದಿಗೆ ಫಾಸಿಫೈ ಸಂದೇಶಗಳ ಫೋರ್ಕ್ ಆಗಿದೆ: https://github.com/vinendrakartik/Messages</string>
 </resources>

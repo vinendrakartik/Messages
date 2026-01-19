@@ -12,8 +12,8 @@
       "filters": [],
       "attributes": [],
       "versionCode": 20,
-      "versionName": "1.8.4-vk",
-      "outputFile": "messages-20-core-release.apk"
+      "versionName": "1.8.5-vk",
+      "outputFile": "app-core-release.apk"
     }
   ],
   "elementType": "File",
@@ -22,14 +22,14 @@
       "minApi": 28,
       "maxApi": 30,
       "baselineProfiles": [
-        "baselineProfiles/1/messages-20-core-release.dm"
+        "baselineProfiles/1/app-core-release.dm"
       ]
     },
     {
       "minApi": 31,
       "maxApi": 2147483647,
       "baselineProfiles": [
-        "baselineProfiles/0/messages-20-core-release.dm"
+        "baselineProfiles/0/app-core-release.dm"
       ]
     }
   ],

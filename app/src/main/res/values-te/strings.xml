@@ -192,5 +192,9 @@
     <string name="filter_orders">ఆర్డర్‌లు</string>
     <string name="filter_service">సేవ</string>
     <string name="spam_indicator" />
-    <string name="version">వెర్షన్</string>
+    <string name="version">V</string>
+    <string name="fork_from">ఈ యాప్ ఫాసిఫై సందేశాల ఫోర్క్(fork)</string>
+    <string name="share">పంచుకోండి</string>
+    <string name="releases">విడుదలలు</string>
+    <string name="share_text">%1$sని చూడండి, అదనపు గొప్ప ఫీచర్లతో ఫాసిఫై సందేశాల ఫోర్క్: https://github.com/vinendrakartik/Messages</string>
 </resources>
