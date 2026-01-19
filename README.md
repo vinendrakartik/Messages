@@ -29,12 +29,11 @@ This is a fork of the official [Fossify Messages](https://github.com/FossifyOrg/
 ### 4. Build & Optimization
 *   **Optimized Size**: The app size is reduced by including only English and major Indian languages (Hindi, Marathi, Telugu, Tamil, Kannada, Malayalam).
 *   **Modern Build Compatibility**: Includes fixes to ensure the app builds successfully with the latest versions of Gradle and JDK.
-
 ### Screenshots
 | Conversations | Mute Notifications |
 |:---:|:---:|
-| <img src="app_images/Conversations.png" width="200" /> | <img src="app_images/MuteNotifications.jpg" width="200" /> |
+| <img src="https://raw.githubusercontent.com/vinendrakartik/Messages/com.vk.messages/app_images/Conversations.png" width="200" /> | <img src="https://raw.githubusercontent.com/vinendrakartik/Messages/com.vk.messages/app_images/MuteNotifications.jpg" width="200" /> |
 | **Settings** | **More Settings** |
-| <img src="app_images/Settings.png" width="200" /> | <img src="app_images/Settings2.png" width="200" /> |
+| <img src="https://raw.githubusercontent.com/vinendrakartik/Messages/com.vk.messages/app_images/Settings.png" width="200" /> | <img src="https://raw.githubusercontent.com/vinendrakartik/Messages/com.vk.messages/app_images/Settings2.png" width="200" /> |
 | **About** | **Custom Colors** |
-| <img src="app_images/About.png" width="200" /> | <img src="app_images/Custom_colors.png" width="200" /> |
+| <img src="https://raw.githubusercontent.com/vinendrakartik/Messages/com.vk.messages/app_images/About.png" width="200" /> | <img src="https://raw.githubusercontent.com/vinendrakartik/Messages/com.vk.messages/app_images/Custom_colors.png" width="200" /> |
