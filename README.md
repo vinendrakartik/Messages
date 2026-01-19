@@ -2,7 +2,7 @@
 
 <img alt="Logo" src="graphics/icon.webp" width="120" />
 
-This is a fork of the official [Fossify Messages](https://github.com/FossifyOrg/Messages) app, enhanced with several additional features to improve your messaging experience. Mainly targeting Indian Users.
+This is a fork of the official [Fossify Messages](https://github.com/FossifyOrg/Messages) app, enhanced with several additional features to improve your messaging experience. Mainly targeting Indian Users. (Switch to com.vk.messages branch to view the latest code)
 
 ## Key Features
 
