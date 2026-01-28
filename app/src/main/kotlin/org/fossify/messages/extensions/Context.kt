@@ -68,6 +68,7 @@ import org.fossify.messages.interfaces.MessagesDao
 import org.fossify.messages.messaging.MessagingUtils
 import org.fossify.messages.messaging.MessagingUtils.Companion.ADDRESS_SEPARATOR
 import org.fossify.messages.messaging.SmsSender
+import org.fossify.messages.messaging.scheduleMessage
 import org.fossify.messages.models.Attachment
 import org.fossify.messages.models.Conversation
 import org.fossify.messages.models.Draft
@@ -77,6 +78,7 @@ import org.fossify.messages.models.NamePhoto
 import org.fossify.messages.models.RecycleBinMessage
 import org.xmlpull.v1.XmlPullParserException
 import java.io.FileNotFoundException
+import kotlin.time.Duration.Companion.minutes
 
 val Context.config: Config
     get() = Config.newInstance(applicationContext)
@@ -478,12 +480,10 @@ private fun Context.queryCursorUnsafe(
 }
 
 fun Context.getConversationIds(): List<Long> {
-    val uri = "${Threads.CONTENT_URI}?simple=true".toUri()
     val projection = arrayOf(Threads._ID)
-    val selection = "${Threads.MESSAGE_COUNT} > 0"
     val sortOrder = "${Threads.DATE} ASC"
     val conversationIds = mutableListOf<Long>()
-    queryCursor(uri, projection, selection, null, sortOrder, true) { cursor ->
+    queryCursor(Threads.CONTENT_URI, projection, null, null, sortOrder, true) { cursor ->
         val id = cursor.getLongValue(Threads._ID)
         conversationIds.add(id)
     }
@@ -1313,13 +1313,13 @@ fun Context.updateScheduledMessagesThreadId(messages: List<Message>, newThreadId
 
 fun Context.clearExpiredScheduledMessages(threadId: Long, messagesToDelete: List<Message>? = null) {
     val messages = messagesToDelete ?: messagesDB.getScheduledThreadMessages(threadId)
-    val now = System.currentTimeMillis() + 500L
+    val cutoff = System.currentTimeMillis() - 1.minutes.inWholeMilliseconds
 
     try {
-        messages.filter { it.isScheduled && it.millis() < now }.forEach { msg ->
+        messages.filter { it.isScheduled && it.millis() < cutoff }.forEach { msg ->
             messagesDB.delete(msg.id)
         }
-        if (messages.filterNot { it.isScheduled && it.millis() < now }.isEmpty()) {
+        if (messages.filterNot { it.isScheduled && it.millis() < cutoff }.isEmpty()) {
             // delete empty temporary thread
             val conversation = conversationsDB.getConversationWithThreadId(threadId)
             if (conversation != null && conversation.isScheduled) {
@@ -1329,6 +1329,18 @@ fun Context.clearExpiredScheduledMessages(threadId: Long, messagesToDelete: List
     } catch (e: Exception) {
         e.printStackTrace()
         return
+    }
+}
+
+fun Context.rescheduleAllScheduledMessages() {
+    val scheduledMessages = try {
+        messagesDB.getAllScheduledMessages()
+    } catch (_: Exception) {
+        return
+    }
+
+    scheduledMessages.forEach { message ->
+        runCatching { scheduleMessage(message) }
     }
 }
 

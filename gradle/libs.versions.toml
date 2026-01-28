@@ -1,7 +1,7 @@
 [versions]
 #jetbrains
 kotlin = "2.3.0"
-kotlinxSerializationJson = "1.9.0"
+kotlinxSerializationJson = "1.10.0"
 #KSP
 ksp = "2.3.4"
 #Detekt
@@ -17,7 +17,7 @@ eventbus = "3.3.1"
 #Room
 room = "2.8.4"
 #Fossify
-commons = "5.13.1"
+commons = "6.0.0"
 mmslib = "1.0.0"
 indicator-fast-scroll = "4524cd0b61"
 #Gradle

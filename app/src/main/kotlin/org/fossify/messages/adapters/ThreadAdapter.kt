@@ -38,9 +38,11 @@ import org.fossify.commons.extensions.formatDateOrTime
 import org.fossify.commons.extensions.getContrastColor
 import org.fossify.commons.extensions.getProperPrimaryColor
 import org.fossify.commons.extensions.getTextSize
+import org.fossify.commons.extensions.getTimeFormat
 import org.fossify.commons.extensions.shareTextIntent
 import org.fossify.commons.extensions.showErrorToast
 import org.fossify.commons.extensions.usableScreenSize
+import org.fossify.commons.helpers.FontHelper
 import org.fossify.commons.helpers.SimpleContactsHelper
 import org.fossify.commons.helpers.ensureBackgroundThread
 import org.fossify.commons.views.MyRecyclerView
@@ -85,6 +87,7 @@ import org.fossify.messages.models.ThreadItem.ThreadDateTime
 import org.fossify.messages.models.ThreadItem.ThreadError
 import org.fossify.messages.models.ThreadItem.ThreadSending
 import org.fossify.messages.models.ThreadItem.ThreadSent
+import org.joda.time.DateTime
 
 class ThreadAdapter(
     activity: SimpleActivity,
@@ -220,10 +223,19 @@ class ThreadAdapter(
 
     private fun copyToClipboard() {
         val selectedMessages = getSelectedItems().filterIsInstance<Message>()
-        val textToCopy = selectedMessages
-            .mapNotNull { message -> message.body.takeIf { it.isNotEmpty() } }
-            .joinToString("\n\n")
-        
+        if (selectedMessages.isEmpty()) return
+
+        val textToCopy = if (selectedMessages.size == 1) {
+            selectedMessages.first().body
+        } else {
+            selectedMessages.filter { it.body.isNotEmpty() }.joinToString("\n\n") { message ->
+                val format = "${activity.config.dateFormat}, ${activity.getTimeFormat()}"
+                val dateTime = DateTime(message.millis()).toString(format)
+                val sender = if (message.isReceivedMessage()) message.senderName else activity.getString(R.string.me)
+                "[$dateTime] $sender: ${message.body}"
+            }
+        }
+
         if (textToCopy.isNotEmpty()) {
             activity.copyToClipboard(textToCopy)
         }
@@ -462,7 +474,7 @@ class ThreadAdapter(
                 setLinkTextColor(contrastColor)
 
                 if (message.isScheduled) {
-                    typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC)
+                    typeface = Typeface.create(FontHelper.getTypeface(activity), Typeface.ITALIC)
                     val scheduledDrawable = AppCompatResources.getDrawable(activity, org.fossify.commons.R.drawable.ic_clock_vector)?.apply {
                         applyColorFilter(contrastColor)
                         val size = lineHeight
@@ -471,7 +483,7 @@ class ThreadAdapter(
 
                     setCompoundDrawables(null, null, scheduledDrawable, null)
                 } else {
-                    typeface = Typeface.DEFAULT
+                    typeface = FontHelper.getTypeface(activity)
                     setCompoundDrawables(null, null, null, null)
                 }
             }
