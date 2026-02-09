@@ -4,24 +4,19 @@ import android.content.Context
 import android.net.Uri
 import com.bumptech.glide.Glide
 import com.klinker.android.send_message.MmsReceivedReceiver
-import org.fossify.commons.extensions.baseConfig
-import org.fossify.commons.extensions.getMyContactsCursor
-import org.fossify.commons.extensions.isNumberBlocked
-import org.fossify.commons.extensions.showErrorToast
-import org.fossify.commons.helpers.SimpleContactsHelper
-import org.fossify.commons.helpers.ensureBackgroundThread
 import com.vk.messages.R
-import com.vk.messages.extensions.getConversations
-import com.vk.messages.extensions.getLatestMMS
-import com.vk.messages.extensions.getNameFromAddress
-import com.vk.messages.extensions.insertOrUpdateConversation
-import com.vk.messages.extensions.shouldUnarchive
-import com.vk.messages.extensions.showReceivedMessageNotification
-import com.vk.messages.extensions.updateConversationArchivedStatus
+import com.vk.messages.extensions.*
 import com.vk.messages.helpers.ReceiverUtils.isMessageFilteredOut
 import com.vk.messages.helpers.refreshConversations
 import com.vk.messages.helpers.refreshMessages
 import com.vk.messages.models.Message
+import org.fossify.commons.extensions.baseConfig
+import org.fossify.commons.extensions.getMyContactsCursor
+import org.fossify.commons.extensions.isNumberBlocked
+import org.fossify.commons.extensions.showErrorToast
+import org.fossify.commons.helpers.ContactLookupResult
+import org.fossify.commons.helpers.SimpleContactsHelper
+import org.fossify.commons.helpers.ensureBackgroundThread
 
 class MmsReceiver : MmsReceivedReceiver() {
 
@@ -29,8 +24,10 @@ class MmsReceiver : MmsReceivedReceiver() {
         if (context.isNumberBlocked(address)) return true
         if (context.baseConfig.blockUnknownNumbers) {
             context.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true).use {
-                val isKnownContact = SimpleContactsHelper(context).existsSync(address, it)
-                return !isKnownContact
+                return when (SimpleContactsHelper(context).existsSync(address, it)) {
+                    ContactLookupResult.Found -> false
+                    else -> true
+                }
             }
         }
 

@@ -3,6 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:installLocation="auto">
 
+    <uses-permission android:name="com.vk.messages.permission.INTERNAL_BROADCAST" />
+
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.WRITE_SMS" />
     <uses-permission android:name="android.permission.SEND_SMS" />
@@ -19,15 +21,26 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" tools:ignore="ScopedStorage" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
-    <uses-permission android:name="android.permission.USE_BIOMETRIC" tools:node="remove" />
+    <uses-permission
+        android:name="android.permission.USE_BIOMETRIC"
+        tools:node="remove" />
 
-    <uses-feature android:name="android.hardware.telephony" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <permission
+        android:name="com.vk.messages.permission.INTERNAL_BROADCAST"
+        android:protectionLevel="signature" />
 
     <queries>
         <package android:name="org.fossify.contacts.debug" />
         <package android:name="org.fossify.contacts" />
+
         <intent>
             <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
@@ -49,12 +62,12 @@
 
         <activity
             android:name=".activities.MainActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true" />
 
         <activity
             android:name=".activities.ThreadActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:launchMode="singleTop"
             android:parentActivityName=".activities.MainActivity"
@@ -62,28 +75,30 @@
 
         <activity
             android:name=".activities.RecycleBinConversationsActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:label="@string/recycle_bin"
             android:parentActivityName=".activities.MainActivity" />
 
         <activity
             android:name=".activities.ArchivedConversationsActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:label="@string/archived_conversations"
             android:parentActivityName=".activities.MainActivity" />
 
         <activity
             android:name=".activities.NewConversationActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:parentActivityName=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SENDTO" />
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
@@ -103,7 +118,7 @@
 
         <activity
             android:name=".activities.SettingsActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="true"
             android:label="@string/settings"
             android:parentActivityName=".activities.MainActivity">
@@ -115,49 +130,49 @@
 
         <activity
             android:name=".activities.AppAboutActivity"
+            android:exported="false"
             android:label="@string/about"
-            android:theme="@style/AppTheme"
-            android:exported="false" />
+            android:theme="@style/AppTheme" />
 
         <activity
             android:name=".activities.CustomizationNotificationsActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:label="@string/customize_notifications"
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity
             android:name="org.fossify.commons.activities.CustomizationActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden|uiMode"
             android:exported="false"
             android:label="@string/customize_colors"
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity
             android:name="org.fossify.commons.activities.ManageBlockedNumbersActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:label="@string/blocked_numbers"
             android:parentActivityName=".activities.SettingsActivity"
-            tools:replace="android:label" />
+            tools:replace="android:label,android:configChanges" />
 
         <activity
             android:name=".activities.ManageBlockedKeywordsActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:label="@string/blocked_keywords"
             android:parentActivityName=".activities.SettingsActivity" />
 
         <activity
             android:name=".activities.VCardViewerActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:label="@string/contact_details"
             android:parentActivityName=".activities.ThreadActivity" />
 
         <activity
             android:name=".activities.ConversationDetailsActivity"
-            android:configChanges="orientation"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false"
             android:label="@string/conversation_details"
             android:parentActivityName=".activities.ThreadActivity" />
@@ -169,6 +184,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.RESPOND_VIA_MESSAGE" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="sms" />
                 <data android:scheme="smsto" />
                 <data android:scheme="mms" />
@@ -178,9 +194,15 @@
 
         <service android:name="com.android.mms.transaction.TransactionService" />
 
-        <receiver android:name=".receivers.SmsStatusSentReceiver" />
-        <receiver android:name=".receivers.SmsStatusDeliveredReceiver" />
-        <receiver android:name=".receivers.ScheduledMessageReceiver" android:exported="false" />
+        <receiver
+            android:name=".receivers.SmsStatusSentReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".receivers.SmsStatusDeliveredReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".receivers.ScheduledMessageReceiver"
+            android:exported="false" />
 
         <receiver
             android:name=".receivers.SmsReceiver"
@@ -197,6 +219,7 @@
             android:permission="android.permission.BROADCAST_WAP_PUSH">
             <intent-filter>
                 <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
+
                 <data android:mimeType="application/vnd.wap.mms-message" />
                 <data android:mimeType="application/vnd.wap.sic" />
             </intent-filter>
@@ -204,18 +227,20 @@
 
         <receiver
             android:name=".receivers.MmsSentReceiver"
-            android:exported="true"
+            android:exported="false"
             android:taskAffinity="com.klinker.android.messaging.MMS_SENT" />
 
         <receiver
             android:name=".receivers.MmsReceiver"
             android:exported="true"
+            android:permission="com.vk.messages.permission.INTERNAL_BROADCAST"
             android:taskAffinity="com.klinker.android.messaging.MMS_RECEIVED" />
 
         <receiver
             android:name=".receivers.MarkAsReadReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.vk.messages.permission.INTERNAL_BROADCAST">
             <intent-filter>
                 <action android:name="com.vk.messages.action.mark_as_read" />
             </intent-filter>
@@ -224,7 +249,8 @@
         <receiver
             android:name=".receivers.DirectReplyReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.vk.messages.permission.INTERNAL_BROADCAST">
             <intent-filter>
                 <action android:name="com.vk.messages.action.reply" />
             </intent-filter>
@@ -233,15 +259,17 @@
         <receiver
             android:name=".receivers.DeleteSmsReceiver"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.vk.messages.permission.INTERNAL_BROADCAST">
             <intent-filter>
                 <action android:name="com.vk.messages.action.delete" />
-            </intent-filter>
+            </intent-filter>.
         </receiver>
 
         <receiver
             android:name=".receivers.DebugReceiver"
-            android:exported="true">
+            android:exported="true"
+            android:permission="com.vk.messages.permission.INTERNAL_BROADCAST">
             <intent-filter>
                 <action android:name="com.vk.messages.TEST_SMS" />
             </intent-filter>

@@ -4,19 +4,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.provider.Telephony
-import org.fossify.commons.extensions.baseConfig
-import org.fossify.commons.extensions.getMyContactsCursor
-import org.fossify.commons.extensions.isNumberBlocked
-import org.fossify.commons.helpers.SimpleContactsHelper
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.models.PhoneNumber
-import org.fossify.commons.models.SimpleContact
-import com.vk.messages.data.SmsRepository
 import com.vk.messages.extensions.*
 import com.vk.messages.helpers.ReceiverUtils.isMessageFilteredOut
 import com.vk.messages.helpers.refreshConversations
 import com.vk.messages.helpers.refreshMessages
 import com.vk.messages.models.Message
+import org.fossify.commons.extensions.baseConfig
+import org.fossify.commons.extensions.getMyContactsCursor
+import org.fossify.commons.extensions.isNumberBlocked
+import org.fossify.commons.helpers.ContactLookupResult
+import org.fossify.commons.helpers.SimpleContactsHelper
+import org.fossify.commons.helpers.ensureBackgroundThread
+import org.fossify.commons.models.PhoneNumber
+import org.fossify.commons.models.SimpleContact
 
 class SmsReceiver : BroadcastReceiver() {
 
@@ -39,17 +39,15 @@ class SmsReceiver : BroadcastReceiver() {
                 if (isMessageFilteredOut(appContext, body)) return@ensureBackgroundThread
                 if (appContext.isNumberBlocked(address)) return@ensureBackgroundThread
                 if (appContext.baseConfig.blockUnknownNumbers) {
-                    appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true).use {
-                        val isKnownContact = SimpleContactsHelper(appContext).existsSync(address, it)
-                        if (!isKnownContact) return@ensureBackgroundThread
-                    }
+                    val privateCursor =
+                        appContext.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
+                    val result = SimpleContactsHelper(appContext).existsSync(address, privateCursor)
+                    if (result == ContactLookupResult.NotFound) return@ensureBackgroundThread
                 }
 
                 val date = System.currentTimeMillis()
                 val threadId = appContext.getThreadId(address)
                 val subscriptionId = intent.getIntExtra("subscription", -1)
-
-                SmsRepository.onNewSmsReceived(appContext, address, body)
 
                 handleMessageSync(
                     context = appContext,
