@@ -5,7 +5,6 @@ import java.util.Properties
 
 plugins {
     alias(libs.plugins.android)
-    alias(libs.plugins.kotlinAndroid)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.detekt)
@@ -40,6 +39,11 @@ fun getSigningProperty(propName: String): String? {
     return keystoreProperties.getProperty(propName)
 }
 
+base {
+    val versionCode = project.property("VERSION_CODE").toString().toInt()
+    archivesName = "messages-$versionCode"
+}
+
 android {
     compileSdk = project.libs.versions.app.build.compileSDKVersion.get().toInt()
 
@@ -49,7 +53,6 @@ android {
         targetSdk = project.libs.versions.app.build.targetSDK.get().toInt()
         versionName = project.property("VERSION_NAME").toString()
         versionCode = project.property("VERSION_CODE").toString().toInt()
-        setProperty("archivesBaseName", "messages-$versionCode")
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
@@ -120,7 +123,7 @@ android {
     }
 
     sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
+        getByName("main").java.directories.add("src/main/kotlin")
     }
 
     compileOptions {
