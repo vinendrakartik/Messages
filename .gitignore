@@ -20,3 +20,7 @@ normal_sms.json
 Messages_20251231_234226.json
 Messages_20251231_225428.json
 app/src/test/kotlin/TransactionDetectorTest.kt
+/app/core/release/baselineProfiles/0/app-core-release.dm
+/app/core/release/baselineProfiles/1/app-core-release.dm
+/deploy.sh
+/ping_log.txt
