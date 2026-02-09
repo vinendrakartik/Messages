@@ -56,6 +56,7 @@ class SearchResultsAdapter(
 
     fun updateItems(newItems: ArrayList<SearchResult>, highlightText: String = "") {
         if (newItems.hashCode() != searchResults.hashCode()) {
+            @Suppress("UNCHECKED_CAST")
             searchResults = newItems.clone() as ArrayList<SearchResult>
             textToHighlight = highlightText
             notifyDataSetChanged()

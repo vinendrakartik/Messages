@@ -11,3 +11,12 @@ keystore.properties
 fastlane/fastlane.json
 fastlane/report.xml
 .kotlin/
+/sample
+transaction_sms.json
+*.py
+otp_sms.json
+other_sms.json
+normal_sms.json
+Messages_20251231_234226.json
+Messages_20251231_225428.json
+app/src/test/kotlin/TransactionDetectorTest.kt

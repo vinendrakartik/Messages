@@ -60,6 +60,7 @@ import org.fossify.messages.helpers.MessagingCache
 import org.fossify.messages.helpers.NotificationHelper
 import org.fossify.messages.helpers.ShortcutHelper
 import org.fossify.messages.helpers.generateRandomId
+import org.fossify.messages.helpers.refreshConversations
 import org.fossify.messages.interfaces.AttachmentsDao
 import org.fossify.messages.interfaces.ConversationsDao
 import org.fossify.messages.interfaces.DraftsDao
@@ -88,12 +89,6 @@ fun Context.getMessagesDB() = MessagesDatabase.getInstance(this)
 val Context.conversationsDB: ConversationsDao
     get() = getMessagesDB().ConversationsDao()
 
-val Context.attachmentsDB: AttachmentsDao
-    get() = getMessagesDB().AttachmentsDao()
-
-val Context.messageAttachmentsDB: MessageAttachmentsDao
-    get() = getMessagesDB().MessageAttachmentsDao()
-
 val Context.messagesDB: MessagesDao
     get() = getMessagesDB().MessagesDao()
 
@@ -110,6 +105,7 @@ val Context.smsSender
     get() = SmsSender.getInstance(applicationContext as Application)
 
 val Context.shortcutHelper get() = ShortcutHelper(this)
+
 
 fun Context.getMessages(
     threadId: Long,
@@ -205,6 +201,7 @@ fun Context.getMessages(
         }
     }
 
+    @Suppress("UNCHECKED_CAST")
     messages = messages
         .filter { it.participants.isNotEmpty() }
         .filterNot { it.isScheduled && it.millis() < System.currentTimeMillis() }
@@ -484,6 +481,7 @@ fun Context.getConversationIds(): List<Long> {
     val sortOrder = "${Threads.DATE} ASC"
     val conversationIds = mutableListOf<Long>()
     queryCursor(Threads.CONTENT_URI, projection, null, null, sortOrder, true) { cursor ->
+    queryCursor(uri, projection, selection, null, sortOrder, showErrors = true) { cursor ->
         val id = cursor.getLongValue(Threads._ID)
         conversationIds.add(id)
     }
@@ -1016,6 +1014,28 @@ fun Context.markThreadMessagesRead(threadId: Long) {
     conversationsDB.markRead(threadId)
 }
 
+fun Context.markAllMessagesRead() {
+    ensureBackgroundThread {
+        val smsValues = ContentValues().apply {
+            put(Sms.READ, 1)
+            put(Sms.SEEN, 1)
+        }
+        val smsSelection = "${Sms.READ}=0 AND ${Sms.TYPE}=${Sms.MESSAGE_TYPE_INBOX}"
+        contentResolver.update(Sms.CONTENT_URI, smsValues, smsSelection, null)
+
+        val mmsValues = ContentValues().apply {
+            put(Mms.READ, 1)
+            put(Mms.SEEN, 1)
+        }
+        val mmsSelection = "${Mms.READ}=0 AND ${Mms.MESSAGE_BOX}=${Mms.MESSAGE_BOX_INBOX}"
+        contentResolver.update(Mms.CONTENT_URI, mmsValues, mmsSelection, null)
+
+        messagesDB.markAllRead()
+        conversationsDB.markAllRead()
+        refreshConversations()
+    }
+}
+
 fun Context.markThreadMessagesUnread(threadId: Long) {
     arrayOf(Sms.CONTENT_URI, Mms.CONTENT_URI).forEach { uri ->
         val contentValues = ContentValues().apply {
@@ -1077,8 +1097,8 @@ fun Context.getNameFromAddress(address: String, privateCursor: Cursor?): String 
 }
 
 fun Context.getContactFromAddress(address: String, callback: ((contact: SimpleContact?) -> Unit)) {
-    val privateCursor = getMyContactsCursor(false, true)
-    SimpleContactsHelper(this).getAvailableContacts(false) {
+    val privateCursor = getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
+    SimpleContactsHelper(this).getAvailableContacts(favoritesOnly = false) {
         val contact = it.firstOrNull { it.doesHavePhoneNumber(address) }
         if (contact == null) {
             val privateContacts = MyContactsContentProvider.getSimpleContacts(this, privateCursor)
@@ -1106,7 +1126,7 @@ fun Context.getNotificationBitmap(photoUri: String): Bitmap? {
             .load(photoUri)
             .apply(options)
             .apply(RequestOptions.circleCropTransform())
-            .into(size, size)
+            .submit(size, size)
             .get()
     } catch (_: Exception) {
         null

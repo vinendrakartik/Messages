@@ -3,34 +3,14 @@ package org.fossify.messages.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
 import org.fossify.commons.dialogs.ChangeDateTimeFormatDialog
 import org.fossify.commons.dialogs.ConfirmationDialog
-import org.fossify.commons.dialogs.FeatureLockedDialog
 import org.fossify.commons.dialogs.RadioGroupDialog
 import org.fossify.commons.dialogs.SecurityDialog
-import org.fossify.commons.extensions.addLockedLabelIfNeeded
-import org.fossify.commons.extensions.beGone
-import org.fossify.commons.extensions.beVisible
-import org.fossify.commons.extensions.beVisibleIf
-import org.fossify.commons.extensions.formatWithDeprecatedBadge
-import org.fossify.commons.extensions.getBlockedNumbers
-import org.fossify.commons.extensions.getFontSizeText
-import org.fossify.commons.extensions.getProperPrimaryColor
-import org.fossify.commons.extensions.isOrWasThankYouInstalled
-import org.fossify.commons.extensions.toast
-import org.fossify.commons.extensions.updateTextColors
-import org.fossify.commons.extensions.viewBinding
-import org.fossify.commons.helpers.FONT_SIZE_EXTRA_LARGE
-import org.fossify.commons.helpers.FONT_SIZE_LARGE
-import org.fossify.commons.helpers.FONT_SIZE_MEDIUM
-import org.fossify.commons.helpers.FONT_SIZE_SMALL
-import org.fossify.commons.helpers.NavigationIcon
-import org.fossify.commons.helpers.PROTECTION_FINGERPRINT
-import org.fossify.commons.helpers.SHOW_ALL_TABS
-import org.fossify.commons.helpers.ensureBackgroundThread
-import org.fossify.commons.helpers.isQPlus
-import org.fossify.commons.helpers.isTiramisuPlus
+import org.fossify.commons.extensions.*
+import org.fossify.commons.helpers.*
 import org.fossify.commons.models.RadioItem
 import org.fossify.messages.R
 import org.fossify.messages.databinding.ActivitySettingsBinding
@@ -38,18 +18,7 @@ import org.fossify.messages.dialogs.ExportMessagesDialog
 import org.fossify.messages.extensions.config
 import org.fossify.messages.extensions.emptyMessagesRecycleBin
 import org.fossify.messages.extensions.messagesDB
-import org.fossify.messages.helpers.FILE_SIZE_100_KB
-import org.fossify.messages.helpers.FILE_SIZE_1_MB
-import org.fossify.messages.helpers.FILE_SIZE_200_KB
-import org.fossify.messages.helpers.FILE_SIZE_2_MB
-import org.fossify.messages.helpers.FILE_SIZE_300_KB
-import org.fossify.messages.helpers.FILE_SIZE_600_KB
-import org.fossify.messages.helpers.FILE_SIZE_NONE
-import org.fossify.messages.helpers.LOCK_SCREEN_NOTHING
-import org.fossify.messages.helpers.LOCK_SCREEN_SENDER
-import org.fossify.messages.helpers.LOCK_SCREEN_SENDER_MESSAGE
-import org.fossify.messages.helpers.MessagesImporter
-import org.fossify.messages.helpers.refreshConversations
+import org.fossify.messages.helpers.*
 import java.util.Locale
 import kotlin.system.exitProcess
 
@@ -108,6 +77,9 @@ class SettingsActivity : SimpleActivity() {
         setupManageBlockedKeywords()
         setupChangeDateTimeFormat()
         setupFontSize()
+        setupSwipeActions()
+        setupAutoCopyOtp()
+        setupDebugLogging()
         setupShowCharacterCounter()
         setupUseSimpleCharacters()
         setupSendOnEnter()
@@ -133,12 +105,14 @@ class SettingsActivity : SimpleActivity() {
         arrayOf(
             binding.settingsColorCustomizationSectionLabel,
             binding.settingsGeneralSettingsLabel,
+            binding.settingsIncomingMessagesLabel,
             binding.settingsOutgoingMessagesLabel,
             binding.settingsNotificationsLabel,
             binding.settingsArchivedMessagesLabel,
             binding.settingsRecycleBinLabel,
             binding.settingsSecurityLabel,
-            binding.settingsMigratingLabel
+            binding.settingsMigratingLabel,
+            binding.settingsSwipeActionsLabel
         ).forEach {
             it.setTextColor(getProperPrimaryColor())
         }
@@ -165,13 +139,15 @@ class SettingsActivity : SimpleActivity() {
 
     private fun setupCustomizeColors() = binding.apply {
         settingsColorCustomizationHolder.setOnClickListener {
-            startCustomizationActivity()
+            val intent = Intent(this@SettingsActivity, CustomizationActivity::class.java)
+            startActivity(intent)
         }
     }
 
     private fun setupCustomizeNotifications() = binding.apply {
         settingsCustomizeNotificationsHolder.setOnClickListener {
-            launchCustomizeNotificationsIntent()
+            val intent = Intent(this@SettingsActivity, CustomizationNotificationsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -196,36 +172,25 @@ class SettingsActivity : SimpleActivity() {
                 launchChangeAppLanguageIntent()
             }
         } else {
-            settingsLanguageHolder.beGone()
+            settingsLanguageHolder.visibility = android.view.View.GONE
         }
     }
 
     private fun setupManageBlockedNumbers() = binding.apply {
-        settingsManageBlockedNumbers.text =
-            addLockedLabelIfNeeded(org.fossify.commons.R.string.manage_blocked_numbers)
+        settingsManageBlockedNumbers.text = getString(org.fossify.commons.R.string.manage_blocked_numbers)
         settingsManageBlockedNumbersHolder.beVisible()
         settingsManageBlockedNumbersHolder.setOnClickListener {
-            if (isOrWasThankYouInstalled()) {
-                Intent(this@SettingsActivity, ManageBlockedNumbersActivity::class.java).apply {
-                    startActivity(this)
-                }
-            } else {
-                FeatureLockedDialog(this@SettingsActivity) { }
+            Intent(this@SettingsActivity, ManageBlockedNumbersActivity::class.java).apply {
+                startActivity(this)
             }
         }
     }
 
     private fun setupManageBlockedKeywords() = binding.apply {
-        settingsManageBlockedKeywords.text =
-            addLockedLabelIfNeeded(R.string.manage_blocked_keywords)
-
+        settingsManageBlockedKeywords.text = getString(R.string.manage_blocked_keywords)
         settingsManageBlockedKeywordsHolder.setOnClickListener {
-            if (isOrWasThankYouInstalled()) {
-                Intent(this@SettingsActivity, ManageBlockedKeywordsActivity::class.java).apply {
-                    startActivity(this)
-                }
-            } else {
-                FeatureLockedDialog(this@SettingsActivity) { }
+            Intent(this@SettingsActivity, ManageBlockedKeywordsActivity::class.java).apply {
+                startActivity(this)
             }
         }
     }
@@ -255,6 +220,57 @@ class SettingsActivity : SimpleActivity() {
                 config.fontSize = it as Int
                 settingsFontSize.text = getFontSizeText()
             }
+        }
+    }
+
+    private fun setupSwipeActions() = binding.apply {
+        settingsSwipeRight.text = getSwipeActionText(config.swipeRightAction)
+        settingsSwipeRightHolder.setOnClickListener {
+            val items = getSwipeActionItems()
+            RadioGroupDialog(this@SettingsActivity, items, config.swipeRightAction) {
+                config.swipeRightAction = it as Int
+                settingsSwipeRight.text = getSwipeActionText(config.swipeRightAction)
+            }
+        }
+
+        settingsSwipeLeft.text = getSwipeActionText(config.swipeLeftAction)
+        settingsSwipeLeftHolder.setOnClickListener {
+            val items = getSwipeActionItems()
+            RadioGroupDialog(this@SettingsActivity, items, config.swipeLeftAction) {
+                config.swipeLeftAction = it as Int
+                settingsSwipeLeft.text = getSwipeActionText(config.swipeLeftAction)
+            }
+        }
+    }
+
+    private fun getSwipeActionItems() = arrayListOf(
+        RadioItem(Config.SWIPE_MARK_READ, getString(R.string.mark_as_read)),
+        RadioItem(Config.SWIPE_DELETE, getString(org.fossify.commons.R.string.delete)),
+        RadioItem(Config.SWIPE_ARCHIVE, getString(R.string.archive))
+    )
+
+    private fun getSwipeActionText(action: Int) = getString(
+        when (action) {
+            Config.SWIPE_MARK_READ -> R.string.mark_as_read
+            Config.SWIPE_DELETE -> org.fossify.commons.R.string.delete
+            else -> R.string.archive
+        }
+    )
+
+    private fun setupAutoCopyOtp() = binding.apply {
+        settingsAutoCopyOtp.isChecked = config.autoCopyOtp
+        settingsAutoCopyOtpHolder.setOnClickListener {
+            settingsAutoCopyOtp.toggle()
+            config.autoCopyOtp = settingsAutoCopyOtp.isChecked
+        }
+    }
+
+    private fun setupDebugLogging() = binding.apply {
+        settingsEnableDebugLogs.isChecked = config.enableDebugLogs
+        settingsEnableDebugLogsHolder.setOnClickListener {
+            settingsEnableDebugLogs.toggle()
+            config.enableDebugLogs = settingsEnableDebugLogs.isChecked
+            toast(if (config.enableDebugLogs) R.string.logs_enabled else R.string.logs_disabled)
         }
     }
 

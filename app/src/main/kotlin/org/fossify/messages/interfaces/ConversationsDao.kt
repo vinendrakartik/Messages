@@ -1,5 +1,6 @@
 package org.fossify.messages.interfaces
 
+import androidx.annotation.Keep
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -36,6 +37,14 @@ interface ConversationsDao {
     @Query("SELECT * FROM conversations WHERE thread_id = :threadId")
     fun getConversationWithThreadId(threadId: Long): Conversation?
 
+    @Keep
+    @Query("SELECT * FROM conversations WHERE thread_id IN (:threadIds)")
+    fun getConversationsWithThreadIds(threadIds: List<Long>): List<Conversation>
+
+    @Keep
+    @Query("SELECT * FROM conversations WHERE phone_number IN (:addresses)")
+    fun getConversationsWithAddresses(addresses: List<String>): List<Conversation>
+
     @Query("SELECT * FROM conversations WHERE read = 0")
     fun getUnreadConversations(): List<Conversation>
 
@@ -44,6 +53,9 @@ interface ConversationsDao {
 
     @Query("UPDATE conversations SET read = 1 WHERE thread_id = :threadId")
     fun markRead(threadId: Long)
+
+    @Query("UPDATE conversations SET read = 1")
+    fun markAllRead()
 
     @Query("UPDATE conversations SET read = 0 WHERE thread_id = :threadId")
     fun markUnread(threadId: Long)

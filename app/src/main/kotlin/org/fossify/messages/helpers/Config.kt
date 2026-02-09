@@ -8,6 +8,12 @@ import org.fossify.messages.models.Conversation
 class Config(context: Context) : BaseConfig(context) {
     companion object {
         fun newInstance(context: Context) = Config(context)
+
+        const val SWIPE_MARK_READ = 1
+        const val SWIPE_DELETE = 2
+        const val SWIPE_ARCHIVE = 3
+        private const val auto_copy_otp = "auto_copy_otp"
+        private const val SELECTED_TTS_VOICE = "selected_tts_voice"
     }
 
     fun saveUseSIMIdAtNumber(number: String, SIMId: Int) {
@@ -74,6 +80,22 @@ class Config(context: Context) : BaseConfig(context) {
     fun removePinnedConversations(conversations: List<Conversation>) {
         pinnedConversations =
             pinnedConversations.minus(conversations.map { it.threadId.toString() })
+    }
+
+    var mutedThreads: Set<String>
+        get() = prefs.getStringSet(MUTED_THREADS, HashSet<String>())!!
+        set(mutedThreads) = prefs.edit().putStringSet(MUTED_THREADS, mutedThreads).apply()
+
+    fun addMutedThread(threadId: Long) {
+        val newMutedThreads = HashSet(mutedThreads)
+        newMutedThreads.add(threadId.toString())
+        mutedThreads = newMutedThreads
+    }
+
+    fun removeMutedThread(threadId: Long) {
+        val newMutedThreads = HashSet(mutedThreads)
+        newMutedThreads.remove(threadId.toString())
+        mutedThreads = newMutedThreads
     }
 
     var blockedKeywords: Set<String>
@@ -148,4 +170,37 @@ class Config(context: Context) : BaseConfig(context) {
         get() = prefs.getBoolean(KEEP_CONVERSATIONS_ARCHIVED, false)
         set(keepConversationsArchived) = prefs.edit()
             .putBoolean(KEEP_CONVERSATIONS_ARCHIVED, keepConversationsArchived).apply()
+
+
+    var useNaturalVoices: Boolean
+        get() = prefs.getBoolean(USE_NATURAL_VOICES, true)
+        set(useNaturalVoices) = prefs.edit().putBoolean(USE_NATURAL_VOICES, useNaturalVoices).apply()
+
+    var selectedTtsVoice: String
+        get() = prefs.getString(SELECTED_TTS_VOICE, "")!!
+        set(selectedTtsVoice) = prefs.edit().putString(SELECTED_TTS_VOICE, selectedTtsVoice).apply()
+
+    var ttsSpeed: Float
+        get() = prefs.getFloat(TTS_SPEED, 1.2f).let { if (it < 1.1f) 1.2f else it }
+        set(ttsSpeed) = prefs.edit().putFloat(TTS_SPEED, ttsSpeed).apply()
+
+    var ttsPitch: Float
+        get() = prefs.getFloat(TTS_PITCH, 1.0f)
+        set(ttsPitch) = prefs.edit().putFloat(TTS_PITCH, ttsPitch).apply()
+
+    var enableDebugLogs: Boolean
+        get() = prefs.getBoolean("enable_debug_logs", false)
+        set(enableDebugLogs) = prefs.edit().putBoolean("enable_debug_logs", enableDebugLogs).apply()
+
+    var swipeRightAction: Int
+        get() = prefs.getInt("swipe_right_action", SWIPE_MARK_READ)
+        set(value) = prefs.edit().putInt("swipe_right_action", value).apply()
+
+    var swipeLeftAction: Int
+        get() = prefs.getInt("swipe_left_action", SWIPE_DELETE)
+        set(value) = prefs.edit().putInt("swipe_left_action", value).apply()
+
+    var autoCopyOtp: Boolean
+        get() = prefs.getBoolean(auto_copy_otp, true)
+        set(autoCopyOtp) = prefs.edit().putBoolean(auto_copy_otp, autoCopyOtp).apply()
 }

@@ -45,6 +45,23 @@
                 tools:visibility="visible" />
 
             <RelativeLayout
+                android:id="@+id/mute_notifications_holder"
+                style="@style/SettingsHolderSwitchStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <org.fossify.commons.views.MyMaterialSwitch
+                    android:id="@+id/mute_notifications"
+                    style="@style/SettingsSwitchStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mute_notifications" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
                 android:id="@+id/custom_notifications_holder"
                 style="@style/SettingsHolderSwitchStyle"
                 android:layout_width="match_parent"

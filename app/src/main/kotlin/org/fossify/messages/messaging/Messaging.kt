@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package org.fossify.messages.messaging
 
 import android.content.Context
@@ -18,7 +20,6 @@ import org.fossify.messages.messaging.SmsException.Companion.ERROR_PERSISTING_ME
 import org.fossify.messages.messaging.SmsException.Companion.ERROR_SENDING_MESSAGE
 import org.fossify.messages.models.Attachment
 
-@Deprecated("TODO: Move/rewrite messaging config code into the app.")
 fun Context.getSendMessageSettings(): Settings {
     val settings = Settings()
     settings.useSystemSending = true
