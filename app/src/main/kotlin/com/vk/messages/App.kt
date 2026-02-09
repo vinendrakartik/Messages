@@ -5,11 +5,12 @@ import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.provider.ContactsContract
+import com.vk.messages.extensions.rescheduleAllScheduledMessages
+import com.vk.messages.helpers.MessagingCache
 import org.fossify.commons.FossifyApp
-import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.hasPermission
 import org.fossify.commons.helpers.PERMISSION_READ_CONTACTS
-import com.vk.messages.helpers.MessagingCache
+import org.fossify.commons.helpers.ensureBackgroundThread
 
 class App : FossifyApp() {
     override val isAppLockFeatureAvailable = true
@@ -24,11 +25,14 @@ class App : FossifyApp() {
             ).forEach {
                 try {
                     contentResolver.registerContentObserver(it, true, contactsObserver)
-                } catch (_: Exception){
+                } catch (_: Exception) {
                 }
             }
         }
-   }
+        ensureBackgroundThread {
+            rescheduleAllScheduledMessages()
+        }
+    }
 
     private val contactsObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
         override fun onChange(selfChange: Boolean, uri: Uri?) {

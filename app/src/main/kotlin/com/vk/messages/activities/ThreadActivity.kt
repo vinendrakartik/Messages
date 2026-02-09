@@ -66,6 +66,7 @@ import org.fossify.commons.extensions.applyColorFilter
 import org.fossify.commons.extensions.beGone
 import org.fossify.commons.extensions.beVisible
 import org.fossify.commons.extensions.beVisibleIf
+import org.fossify.commons.extensions.copyToClipboard
 import org.fossify.commons.extensions.darkenColor
 import org.fossify.commons.extensions.formatDate
 import org.fossify.commons.extensions.getBottomNavigationBackgroundColor
@@ -398,6 +399,7 @@ class ThreadActivity : SimpleActivity() {
                 R.id.rename_conversation -> renameConversation()
                 R.id.conversation_details -> launchConversationDetails(threadId)
                 R.id.add_number_to_contact -> addNumberToContact()
+		R.id.copy_number -> copyNumberToClipboard()
                 R.id.dial_number -> dialNumber()
                 R.id.manage_people -> managePeople()
                 R.id.mark_as_unread -> markAsUnread()
@@ -1174,6 +1176,12 @@ class ThreadActivity : SimpleActivity() {
         dialNumber(phoneNumber)
     }
 
+    private fun copyNumberToClipboard() {
+        val phoneNumber = conversation?.phoneNumber
+            ?.ifEmpty { participants.firstOrNull()?.phoneNumbers?.firstOrNull()?.value }
+            ?: return
+        copyToClipboard(phoneNumber)
+    }
     private fun managePeople() {
         if (binding.threadAddContacts.isVisible()) {
             hideKeyboard()

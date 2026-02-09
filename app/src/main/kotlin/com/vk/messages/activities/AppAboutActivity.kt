@@ -1,24 +1,22 @@
 package com.vk.messages.activities
 
 import android.content.Intent
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
+import androidx.core.view.isVisible
+import com.vk.messages.BuildConfig
+import com.vk.messages.R
 import org.fossify.commons.activities.BaseSimpleActivity
 import org.fossify.commons.models.FAQItem
-import com.vk.messages.BuildConfig
-import com.vk.messages.BuildConfig.*
-import com.vk.messages.R
 import org.json.JSONObject
 import java.io.File
 import java.io.FileOutputStream
@@ -43,12 +41,12 @@ class AppAboutActivity : BaseSimpleActivity() {
         val forkTextView = findViewById<TextView>(R.id.about_fork)
         val shareTextView = findViewById<TextView>(R.id.about_share)
         val releasesTextView = findViewById<TextView>(R.id.about_releases)
-        val versionName = VERSION_NAME
+        val versionName = BuildConfig.VERSION_NAME
         val appName = getString(R.string.app_name)
 
 
         versionTextView.text = "$appName ${getString(R.string.version)} $versionName"
-        packageTextView.text = APPLICATION_ID
+        packageTextView.text = BuildConfig.APPLICATION_ID
         forkTextView.text = getString(R.string.fork_from)
 
         // CHECK FOR UPDATES ON CLICK
@@ -66,19 +64,21 @@ class AppAboutActivity : BaseSimpleActivity() {
         }
 
         releasesTextView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/vinendrakartik/Messages/releases"))
+            val intent = Intent(Intent.ACTION_VIEW, "https://github.com/vinendrakartik/Messages/releases".toUri())
             startActivity(intent)
         }
 
-        setupFAQ(arrayListOf(
-            FAQItem(R.string.faq_2_title, R.string.faq_2_text),
-            FAQItem(R.string.faq_3_title, R.string.faq_3_text),
-            FAQItem(R.string.faq_4_title, R.string.faq_4_text),
-            FAQItem(R.string.faq_auto_copy_title, R.string.faq_auto_copy_text),
-            FAQItem(R.string.faq_disable_tts_title, R.string.faq_disable_tts_text),
-            FAQItem(R.string.faq_tts_voice_title, R.string.faq_tts_voice_text),
-            FAQItem(R.string.faq_mute_title, R.string.faq_mute_text)
-        ))
+        setupFAQ(
+            arrayListOf(
+                FAQItem(R.string.faq_2_title, R.string.faq_2_text),
+                FAQItem(R.string.faq_3_title, R.string.faq_3_text),
+                FAQItem(R.string.faq_4_title, R.string.faq_4_text),
+                FAQItem(R.string.faq_auto_copy_title, R.string.faq_auto_copy_text),
+                FAQItem(R.string.faq_disable_tts_title, R.string.faq_disable_tts_text),
+                FAQItem(R.string.faq_tts_voice_title, R.string.faq_tts_voice_text),
+                FAQItem(R.string.faq_mute_title, R.string.faq_mute_text)
+            )
+        )
     }
 
     private fun setupFAQ(faqItems: ArrayList<FAQItem>) {
@@ -95,7 +95,7 @@ class AppAboutActivity : BaseSimpleActivity() {
             textView.text = getString(faq.text as Int)
 
             view.setOnClickListener {
-                textView.visibility = if (textView.visibility == View.VISIBLE) View.GONE else View.VISIBLE
+                textView.isVisible = !textView.isVisible
             }
             faqHolder.addView(view)
         }
@@ -163,12 +163,10 @@ class AppAboutActivity : BaseSimpleActivity() {
 
     private fun downloadAPK(urlStr: String) {
         // Android 8+ requires permission check for installing packages
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (!packageManager.canRequestPackageInstalls()) {
-                Toast.makeText(this, "Please allow permission to install updates", Toast.LENGTH_LONG).show()
-                startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
-                return
-            }
+        if (!packageManager.canRequestPackageInstalls()) {
+            Toast.makeText(this, "Please allow permission to install updates", Toast.LENGTH_LONG).show()
+            startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, "package:$packageName".toUri()))
+            return
         }
 
         val dialogView = layoutInflater.inflate(R.layout.dialog_update_progress, null)

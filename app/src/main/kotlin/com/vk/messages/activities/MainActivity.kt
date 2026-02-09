@@ -18,13 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.coroutines.runBlocking
-import org.fossify.commons.dialogs.ConfirmationDialog
-import org.fossify.commons.dialogs.PermissionRequiredDialog
-import org.fossify.commons.extensions.*
-import org.fossify.commons.helpers.*
-import org.fossify.commons.models.FAQItem
-import org.fossify.commons.models.Release
 import com.vk.messages.BuildConfig
 import com.vk.messages.R
 import com.vk.messages.adapters.ConversationsAdapter
@@ -41,12 +34,20 @@ import com.vk.messages.models.Conversation
 import com.vk.messages.models.Events
 import com.vk.messages.models.Message
 import com.vk.messages.models.SearchResult
+import kotlinx.coroutines.runBlocking
+import org.fossify.commons.dialogs.ConfirmationDialog
+import org.fossify.commons.dialogs.PermissionRequiredDialog
+import org.fossify.commons.extensions.*
+import org.fossify.commons.helpers.*
+import org.fossify.commons.models.Release
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 class MainActivity : SimpleActivity() {
     override var isSearchBarEnabled = true
+
+    private val MAKE_DEFAULT_APP_REQUEST = 1
 
     private var storedTextColor = 0
     private var storedFontSize = 0
@@ -244,6 +245,7 @@ class MainActivity : SimpleActivity() {
 
     private fun setupOptionsMenu() {
         binding.mainMenu.requireToolbar().inflateMenu(R.menu.menu_main)
+        binding.mainMenu.toggleHideOnScroll(true)
         binding.mainMenu.setupMenu()
 
         binding.mainMenu.onSearchClosedListener = {
@@ -278,6 +280,17 @@ class MainActivity : SimpleActivity() {
         binding.mainMenu.requireToolbar().menu.apply {
             findItem(R.id.show_recycle_bin).isVisible = config.useRecycleBin
             findItem(R.id.show_archived).isVisible = config.isArchiveAvailable
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, resultData: Intent?) {
+        super.onActivityResult(requestCode, resultCode, resultData)
+        if (requestCode == MAKE_DEFAULT_APP_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                askPermissions()
+            } else {
+                finish()
+            }
         }
     }
 
@@ -398,6 +411,8 @@ class MainActivity : SimpleActivity() {
                 val newConversation =
                     conversations.find { it.phoneNumber == cachedConversation.phoneNumber }
                 if (isTemporaryThread && newConversation != null) {
+                    // delete the original temporary thread and move any scheduled messages
+                    // to the new thread
                     conversationsDB.deleteThreadId(threadId)
                     messagesDB.getScheduledThreadMessages(threadId)
                         .forEach { message ->
@@ -416,6 +431,8 @@ class MainActivity : SimpleActivity() {
                     )
                 }
                 if (conv != null) {
+                    // FIXME: Scheduled message date is being reset here. Conversations with
+                    //  scheduled messages will have their original date.
                     insertOrUpdateConversation(conv)
                 }
             }
@@ -465,6 +482,8 @@ class MainActivity : SimpleActivity() {
             ).toMutableList() as ArrayList<Conversation>
 
         if (cached && config.appRunCount == 1) {
+            // there are no cached conversations on the first run so we show the
+            // loading placeholder and progress until we are done loading from telephony
             showOrHideProgress(conversations.isEmpty())
         } else {
             showOrHideProgress(false)
@@ -679,7 +698,7 @@ class MainActivity : SimpleActivity() {
     }
 
     private fun launchAbout() {
-        val intent = android.content.Intent(this, com.vk.messages.activities.AppAboutActivity::class.java)
+        val intent = Intent(this, com.vk.messages.activities.AppAboutActivity::class.java)
         startActivity(intent)
     }
 

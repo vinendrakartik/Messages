@@ -1,4 +1,5 @@
 @file:Suppress("MagicNumber")
+
 package com.vk.messages.databases
 
 import android.content.Context
@@ -9,17 +10,8 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.vk.messages.helpers.Converters
-import com.vk.messages.interfaces.AttachmentsDao
-import com.vk.messages.interfaces.ConversationsDao
-import com.vk.messages.interfaces.DraftsDao
-import com.vk.messages.interfaces.MessageAttachmentsDao
-import com.vk.messages.interfaces.MessagesDao
-import com.vk.messages.models.Attachment
-import com.vk.messages.models.Conversation
-import com.vk.messages.models.Draft
-import com.vk.messages.models.Message
-import com.vk.messages.models.MessageAttachment
-import com.vk.messages.models.RecycleBinMessage
+import com.vk.messages.interfaces.*
+import com.vk.messages.models.*
 
 @Database(
     entities = [
@@ -67,9 +59,6 @@ abstract class MessagesDatabase : RoomDatabase() {
                             .addMigrations(MIGRATION_7_8)
                             .addMigrations(MIGRATION_8_9)
                             .addMigrations(MIGRATION_9_10)
-                            .addMigrations(MIGRATION_10_11)
-                            .addMigrations(MIGRATION_11_12)
-                            .addMigrations(MIGRATION_12_13)
                             .build()
                     }
                 }
@@ -97,7 +86,7 @@ abstract class MessagesDatabase : RoomDatabase() {
 
                     execSQL(
                         "INSERT OR IGNORE INTO conversations_new (thread_id, snippet, date, read, title, photo_uri, is_group_conversation, phone_number) " +
-                                "SELECT thread_id, snippet, date, read, title, photo_uri, is_group_conversation, phone_number FROM conversations"
+                            "SELECT thread_id, snippet, date, read, title, photo_uri, is_group_conversation, phone_number FROM conversations"
                     )
 
                     execSQL("DROP TABLE conversations")

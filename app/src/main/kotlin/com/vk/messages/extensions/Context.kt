@@ -69,6 +69,7 @@ import com.vk.messages.interfaces.MessagesDao
 import com.vk.messages.messaging.MessagingUtils
 import com.vk.messages.messaging.MessagingUtils.Companion.ADDRESS_SEPARATOR
 import com.vk.messages.messaging.SmsSender
+import com.vk.messages.messaging.scheduleMessage
 import com.vk.messages.models.Attachment
 import com.vk.messages.models.Conversation
 import com.vk.messages.models.Draft
@@ -78,6 +79,7 @@ import com.vk.messages.models.NamePhoto
 import com.vk.messages.models.RecycleBinMessage
 import org.xmlpull.v1.XmlPullParserException
 import java.io.FileNotFoundException
+import kotlin.time.Duration.Companion.minutes
 
 val Context.config: Config
     get() = Config.newInstance(applicationContext)
@@ -87,6 +89,11 @@ fun Context.getMessagesDB() = MessagesDatabase.getInstance(this)
 val Context.conversationsDB: ConversationsDao
     get() = getMessagesDB().ConversationsDao()
 
+val Context.attachmentsDB: AttachmentsDao
+    get() = getMessagesDB().AttachmentsDao()
+
+val Context.messageAttachmentsDB: MessageAttachmentsDao
+    get() = getMessagesDB().MessageAttachmentsDao()
 val Context.messagesDB: MessagesDao
     get() = getMessagesDB().MessagesDao()
 
@@ -1332,13 +1339,13 @@ fun Context.updateScheduledMessagesThreadId(messages: List<Message>, newThreadId
 
 fun Context.clearExpiredScheduledMessages(threadId: Long, messagesToDelete: List<Message>? = null) {
     val messages = messagesToDelete ?: messagesDB.getScheduledThreadMessages(threadId)
-    val now = System.currentTimeMillis() + 500L
+    val cutoff = System.currentTimeMillis() - 1.minutes.inWholeMilliseconds
 
     try {
-        messages.filter { it.isScheduled && it.millis() < now }.forEach { msg ->
+        messages.filter { it.isScheduled && it.millis() < cutoff }.forEach { msg ->
             messagesDB.delete(msg.id)
         }
-        if (messages.filterNot { it.isScheduled && it.millis() < now }.isEmpty()) {
+        if (messages.filterNot { it.isScheduled && it.millis() < cutoff }.isEmpty()) {
             // delete empty temporary thread
             val conversation = conversationsDB.getConversationWithThreadId(threadId)
             if (conversation != null && conversation.isScheduled) {
@@ -1348,6 +1355,18 @@ fun Context.clearExpiredScheduledMessages(threadId: Long, messagesToDelete: List
     } catch (e: Exception) {
         e.printStackTrace()
         return
+    }
+}
+
+fun Context.rescheduleAllScheduledMessages() {
+    val scheduledMessages = try {
+        messagesDB.getAllScheduledMessages()
+    } catch (_: Exception) {
+        return
+    }
+
+    scheduledMessages.forEach { message ->
+        runCatching { scheduleMessage(message) }
     }
 }
 

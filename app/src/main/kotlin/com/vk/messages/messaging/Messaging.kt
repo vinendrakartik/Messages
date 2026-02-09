@@ -20,6 +20,7 @@ import com.vk.messages.messaging.SmsException.Companion.ERROR_PERSISTING_MESSAGE
 import com.vk.messages.messaging.SmsException.Companion.ERROR_SENDING_MESSAGE
 import com.vk.messages.models.Attachment
 
+@Deprecated("TODO: Move/rewrite messaging config code into the app.")
 fun Context.getSendMessageSettings(): Settings {
     val settings = Settings()
     settings.useSystemSending = true

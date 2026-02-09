@@ -23,12 +23,9 @@ class MmsReceiver : MmsReceivedReceiver() {
     override fun isAddressBlocked(context: Context, address: String): Boolean {
         if (context.isNumberBlocked(address)) return true
         if (context.baseConfig.blockUnknownNumbers) {
-            context.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true).use {
-                return when (SimpleContactsHelper(context).existsSync(address, it)) {
-                    ContactLookupResult.Found -> false
-                    else -> true
-                }
-            }
+            val privateCursor = context.getMyContactsCursor(favoritesOnly = false, withPhoneNumbersOnly = true)
+            val result = SimpleContactsHelper(context).existsSync(address, privateCursor)
+            return result == ContactLookupResult.NotFound
         }
 
         return false
@@ -40,7 +37,7 @@ class MmsReceiver : MmsReceivedReceiver() {
 
     override fun onMessageReceived(context: Context, messageUri: Uri) {
         val mms = context.getLatestMMS() ?: return
-        val address = mms.getSender()?.phoneNumbers?.first()?.normalizedNumber ?: ""
+        val address = mms.getSender()?.phoneNumbers?.firstOrNull()?.normalizedNumber ?: ""
         val size = context.resources.getDimension(R.dimen.notification_large_icon_size).toInt()
         ensureBackgroundThread {
             handleMmsMessage(context, mms, size, address)

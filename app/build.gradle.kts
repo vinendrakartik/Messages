@@ -190,5 +190,7 @@ dependencies {
     detektPlugins(libs.compose.detekt)
     testImplementation(libs.mockito.core)
     testImplementation(libs.junit)
-    implementation(libs.tensorflow.lite)
+    "gplayImplementation"(libs.tensorflow.lite.gms)
+    "coreImplementation"(libs.tensorflow.lite)
+    "fossImplementation"(libs.tensorflow.lite)
 }
