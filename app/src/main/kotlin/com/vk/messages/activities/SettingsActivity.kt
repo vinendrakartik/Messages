@@ -3,6 +3,7 @@ package com.vk.messages.activities
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import com.vk.messages.BuildConfig
 import org.fossify.commons.activities.CustomizationActivity
 import org.fossify.commons.activities.ManageBlockedNumbersActivity
 import org.fossify.commons.dialogs.ChangeDateTimeFormatDialog
@@ -266,6 +267,7 @@ class SettingsActivity : SimpleActivity() {
     }
 
     private fun setupDebugLogging() = binding.apply {
+        settingsEnableDebugLogsHolder.beVisibleIf(BuildConfig.DEBUG)
         settingsEnableDebugLogs.isChecked = config.enableDebugLogs
         settingsEnableDebugLogsHolder.setOnClickListener {
             settingsEnableDebugLogs.toggle()

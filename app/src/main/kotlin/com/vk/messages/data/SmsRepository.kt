@@ -140,14 +140,17 @@ object SmsRepository {
         }
 
         // Transaction Detector
-        val transactionInfo: TransactionInfo? = body.extractTransactionInfo(context, address)
-        if (transactionInfo != null) {
-            detectedTags.add(SmsTag.TRANSACTIONAL)
-            if (transactionInfo.isCreditCard ||
-                transactionInfo.source.contains("bank", true) ||
-                transactionInfo.source.contains("card", true) ||
-                transactionInfo.amount > 0) {
-                detectedTags.add(SmsTag.BANKING)
+        if (body.isNotBlank()) {
+            val transactionInfo: TransactionInfo? = body.extractTransactionInfo(context, address)
+            if (transactionInfo != null) {
+                detectedTags.add(SmsTag.TRANSACTIONAL)
+                if (transactionInfo.isCreditCard ||
+                    transactionInfo.source.contains("bank", true) ||
+                    transactionInfo.source.contains("card", true) ||
+                    transactionInfo.amount > 0
+                ) {
+                    detectedTags.add(SmsTag.BANKING)
+                }
             }
         }
 

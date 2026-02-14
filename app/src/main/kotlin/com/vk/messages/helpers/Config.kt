@@ -1,9 +1,9 @@
 package com.vk.messages.helpers
 
 import android.content.Context
-import org.fossify.commons.helpers.BaseConfig
 import com.vk.messages.extensions.getDefaultKeyboardHeight
 import com.vk.messages.models.Conversation
+import org.fossify.commons.helpers.BaseConfig
 
 class Config(context: Context) : BaseConfig(context) {
     companion object {
@@ -189,7 +189,7 @@ class Config(context: Context) : BaseConfig(context) {
         set(ttsPitch) = prefs.edit().putFloat(TTS_PITCH, ttsPitch).apply()
 
     var enableDebugLogs: Boolean
-        get() = prefs.getBoolean("enable_debug_logs", false)
+        get() = prefs.getBoolean("enable_debug_logs", true)
         set(enableDebugLogs) = prefs.edit().putBoolean("enable_debug_logs", enableDebugLogs).apply()
 
     var swipeRightAction: Int

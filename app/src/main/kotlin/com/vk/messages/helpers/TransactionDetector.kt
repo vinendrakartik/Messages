@@ -103,8 +103,6 @@ private object TransactionML {
         try {
             interpreter?.runForMultipleInputsOutputs(arrayOf(input), outputs)
         } catch (e: Exception) {
-            // 2. FIX: Now you can use the 'context' parameter you passed in
-            context.logError(TAG, "Inference failed", e)
             return null
         }
 
@@ -194,7 +192,10 @@ private val DEBIT_REGEX = listOf(
     "\\btxn of\\b", "\\btransaction\\b", "\\bpurchase\\b", "\\bpaid to\\b", "\\bpaid from\\b",
     "\\bspent via\\b", "\\bsent via\\b", "\\bsent to\\b", "\\bwithdrawal\\b", "\\batm cash withdrawal\\b",
     "\\bdebited with\\b", "\\bdebited by\\b", "\\bdebited for\\b", "\\bsent from\\b", "\\bsent to\\b",
-    "\\bamt deducted\\b", "\\bamt deducted!\\b", "\\bsent\\b", "\\bsent rs\\b", "\\bused for\\b", "\\busing\\b"
+    "\\bamt deducted\\b", "\\bamt deducted!\\b", "\\bsent\\b", "\\bsent rs\\b", "\\bused for\\b", "\\busing\\b", "\\bnach debit\\b",
+    "\\bsuccessfully processed\\b",
+    "\\bfunds blocked\\b",
+    "\\bmandate created\\b"
 ).map { Regex(it, RegexOption.IGNORE_CASE) }
 
 private val CREDIT_REGEX = listOf(
@@ -253,7 +254,7 @@ private val CREDIT_SENDER_INDICATORS = listOf("CRD", "CREDIT", "CARD", "AMEX", "
 private val SOURCE_MAP = mapOf(
     "INDUSB" to "IndusInd Bank", "INDUSI" to "IndusInd Bank",
     "HDFCBK" to "HDFC Bank", "HDFCBN" to "HDFC Bank",
-    "AXISBK" to "Axis Bank", "UTIBNK" to "Axis Bank", "AXISBN" to "Axis Bank",
+    "AXISBK" to "Axis Bank", "UTIBNK" to "Axis Bank", "AXISBN" to "Axis Bank", "AXIS" to "Axis Bank", "AXISBN" to "Axis Bank",
     "ICICIB" to "ICICI Bank", "ICICIP" to "ICICI Bank", "ICICIT" to "ICICI Bank", "ICIC" to "ICICI Bank",
     "SBIN" to "SBI", "SBIINB" to "SBI", "SBIPS" to "SBI", "SBICRD" to "SBI Credit Card", "SBIC" to "SBI",
     "JTEDGE" to "Jupiter Bank", "JUPITR" to "Jupiter Bank",
@@ -262,7 +263,7 @@ private val SOURCE_MAP = mapOf(
     "IDFCBK" to "IDFC FIRST Bank", "IDFB" to "IDFC FIRST Bank", "IDFCFB" to "IDFC FIRST Bank",
     "ONECRD" to "One Card", "SLICE" to "Slice Card", "SLCE" to "Slice Card", "SLCEIT" to "Slice Account",
     "PAYTM" to "Paytm", "PYTM" to "Paytm", "IPAYTM" to "Paytm Bank",
-    "BARODA" to "BOB", "BOB" to "BOB", "BOBTXN" to "BOB",
+    "BARODA" to "BOB", "BOB" to "BOB", "BOBTXN" to "BOB", "BOBSMS" to "BOB",
     "PUNBNB" to "PNB", "PNBSMS" to "PNB", "PNBBK" to "PNB",
     "CANBK" to "Canara Bank", "CNRB" to "Canara Bank",
     "YESBNK" to "Yes Bank", "YESB" to "Yes Bank",
@@ -273,7 +274,7 @@ private val SOURCE_MAP = mapOf(
     "RBLBNK" to "RBL Bank", "RBLBK" to "RBL Bank", "RBL" to "RBL Bank",
     "AUBNK" to "AU Bank", "AUFIRA" to "AU Bank",
     "EQUTAS" to "Equitas Bank", "UJJIVN" to "Ujjivan Bank",
-    "DBSSMS" to "DBS Bank", "DBSBK" to "DBS Bank",
+    "DBSSMS" to "DBS Bank", "DBSBK" to "DBS Bank", "DBSBNK" to "DBS Bank",
     "SCBANK" to "Standard Chartered", "SCREDC" to "Standard Chartered", "STANCB" to "Standard Chartered",
     "CITIBK" to "Citi Bank", "CITI" to "Citi Bank",
     "HSBCBK" to "HSBC Bank", "HSBC" to "HSBC Bank", "HSBCIM" to "HSBC Bank",
@@ -285,7 +286,19 @@ private val SOURCE_MAP = mapOf(
     "KARB" to "Karnataka Bank", "KTKBNK" to "Karnataka Bank",
     "MAHAB" to "Bank of Maharashtra", "MAHBNK" to "Bank of Maharashtra",
     "UCOBNK" to "UCO Bank", "UCO" to "UCO Bank",
-    "IOB" to "IOB", "IOBA" to "IOB"
+    "IOB" to "IOB", "IOBA" to "IOB",
+    "AIRBNK" to "Airtel Payments Bank", "AIRTEL" to "Airtel Payments Bank",
+    "JIOPAY" to "Jio Payments Bank", "JIOPBL" to "Jio Payments Bank",
+    "BANDHAN" to "Bandhan Bank", "BDBN" to "Bandhan Bank",
+    "IDBIBK" to "IDBI Bank", "IDBI" to "IDBI Bank",
+    "PSBANK" to "Punjab & Sind Bank", "PSB" to "Punjab & Sind Bank",
+    "ANDBNK" to "Andhra Bank",
+    "SYNBNK" to "Syndicate Bank", "SYNB" to "Syndicate Bank",
+    "IPPB" to "India Post Payments Bank",
+    "FINO" to "Fino Payments Bank",
+    "KVB" to "Karur Vysya Bank", "KARUR" to "Karur Vysya Bank",
+    "TMB" to "Tamilnad Mercantile Bank",
+    "DHAN" to "Dhanlaxmi Bank"
 ).mapKeys { it.key.uppercase() }
 
 private val PARTICIPANT_EXCLUSIONS = listOf(
@@ -375,6 +388,25 @@ fun String.extractTransactionInfo(context: Context, address: String): Transactio
 
     var isCredit = isRefund || (isSelfCredit && !debitSignal) || mlCredit
     var isDebit = debitSignal || (rawCreditSignal && !isCredit) || mlDebit
+
+    // If source is a known bank and amount is present, force detection
+    val knownBank = sourceRaw.isNotBlank() // identified from SOURCE_MAP
+    if (knownBank && amount != null && !isStatement) {
+        if (!isDebit && !isCredit) {
+            // Fallback keywords
+            if (lowerBody.contains("debited") || lowerBody.contains("dr") || lowerBody.contains("spent") || lowerBody.contains("paid") || lowerBody.contains("sent") || lowerBody.contains(
+                    "withdrawn"
+                ) || lowerBody.contains("used")
+            ) {
+                isDebit = true
+            } else if (lowerBody.contains("credited") || lowerBody.contains("cr") || lowerBody.contains("received") || lowerBody.contains("deposited") || lowerBody.contains(
+                    "added"
+                )
+            ) {
+                isCredit = true
+            }
+        }
+    }
 
     if (isDebit && isCredit) {
         if (lowerBody.contains("spent") || lowerBody.contains("paid") || lowerBody.contains("debited") || lowerBody.contains("sent") || lowerBody.contains("used")) {
@@ -530,7 +562,10 @@ private fun identifySource(context: Context, upperAddress: String, body: String)
 
     SOURCE_FALLBACK_REGEX.find(body)?.let {
         val digits = formatDigits(it.groupValues[1])
-        val isCard = it.value.contains("card", ignoreCase = true) || CARD_PHRASE_REGEX.containsMatchIn(body) || MASKED_CARD_REGEX.containsMatchIn(body) || headerSuggestsCard || isCreditCard
+        val isCard = it.value.contains(
+            "card",
+            ignoreCase = true
+        ) || CARD_PHRASE_REGEX.containsMatchIn(body) || MASKED_CARD_REGEX.containsMatchIn(body) || headerSuggestsCard || isCreditCard
         val suffix = if (isCard) context.getString(R.string.credit_card) else context.getString(R.string.account)
         val finalSource = "$suffix $digits".trim()
         val isCreditCardBool = isCard && !explicitDebitCard
@@ -613,7 +648,11 @@ private fun extractParticipant(body: String, isDebit: Boolean, bankName: String)
         val tokens = rawInfo.split("/")
         for (token in tokens.reversed()) {
             val cleaned = cleanParticipantName(token)
-            if (!cleaned.isNullOrBlank() && !cleaned.equals("NEFT", true) && !cleaned.equals("IMPS", true) && !cleaned.equals("UPI", true) && !isInvalidParticipant(cleaned)) {
+            if (!cleaned.isNullOrBlank() && !cleaned.equals("NEFT", true) && !cleaned.equals("IMPS", true) && !cleaned.equals(
+                    "UPI",
+                    true
+                ) && !isInvalidParticipant(cleaned)
+            ) {
                 return cleaned
             }
         }

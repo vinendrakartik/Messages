@@ -30,7 +30,7 @@ mmslib = "1.0.0"
 indicator-fast-scroll = "4524cd0b61"
 
 # Gradle & Build
-gradlePlugins-agp = "9.0.0"
+gradlePlugins-agp = "9.0.1"
 app-build-compileSDKVersion = "36"
 app-build-targetSDK = "36"
 app-build-minimumSDK = "26"
@@ -43,7 +43,6 @@ app-build-kotlinJVMTarget = "21"
 # Helpers
 ez-vcard = "0.12.1"
 tensorflowLite = "2.17.0"
-tensorflowLiteGms = "0.5.0-beta01"
 
 [libraries]
 # AndroidX
@@ -76,7 +75,7 @@ ez-vcard = { module = "com.googlecode.ez-vcard:ez-vcard", version.ref = "ez-vcar
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 tensorflow-lite = { module = "org.tensorflow:tensorflow-lite", version.ref = "tensorflowLite" }
-tensorflow-lite-gms = { module = "org.tensorflow:tensorflow-lite-play-services", version.ref = "tensorflowLiteGms" }
+tensorflow-lite-gms = { module = "com.google.android.gms:play-services-tflite-java", version.ref = "tensorflowLite" }
 
 [bundles]
 room = [

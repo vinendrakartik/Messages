@@ -22,7 +22,7 @@ import com.vk.messages.models.*
         RecycleBinMessage::class,
         Draft::class
     ],
-    version = 13
+    version = 10
 )
 @TypeConverters(Converters::class)
 abstract class MessagesDatabase : RoomDatabase() {
@@ -157,29 +157,5 @@ abstract class MessagesDatabase : RoomDatabase() {
             }
         }
 
-        private val MIGRATION_10_11 = object : Migration(10, 11) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                db.apply {
-                    // Try to add the column, catch if it already exists from a previous partially-failed run
-                    try {
-                        execSQL("ALTER TABLE messages ADD COLUMN translated_body TEXT DEFAULT NULL")
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-        }
-
-        private val MIGRATION_11_12 = object : Migration(11, 12) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                // Empty migration
-            }
-        }
-
-        private val MIGRATION_12_13 = object : Migration(12, 13) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                // Empty migration to refresh schema hash
-            }
-        }
     }
 }

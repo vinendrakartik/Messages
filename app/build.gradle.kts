@@ -97,6 +97,7 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix = ".debug"
+            manifestPlaceholders["receiverEnabled"] = "true"
         }
         release {
             isMinifyEnabled = true
@@ -108,6 +109,7 @@ android {
             if (canSign) {
                 signingConfig = signingConfigs.getByName("release")
             }
+            manifestPlaceholders["receiverEnabled"] = "false"
         }
     }
 

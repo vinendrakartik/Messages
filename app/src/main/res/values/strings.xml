@@ -220,5 +220,5 @@
     <string name="share">Share</string>
     <string name="releases">Releases</string>
     <string name="share_text">Check out %1$s, a fork of Fossify Messages with AI features: https://github.com/vinendrakartik/Messages</string>
-
+<string name="enable_debug_logs">Enable Debug Logs</string>
 </resources>

@@ -263,16 +263,8 @@
             android:permission="com.vk.messages.permission.INTERNAL_BROADCAST">
             <intent-filter>
                 <action android:name="com.vk.messages.action.delete" />
-            </intent-filter>.
-        </receiver>
-
-        <receiver
-            android:name=".receivers.DebugReceiver"
-            android:exported="true"
-            android:permission="com.vk.messages.permission.INTERNAL_BROADCAST">
-            <intent-filter>
-                <action android:name="com.vk.messages.TEST_SMS" />
             </intent-filter>
+            .
         </receiver>
 
         <provider
