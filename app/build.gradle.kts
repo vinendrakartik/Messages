@@ -135,7 +135,6 @@ android {
         generateLocaleConfig = true
         // Limit languages to English and Indian languages to reduce APK size
         localeFilters += listOf("en", "hi", "mr", "te", "ta", "kn", "ml")
-        noCompress += "tflite"
     }
 
     tasks.withType<KotlinCompile> {
@@ -192,7 +191,4 @@ dependencies {
     detektPlugins(libs.compose.detekt)
     testImplementation(libs.mockito.core)
     testImplementation(libs.junit)
-    "gplayImplementation"(libs.tensorflow.lite.gms)
-    "coreImplementation"(libs.tensorflow.lite)
-    "fossImplementation"(libs.tensorflow.lite)
 }
