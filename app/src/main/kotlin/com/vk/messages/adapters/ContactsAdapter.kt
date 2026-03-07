@@ -5,6 +5,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toDrawable
 import com.bumptech.glide.Glide
 import org.fossify.commons.adapters.MyRecyclerViewAdapter
 import org.fossify.commons.databinding.ItemContactWithNumberBinding
@@ -75,7 +76,11 @@ class ContactsAdapter(
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize)
             }
 
-            SimpleContactsHelper(activity).loadContactImage(contact.photoUri, itemContactImage, contact.name)
+            if (contact.photoUri.isNotEmpty()) {
+                SimpleContactsHelper(activity).loadContactImage(contact.photoUri, itemContactImage, contact.name)
+            } else {
+                itemContactImage.setImageDrawable(SimpleContactsHelper(activity).getContactLetterIcon(contact.name).toDrawable(activity.resources))
+            }
         }
     }
 

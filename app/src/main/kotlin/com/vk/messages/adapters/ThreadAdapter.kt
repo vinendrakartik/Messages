@@ -443,7 +443,7 @@ class ThreadAdapter(
                     .centerCrop()
 
                 Glide.with(activity)
-                    .load(message.senderPhotoUri)
+                    .load(message.senderPhotoUri.ifEmpty { null })
                     .placeholder(placeholder)
                     .apply(options)
                     .apply(RequestOptions.circleCropTransform())

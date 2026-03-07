@@ -7,6 +7,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -206,12 +207,17 @@ abstract class BaseConversationsAdapter(
                 null
             }
 
-            SimpleContactsHelper(activity).loadContactImage(
-                path = conversation.photoUri,
-                imageView = conversationImage,
-                placeholderName = conversation.title,
-                placeholderImage = placeholder
-            )
+            if (conversation.photoUri.isNotEmpty()) {
+                SimpleContactsHelper(activity).loadContactImage(
+                    path = conversation.photoUri,
+                    imageView = conversationImage,
+                    placeholderName = conversation.title,
+                    placeholderImage = placeholder
+                )
+            } else {
+                val contactPlaceholder = placeholder ?: SimpleContactsHelper(activity).getContactLetterIcon(conversation.title).toDrawable(activity.resources)
+                conversationImage.setImageDrawable(contactPlaceholder)
+            }
         }
     }
 

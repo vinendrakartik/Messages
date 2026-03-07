@@ -85,7 +85,7 @@ class VCardViewerAdapter(
                         .placeholder(placeholder)
                         .transform(transformation)
                     Glide.with(this)
-                        .load(photo?.data ?: photo?.url)
+                        .load(photo?.data ?: photo?.url?.ifEmpty { null })
                         .apply(options)
                         .transition(DrawableTransitionOptions.withCrossFade())
                         .into(this)

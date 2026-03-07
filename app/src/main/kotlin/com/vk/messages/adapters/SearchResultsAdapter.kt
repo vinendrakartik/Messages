@@ -4,6 +4,7 @@ import android.util.TypedValue
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toDrawable
 import com.bumptech.glide.Glide
 import org.fossify.commons.adapters.MyRecyclerViewAdapter
 import org.fossify.commons.extensions.getTextSize
@@ -86,7 +87,11 @@ class SearchResultsAdapter(
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, fontSize * 0.8f)
             }
 
-            SimpleContactsHelper(activity).loadContactImage(searchResult.photoUri, searchResultImage, searchResult.title)
+            if (searchResult.photoUri.isNotEmpty()) {
+                SimpleContactsHelper(activity).loadContactImage(searchResult.photoUri, searchResultImage, searchResult.title)
+            } else {
+                searchResultImage.setImageDrawable(SimpleContactsHelper(activity).getContactLetterIcon(searchResult.title).toDrawable(activity.resources))
+            }
         }
     }
 

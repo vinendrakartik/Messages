@@ -9,13 +9,19 @@ import android.graphics.drawable.Icon
 import android.graphics.drawable.LayerDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.provider.Telephony
 import android.text.TextUtils
 import android.view.View
+import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.vk.messages.BuildConfig
@@ -43,6 +49,12 @@ import org.fossify.commons.models.Release
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
+import kotlin.concurrent.thread
 
 class MainActivity : SimpleActivity() {
     override var isSearchBarEnabled = true
@@ -150,6 +162,7 @@ class MainActivity : SimpleActivity() {
 
         setupSwipeActions()
         setupFilterChips()
+        checkAppUpdate(BuildConfig.VERSION_NAME)
     }
 
     private fun setupFilterChips() {
@@ -630,7 +643,7 @@ class MainActivity : SimpleActivity() {
                 snippet = conversation.phoneNumber,
                 date = date,
                 threadId = conversation.threadId,
-                photoUri = conversation.photoUri
+                photoUri = conversation.photoUri.ifEmpty { "" }
             )
             searchResults.add(searchResult)
         }
@@ -654,7 +667,7 @@ class MainActivity : SimpleActivity() {
                 snippet = message.body,
                 date = date,
                 threadId = message.threadId,
-                photoUri = message.senderPhotoUri
+                photoUri = message.senderPhotoUri.ifEmpty { "" }
             )
             searchResults.add(searchResult)
         }
@@ -774,5 +787,156 @@ class MainActivity : SimpleActivity() {
         arrayListOf<Release>().apply {
             checkWhatsNew(this, BuildConfig.VERSION_CODE)
         }
+    }
+
+    private fun checkAppUpdate(currentVersion: String) {
+        val repo = "vinendrakartik/Messages"
+
+        thread {
+            try {
+                val url = URL("https://api.github.com/repos/$repo/releases/latest")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.setRequestProperty("User-Agent", "Messages")
+
+                if (connection.responseCode == 200) {
+                    val response = connection.inputStream.bufferedReader().readText()
+                    val json = JSONObject(response)
+                    val latestTag = json.getString("tag_name")
+
+                    // FIND APK URL IN ASSETS
+                    var apkUrl = ""
+                    val assets = json.getJSONArray("assets")
+                    for (i in 0 until assets.length()) {
+                        val asset = assets.getJSONObject(i)
+                        val name = asset.getString("name")
+                        if (name.endsWith(".apk")) {
+                            apkUrl = asset.getString("browser_download_url")
+                            break
+                        }
+                    }
+
+                    Handler(Looper.getMainLooper()).post {
+                        if (isUpdateAvailable(currentVersion, latestTag) && apkUrl.isNotEmpty()) {
+                            showUpdateDialog(latestTag, apkUrl)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun showUpdateDialog(version: String, url: String) {
+        AlertDialog.Builder(this)
+            .setTitle("Update Available")
+            .setMessage("Version $version is available. Download and install now?")
+            .setPositiveButton("Update") { _, _ ->
+                downloadAPK(url)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun downloadAPK(urlStr: String) {
+        // Android 8+ requires permission check for installing packages
+        if (!packageManager.canRequestPackageInstalls()) {
+            Toast.makeText(this, "Please allow permission to install updates", Toast.LENGTH_LONG).show()
+            startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, "package:$packageName".toUri()))
+            return
+        }
+
+        val dialogView = layoutInflater.inflate(R.layout.dialog_update_progress, null)
+        val progressBar = dialogView.findViewById<android.widget.ProgressBar>(R.id.progress_bar)
+        val progressPercent = dialogView.findViewById<TextView>(R.id.progress_percent)
+
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Updating")
+            .setView(dialogView)
+            .setCancelable(false) // Prevent user from closing it by accident
+            .create()
+
+        dialog.show()
+
+        thread {
+            try {
+                val url = URL(urlStr)
+                val connection = url.openConnection() as HttpURLConnection
+                connection.connect()
+
+                val fileLength = connection.contentLength
+                val input = connection.inputStream
+
+                val file = File(externalCacheDir, "update.apk")
+                val output = FileOutputStream(file)
+
+                val data = ByteArray(1024)
+                var total: Long = 0
+                var count: Int
+
+                while (input.read(data).also { count = it } != -1) {
+                    total += count
+                    output.write(data, 0, count)
+
+                    // FIX: Only calculate progress if we know the file size
+                    if (fileLength > 0) {
+                        val progress = (total * 100 / fileLength).toInt()
+
+                        Handler(Looper.getMainLooper()).post {
+                            progressBar.progress = progress
+                            progressPercent.text = "$progress%"
+                        }
+                    } else {
+                        // Optional: Show indeterminate state if size is unknown
+                        Handler(Looper.getMainLooper()).post {
+                            progressPercent.text = "${total / 1024} KB"
+                        }
+                    }
+                }
+                output.close()
+                input.close()
+
+                Handler(Looper.getMainLooper()).post {
+                    dialog.dismiss()
+                    installAPK(file)
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Handler(Looper.getMainLooper()).post {
+                    dialog.dismiss()
+                    Toast.makeText(this, "Download failed: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+    }
+
+    private fun installAPK(file: File) {
+        try {
+            val uri = FileProvider.getUriForFile(this, "$packageName.provider", file)
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(uri, "application/vnd.android.package-archive")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Install failed: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun isUpdateAvailable(current: String, latest: String): Boolean {
+        // Logic to compare versions (e.g. 1.0.0 vs 1.0.1)
+        // Returns true if latest > current
+        val l = latest.replace(Regex("[^0-9.]"), "").split(".")
+        val c = current.replace(Regex("[^0-9.]"), "").split(".")
+
+        for (i in 0 until minOf(l.size, c.size)) {
+            val lVal = l[i].toIntOrNull() ?: 0
+            val cVal = c[i].toIntOrNull() ?: 0
+            if (lVal > cVal) return true
+            if (lVal < cVal) return false
+        }
+        return l.size > c.size
     }
 }
